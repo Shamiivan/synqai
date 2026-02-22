@@ -1,0 +1,9 @@
+{
+  "name": "@synqai/gworkspace-auth",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "googleapis": "^148.0.0"
+  }
+}

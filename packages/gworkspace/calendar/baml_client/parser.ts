@@ -23,7 +23,7 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CalendarDone, CreateEvent, ListEvents, RequestInfo} from "./types"
+import type {CalendarDone, CheckAvailability, CreateEvent, DeleteEvent, GetEvent, ListEvents, QuickAdd, RequestInfo, UpdateEvent} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
@@ -33,7 +33,7 @@ export class LlmResponseParser {
   CalendarNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone {
+  ): types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -47,7 +47,7 @@ export class LlmResponseParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone
+      ) as types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone
     } catch (error) {
       throw toBamlError(error);
     }
@@ -62,7 +62,7 @@ export class LlmStreamParser {
   CalendarNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.CreateEvent | partial_types.ListEvents | partial_types.RequestInfo | partial_types.CalendarDone {
+  ): partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.RequestInfo | partial_types.CalendarDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -76,7 +76,7 @@ export class LlmStreamParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.CreateEvent | partial_types.ListEvents | partial_types.RequestInfo | partial_types.CalendarDone
+      ) as partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.RequestInfo | partial_types.CalendarDone
     } catch (error) {
       throw toBamlError(error);
     }

@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  CalendarDone,  CreateEvent,  ListEvents,  RequestInfo } from "./types"
+import type {  CalendarDone,  CheckAvailability,  CreateEvent,  DeleteEvent,  GetEvent,  ListEvents,  QuickAdd,  RequestInfo,  UpdateEvent } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -40,6 +40,13 @@ export namespace partial_types {
       intent?: "done" | null
       message?: string | null
     }
+    export interface CheckAvailability {
+      intent?: "check_availability" | null
+      date?: string | null
+      startTime?: string | null
+      endTime?: string | null
+      timezone?: string | null
+    }
     export interface CreateEvent {
       intent?: "create_event" | null
       summary?: string | null
@@ -50,15 +57,39 @@ export namespace partial_types {
       location?: string | null
       timezone?: string | null
     }
+    export interface DeleteEvent {
+      intent?: "delete_event" | null
+      eventId?: string | null
+      confirmation?: string | null
+    }
+    export interface GetEvent {
+      intent?: "get_event" | null
+      eventId?: string | null
+    }
     export interface ListEvents {
       intent?: "list_events" | null
       date?: string | null
       timezone?: string | null
     }
+    export interface QuickAdd {
+      intent?: "quick_add" | null
+      text?: string | null
+    }
     export interface RequestInfo {
       intent?: "request_info" | null
       message?: string | null
     }
-export type CalendarStep = CreateEvent | ListEvents | RequestInfo | CalendarDone | null
+    export interface UpdateEvent {
+      intent?: "update_event" | null
+      eventId?: string | null
+      summary?: string | null
+      date?: string | null
+      startTime?: string | null
+      endTime?: string | null
+      description?: string | null
+      location?: string | null
+      timezone?: string | null
+    }
+export type CalendarStep = CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | RequestInfo | CalendarDone | null
 
 }

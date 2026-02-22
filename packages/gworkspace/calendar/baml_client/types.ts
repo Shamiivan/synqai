@@ -53,6 +53,15 @@ export interface CalendarDone {
   
 }
 
+export interface CheckAvailability {
+  intent: "check_availability"
+  date: string
+  startTime: string
+  endTime: string
+  timezone: string
+  
+}
+
 export interface CreateEvent {
   intent: "create_event"
   summary: string
@@ -65,10 +74,29 @@ export interface CreateEvent {
   
 }
 
+export interface DeleteEvent {
+  intent: "delete_event"
+  eventId: string
+  confirmation: string
+  
+}
+
+export interface GetEvent {
+  intent: "get_event"
+  eventId: string
+  
+}
+
 export interface ListEvents {
   intent: "list_events"
   date: string
   timezone: string
+  
+}
+
+export interface QuickAdd {
+  intent: "quick_add"
+  text: string
   
 }
 
@@ -78,4 +106,17 @@ export interface RequestInfo {
   
 }
 
-export type CalendarStep = CreateEvent | ListEvents | RequestInfo | CalendarDone
+export interface UpdateEvent {
+  intent: "update_event"
+  eventId: string
+  summary?: string | null
+  date?: string | null
+  startTime?: string | null
+  endTime?: string | null
+  description?: string | null
+  location?: string | null
+  timezone: string
+  
+}
+
+export type CalendarStep = CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | RequestInfo | CalendarDone

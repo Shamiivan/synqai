@@ -29,18 +29,28 @@ export default class TypeBuilder {
     
     CalendarDone: ClassViewer<'CalendarDone', "intent" | "message">;
     
+    CheckAvailability: ClassViewer<'CheckAvailability', "intent" | "date" | "startTime" | "endTime" | "timezone">;
+    
     CreateEvent: ClassViewer<'CreateEvent', "intent" | "summary" | "date" | "startTime" | "endTime" | "description" | "location" | "timezone">;
+    
+    DeleteEvent: ClassViewer<'DeleteEvent', "intent" | "eventId" | "confirmation">;
+    
+    GetEvent: ClassViewer<'GetEvent', "intent" | "eventId">;
     
     ListEvents: ClassViewer<'ListEvents', "intent" | "date" | "timezone">;
     
+    QuickAdd: ClassViewer<'QuickAdd', "intent" | "text">;
+    
     RequestInfo: ClassViewer<'RequestInfo', "intent" | "message">;
+    
+    UpdateEvent: ClassViewer<'UpdateEvent', "intent" | "eventId" | "summary" | "date" | "startTime" | "endTime" | "description" | "location" | "timezone">;
     
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "CalendarDone","CreateEvent","ListEvents","RequestInfo",
+            "CalendarDone","CheckAvailability","CreateEvent","DeleteEvent","GetEvent","ListEvents","QuickAdd","RequestInfo","UpdateEvent",
           ]),
           enums: new Set([
             
@@ -52,16 +62,36 @@ export default class TypeBuilder {
           "intent","message",
         ]);
         
+        this.CheckAvailability = this.tb.classViewer("CheckAvailability", [
+          "intent","date","startTime","endTime","timezone",
+        ]);
+        
         this.CreateEvent = this.tb.classViewer("CreateEvent", [
           "intent","summary","date","startTime","endTime","description","location","timezone",
+        ]);
+        
+        this.DeleteEvent = this.tb.classViewer("DeleteEvent", [
+          "intent","eventId","confirmation",
+        ]);
+        
+        this.GetEvent = this.tb.classViewer("GetEvent", [
+          "intent","eventId",
         ]);
         
         this.ListEvents = this.tb.classViewer("ListEvents", [
           "intent","date","timezone",
         ]);
         
+        this.QuickAdd = this.tb.classViewer("QuickAdd", [
+          "intent","text",
+        ]);
+        
         this.RequestInfo = this.tb.classViewer("RequestInfo", [
           "intent","message",
+        ]);
+        
+        this.UpdateEvent = this.tb.classViewer("UpdateEvent", [
+          "intent","eventId","summary","date","startTime","endTime","description","location","timezone",
         ]);
         
         

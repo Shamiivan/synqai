@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CalendarDone, CreateEvent, ListEvents, RequestInfo} from "./types"
+import type {CalendarDone, CheckAvailability, CreateEvent, DeleteEvent, GetEvent, ListEvents, QuickAdd, RequestInfo, UpdateEvent} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -100,7 +100,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         async CalendarNextStep(
         thread: string,today: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone> {
+        ): Promise<types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -147,7 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone
+            return __raw__.parsed(false) as types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone
             } catch (error) {
             throw toBamlError(error);
             }
@@ -170,7 +170,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             CalendarNextStep(
             thread: string,today: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.CreateEvent | partial_types.ListEvents | partial_types.RequestInfo | partial_types.CalendarDone, types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone>
+            ): BamlStream<partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.RequestInfo | partial_types.CalendarDone, types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -229,10 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.CreateEvent | partial_types.ListEvents | partial_types.RequestInfo | partial_types.CalendarDone, types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone>(
+                return new BamlStream<partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.RequestInfo | partial_types.CalendarDone, types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone>(
                   __raw__,
-                  (a): partial_types.CreateEvent | partial_types.ListEvents | partial_types.RequestInfo | partial_types.CalendarDone => a,
-                  (a): types.CreateEvent | types.ListEvents | types.RequestInfo | types.CalendarDone => a,
+                  (a): partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.RequestInfo | partial_types.CalendarDone => a,
+                  (a): types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.RequestInfo | types.CalendarDone => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

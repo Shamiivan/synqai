@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow,  Handoff } from "./types"
+import type {  CreateDocument,  DocsDone,  DocsRequestInfo,  GetDocument,  InsertText,  ListDocuments,  ReplaceText } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -36,15 +36,39 @@ export interface StreamState<T> {
 }
 
 export namespace partial_types {
-    export interface DoneForNow {
-      intent?: "done_for_now" | null
+    export interface CreateDocument {
+      intent?: "create_document" | null
+      title?: string | null
+      content?: string | null
+    }
+    export interface DocsDone {
+      intent?: "done" | null
       message?: string | null
     }
-    export interface Handoff {
-      intent?: "handoff" | null
-      agent?: "calendar" | "gmail" | "docs" | "sheets" | "meet" | null
-      task?: string | null
+    export interface DocsRequestInfo {
+      intent?: "request_info" | null
+      message?: string | null
     }
-export type RouterStep = DoneForNow | Handoff | null
+    export interface GetDocument {
+      intent?: "get_document" | null
+      documentId?: string | null
+    }
+    export interface InsertText {
+      intent?: "insert_text" | null
+      documentId?: string | null
+      text?: string | null
+      position?: string | null
+    }
+    export interface ListDocuments {
+      intent?: "list_documents" | null
+      query?: string | null
+    }
+    export interface ReplaceText {
+      intent?: "replace_text" | null
+      documentId?: string | null
+      find?: string | null
+      replaceWith?: string | null
+    }
+export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | DocsRequestInfo | DocsDone | null
 
 }

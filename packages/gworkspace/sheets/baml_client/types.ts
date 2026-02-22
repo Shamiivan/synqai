@@ -47,17 +47,71 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
-export interface DoneForNow {
-  intent: "done_for_now"
+export interface AddSheet {
+  intent: "add_sheet"
+  spreadsheetId: string
+  title: string
+  
+}
+
+export interface AppendRows {
+  intent: "append_rows"
+  spreadsheetId: string
+  range: string
+  values: string[][]
+  
+}
+
+export interface ClearRange {
+  intent: "clear_range"
+  spreadsheetId: string
+  range: string
+  
+}
+
+export interface CreateSpreadsheet {
+  intent: "create_spreadsheet"
+  title: string
+  
+}
+
+export interface GetSpreadsheet {
+  intent: "get_spreadsheet"
+  spreadsheetId: string
+  
+}
+
+export interface ListSpreadsheets {
+  intent: "list_spreadsheets"
+  query: string
+  
+}
+
+export interface ReadValues {
+  intent: "read_values"
+  spreadsheetId: string
+  range: string
+  
+}
+
+export interface SheetsDone {
+  intent: "done"
   message: string
   
 }
 
-export interface Handoff {
-  intent: "handoff"
-  agent: "calendar" | "gmail" | "docs" | "sheets" | "meet"
-  task: string
+export interface SheetsRequestInfo {
+  intent: "request_info"
+  message: string
   
 }
 
-export type RouterStep = DoneForNow | Handoff
+export interface WriteValues {
+  intent: "write_values"
+  spreadsheetId: string
+  range: string
+  values: string[][]
+  
+}
+
+export type SheetsStep = CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | SheetsRequestInfo | SheetsDone

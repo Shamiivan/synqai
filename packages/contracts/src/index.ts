@@ -1,5 +1,5 @@
 import type { ConvexClient } from "convex/browser";
-import type { calendar_v3, gmail_v1 } from "googleapis";
+import type { calendar_v3, gmail_v1, docs_v1, sheets_v4, drive_v3, meet_v2 } from "googleapis";
 
 // ── Logger (shared by all layers) ──
 
@@ -68,6 +68,85 @@ export interface GmailAgentDependencies {
     gmailNextStep: (thread: string, today: string) => Promise<unknown>;
   };
   tools: GmailTools;
+  log: Logger;
+}
+
+// ── Docs Tools ──
+
+export interface DocsToolsDependencies {
+  docs: docs_v1.Docs;
+  drive: drive_v3.Drive;
+}
+
+export interface DocsTools {
+  handleCreateDocument: (step: any) => Promise<any>;
+  handleGetDocument: (step: any) => Promise<any>;
+  handleInsertText: (step: any) => Promise<any>;
+  handleReplaceText: (step: any) => Promise<any>;
+  handleListDocuments: (step: any) => Promise<any>;
+}
+
+// ── Docs Agent ──
+
+export interface DocsAgentDependencies {
+  baml: {
+    docsNextStep: (thread: string, today: string) => Promise<unknown>;
+  };
+  tools: DocsTools;
+  log: Logger;
+}
+
+// ── Sheets Tools ──
+
+export interface SheetsToolsDependencies {
+  sheets: sheets_v4.Sheets;
+  drive: drive_v3.Drive;
+}
+
+export interface SheetsTools {
+  handleCreateSpreadsheet: (step: any) => Promise<any>;
+  handleGetSpreadsheet: (step: any) => Promise<any>;
+  handleReadValues: (step: any) => Promise<any>;
+  handleWriteValues: (step: any) => Promise<any>;
+  handleAppendRows: (step: any) => Promise<any>;
+  handleClearRange: (step: any) => Promise<any>;
+  handleAddSheet: (step: any) => Promise<any>;
+  handleListSpreadsheets: (step: any) => Promise<any>;
+}
+
+// ── Sheets Agent ──
+
+export interface SheetsAgentDependencies {
+  baml: {
+    sheetsNextStep: (thread: string, today: string) => Promise<unknown>;
+  };
+  tools: SheetsTools;
+  log: Logger;
+}
+
+// ── Meet Tools ──
+
+export interface MeetToolsDependencies {
+  meet: meet_v2.Meet;
+}
+
+export interface MeetTools {
+  handleCreateMeeting: (step: any) => Promise<any>;
+  handleGetMeeting: (step: any) => Promise<any>;
+  handleEndMeeting: (step: any) => Promise<any>;
+  handleListConferences: (step: any) => Promise<any>;
+  handleListRecordings: (step: any) => Promise<any>;
+  handleListTranscripts: (step: any) => Promise<any>;
+  handleGetTranscriptEntries: (step: any) => Promise<any>;
+}
+
+// ── Meet Agent ──
+
+export interface MeetAgentDependencies {
+  baml: {
+    meetNextStep: (thread: string, today: string) => Promise<unknown>;
+  };
+  tools: MeetTools;
   log: Logger;
 }
 

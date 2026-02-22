@@ -47,17 +47,57 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
-export interface DoneForNow {
-  intent: "done_for_now"
+export interface CreateMeeting {
+  intent: "create_meeting"
+  
+}
+
+export interface EndMeeting {
+  intent: "end_meeting"
+  spaceName: string
+  
+}
+
+export interface GetMeeting {
+  intent: "get_meeting"
+  spaceName: string
+  
+}
+
+export interface GetTranscriptEntries {
+  intent: "get_transcript_entries"
+  transcriptName: string
+  
+}
+
+export interface ListConferences {
+  intent: "list_conferences"
+  pageSize?: number | null
+  
+}
+
+export interface ListRecordings {
+  intent: "list_recordings"
+  conferenceRecordName: string
+  
+}
+
+export interface ListTranscripts {
+  intent: "list_transcripts"
+  conferenceRecordName: string
+  
+}
+
+export interface MeetDone {
+  intent: "done"
   message: string
   
 }
 
-export interface Handoff {
-  intent: "handoff"
-  agent: "calendar" | "gmail" | "docs" | "sheets" | "meet"
-  task: string
+export interface MeetRequestInfo {
+  intent: "request_info"
+  message: string
   
 }
 
-export type RouterStep = DoneForNow | Handoff
+export type MeetStep = CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries | MeetRequestInfo | MeetDone

@@ -47,17 +47,51 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
-export interface DoneForNow {
-  intent: "done_for_now"
+export interface CreateDocument {
+  intent: "create_document"
+  title: string
+  content?: string | null
+  
+}
+
+export interface DocsDone {
+  intent: "done"
   message: string
   
 }
 
-export interface Handoff {
-  intent: "handoff"
-  agent: "calendar" | "gmail" | "docs" | "sheets" | "meet"
-  task: string
+export interface DocsRequestInfo {
+  intent: "request_info"
+  message: string
   
 }
 
-export type RouterStep = DoneForNow | Handoff
+export interface GetDocument {
+  intent: "get_document"
+  documentId: string
+  
+}
+
+export interface InsertText {
+  intent: "insert_text"
+  documentId: string
+  text: string
+  position: string
+  
+}
+
+export interface ListDocuments {
+  intent: "list_documents"
+  query: string
+  
+}
+
+export interface ReplaceText {
+  intent: "replace_text"
+  documentId: string
+  find: string
+  replaceWith: string
+  
+}
+
+export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | DocsRequestInfo | DocsDone

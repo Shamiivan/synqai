@@ -6,12 +6,24 @@ import { ConvexClient } from "convex/browser";
 import { b as routerBaml } from "../baml_client";
 import { b as calendarBaml } from "@synqai/gworkspace-calendar/baml_client";
 import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
+import { b as docsBaml } from "@synqai/gworkspace-docs/baml_client";
+import { b as sheetsBaml } from "@synqai/gworkspace-sheets/baml_client";
+import { b as meetBaml } from "@synqai/gworkspace-meet/baml_client";
 import { getCalendarClient, calendarId } from "@synqai/gworkspace-calendar/src/google-auth";
 import { createCalendarTools } from "@synqai/gworkspace-calendar/src/tools";
 import { createCalendarAgent } from "@synqai/gworkspace-calendar/src/agent";
 import { getGmailClient, userId } from "@synqai/gworkspace-gmail/src/google-auth";
 import { createGmailTools } from "@synqai/gworkspace-gmail/src/tools";
 import { createGmailAgent } from "@synqai/gworkspace-gmail/src/agent";
+import { getDocsClient, getDriveClient as getDocsDrive } from "@synqai/gworkspace-docs/src/google-auth";
+import { createDocsTools } from "@synqai/gworkspace-docs/src/tools";
+import { createDocsAgent } from "@synqai/gworkspace-docs/src/agent";
+import { getSheetsClient, getDriveClient as getSheetsDrive } from "@synqai/gworkspace-sheets/src/google-auth";
+import { createSheetsTools } from "@synqai/gworkspace-sheets/src/tools";
+import { createSheetsAgent } from "@synqai/gworkspace-sheets/src/agent";
+import { getMeetClient } from "@synqai/gworkspace-meet/src/google-auth";
+import { createMeetTools } from "@synqai/gworkspace-meet/src/tools";
+import { createMeetAgent } from "@synqai/gworkspace-meet/src/agent";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 import { createLogger } from "./logging";
 import { createRouter } from "./agents/router";
@@ -46,12 +58,50 @@ const gmailAgent = createGmailAgent({
   log: log.child("gmail"),
 });
 
+// ── Google Docs ──
+const docsClient = getDocsClient();
+const docsDrive = getDocsDrive();
+const docsTools = createDocsTools({ docs: docsClient, drive: docsDrive });
+
+// ── Docs Agent ──
+const docsAgent = createDocsAgent({
+  baml: { docsNextStep: (thread, today) => docsBaml.DocsNextStep(thread, today) },
+  tools: docsTools,
+  log: log.child("docs"),
+});
+
+// ── Google Sheets ──
+const sheetsClient = getSheetsClient();
+const sheetsDrive = getSheetsDrive();
+const sheetsTools = createSheetsTools({ sheets: sheetsClient, drive: sheetsDrive });
+
+// ── Sheets Agent ──
+const sheetsAgent = createSheetsAgent({
+  baml: { sheetsNextStep: (thread, today) => sheetsBaml.SheetsNextStep(thread, today) },
+  tools: sheetsTools,
+  log: log.child("sheets"),
+});
+
+// ── Google Meet ──
+const meetClient = getMeetClient();
+const meetTools = createMeetTools({ meet: meetClient });
+
+// ── Meet Agent ──
+const meetAgent = createMeetAgent({
+  baml: { meetNextStep: (thread, today) => meetBaml.MeetNextStep(thread, today) },
+  tools: meetTools,
+  log: log.child("meet"),
+});
+
 // ── Router (agent registry) ──
 const router = createRouter({
   baml: { determineNextStep: (thread, lastMsg) => routerBaml.DetermineNextStep(thread, lastMsg) },
   agents: {
     calendar: (thread, childLog) => calendarAgent.run(thread, childLog),
     gmail: (thread, childLog) => gmailAgent.run(thread, childLog),
+    docs: (thread, childLog) => docsAgent.run(thread, childLog),
+    sheets: (thread, childLog) => sheetsAgent.run(thread, childLog),
+    meet: (thread, childLog) => meetAgent.run(thread, childLog),
   },
   log: log.child("router"),
 });

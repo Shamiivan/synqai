@@ -38,11 +38,13 @@ client.once(Events.ClientReady, async (c) => {
   convex.onUpdate(api.runs.listWaitingHuman, {}, async (waiting) => {
     for (const run of waiting) {
       try {
-        if (run.discordThreadId) {
-          // Thread already exists — post follow-up question there
-          await postFollowUpInThread(run);
+        const conv = await convex.query(api.runs.getConversationByRun, { runId: run._id });
+        if (!conv) continue;
+
+        if (conv.discordThreadId) {
+          await postFollowUpInThread(run, conv);
         } else {
-          await postQuestionInThread(run);
+          await postQuestionInThread(run, conv);
         }
       } catch (err) {
         log.error("Failed to post question", { run: run._id, error: String(err) });
@@ -53,23 +55,21 @@ client.once(Events.ClientReady, async (c) => {
   log.info(`Bot online as ${c.user.tag}`);
 });
 
-async function postQuestionInThread(run: {
-  _id: any;
-  question?: string | null;
-  discordChannelId: string;
-  discordMessageId?: string | null;
-}) {
+async function postQuestionInThread(
+  run: { _id: any; question?: string | null },
+  conv: { discordChannelId: string; discordMessageId?: string | null },
+) {
   const question = run.question ?? "I need more information to continue.";
 
-  const channel = await client.channels.fetch(run.discordChannelId);
+  const channel = await client.channels.fetch(conv.discordChannelId);
   if (!channel || !("messages" in channel)) return;
 
   const textChannel = channel as TextChannel;
 
   // Create thread off the original message
   let thread;
-  if (run.discordMessageId) {
-    const msg = await textChannel.messages.fetch(run.discordMessageId);
+  if (conv.discordMessageId) {
+    const msg = await textChannel.messages.fetch(conv.discordMessageId);
     const name = `Clarification: ${msg.content.slice(0, 85)}`;
     thread = await msg.startThread({ name });
   } else {
@@ -80,9 +80,9 @@ async function postQuestionInThread(run: {
 
   await thread.send(question);
 
-  // Persist thread ID on the run so it survives restarts
+  // Persist thread ID on the conversation so it survives restarts
   await convex.mutation(api.runs.setDiscordThreadId, {
-    id: run._id,
+    runId: run._id as any,
     discordThreadId: thread.id,
   });
 
@@ -93,27 +93,26 @@ async function postQuestionInThread(run: {
   log.info("Posted question in thread", { thread: thread.id, run: run._id });
 }
 
-async function postFollowUpInThread(run: {
-  _id: any;
-  question?: string | null;
-  discordThreadId?: string | null;
-}) {
-  if (!run.discordThreadId) return;
+async function postFollowUpInThread(
+  run: { _id: any; question?: string | null },
+  conv: { discordThreadId?: string | null },
+) {
+  if (!conv.discordThreadId) return;
   const question = run.question ?? "I need more information to continue.";
 
   // Skip if we already posted this exact question (subscription refire)
   if (postedQuestions.get(String(run._id)) === question) return;
 
-  const thread = await client.channels.fetch(run.discordThreadId);
+  const thread = await client.channels.fetch(conv.discordThreadId);
   if (!thread || !("send" in thread)) return;
 
   await (thread as any).send(question);
   postedQuestions.set(String(run._id), question);
 
   // Ensure thread mapping is populated (may be missing after restart)
-  threadToRun.set(run.discordThreadId, String(run._id));
+  threadToRun.set(conv.discordThreadId, String(run._id));
 
-  log.info("Posted follow-up question", { thread: run.discordThreadId, run: run._id });
+  log.info("Posted follow-up question", { thread: conv.discordThreadId, run: run._id });
 }
 
 client.on(Events.MessageCreate, async (message) => {
@@ -143,7 +142,6 @@ client.on(Events.MessageCreate, async (message) => {
 
   // New message in channel → create a run
   const runId = await convex.mutation(api.runs.create, {
-    agent: "router",
     input: message.content,
     discordChannelId: message.channelId,
     discordMessageId: message.id,
@@ -165,10 +163,17 @@ client.on(Events.MessageCreate, async (message) => {
 
       try {
         if (r.status === "failed") {
-          log.error("Run failed", { run: runId, output: r.output });
+          log.error("Run failed", { run: runId });
           await message.reply("Sorry, something went wrong. Please try again.");
         } else {
-          await message.reply(r.output ?? "Done.");
+          // Extract final message from thread events
+          try {
+            const events = JSON.parse(r.thread);
+            const lastOutput = [...events].reverse().find((e: any) => e.type === "agent_output");
+            await message.reply(lastOutput?.data ?? "Done.");
+          } catch {
+            await message.reply("Done.");
+          }
         }
       } catch (err) {
         log.error("Failed to reply", { run: runId, error: String(err) });
@@ -181,25 +186,25 @@ client.on(Events.MessageCreate, async (message) => {
 
 /**
  * Handle replies in threads after a bot restart.
- * The in-memory threadToRun map is empty, so we look up the run by discordThreadId.
+ * The in-memory threadToRun map is empty, so we look up the conversation by discordThreadId.
  */
 async function handleOrphanedThreadReply(message: any) {
-  // Query all waiting_human runs and find the one with this thread ID
-  const waiting = await convex.query(api.runs.listWaitingHuman, {});
-  const run = waiting.find((r: any) => r.discordThreadId === message.channel.id);
-  if (!run) return; // Not a thread we care about
+  const conv = await convex.query(api.runs.getConversationByThread, {
+    discordThreadId: message.channel.id,
+  });
+  if (!conv) return;
 
   // Re-populate the mapping
-  threadToRun.set(message.channel.id, String(run._id));
+  threadToRun.set(message.channel.id, String(conv.runId));
 
   try {
     await convex.mutation(api.runs.resume, {
-      id: run._id,
+      id: conv.runId,
       answer: message.content.trim(),
     });
-    log.info("Forwarded orphaned thread answer", { run: run._id });
+    log.info("Forwarded orphaned thread answer", { run: conv.runId });
   } catch (err) {
-    log.error("Failed to resume orphaned run", { run: run._id, error: String(err) });
+    log.error("Failed to resume orphaned run", { run: conv.runId, error: String(err) });
   }
 }
 

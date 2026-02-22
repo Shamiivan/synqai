@@ -2,8 +2,18 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  conversations: defineTable({
+    discordChannelId: v.string(),
+    discordMessageId: v.optional(v.string()),
+    discordThreadId: v.optional(v.string()),
+    runId: v.id("agentRuns"),
+  })
+    .index("by_discord_thread", ["discordThreadId"])
+    .index("by_run", ["runId"]),
+
   agentRuns: defineTable({
-    agent: v.string(),
+    entryAgent: v.string(),
+    currentAgent: v.union(v.literal("router"), v.literal("calendar")),
     status: v.union(
       v.literal("pending"),
       v.literal("running"),
@@ -11,12 +21,7 @@ export default defineSchema({
       v.literal("done"),
       v.literal("failed"),
     ),
-    input: v.string(),
-    output: v.optional(v.string()),
-    thread: v.optional(v.string()),
+    thread: v.string(),
     question: v.optional(v.string()),
-    discordChannelId: v.string(),
-    discordMessageId: v.optional(v.string()),
-    discordThreadId: v.optional(v.string()),
   }).index("by_status", ["status"]),
 });

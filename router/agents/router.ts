@@ -7,20 +7,11 @@ export interface AgentResult {
   thread: Thread;
   intent: string;
   message?: string;
+  currentAgent?: "router" | "calendar";
 }
 
 export async function runRouter(thread: Thread, deps?: { log?: Logger }): Promise<AgentResult> {
   const log = deps?.log;
-
-  // If the thread already has tool_call events, a sub-agent is mid-conversation.
-  // Skip routing and resume the agent loop directly.
-  const hasToolCalls = thread.events.some((e) => e.type === "tool_call");
-  if (hasToolCalls) {
-    log?.info("Resuming mid-conversation agent loop");
-    const result = await agentLoop(thread, { log: log?.child("calendar") });
-    const intent = getLastIntent(result);
-    return { thread: result, intent, message: getLastMessage(result) };
-  }
 
   const lastUserInput = thread.events
     .filter((e) => e.type === "user_input" || e.type === "human_response")
@@ -42,7 +33,7 @@ export async function runRouter(thread: Thread, deps?: { log?: Logger }): Promis
       }
       const result = await agentLoop(thread, { log: log?.child("calendar") });
       const intent = getLastIntent(result);
-      return { thread: result, intent, message: getLastMessage(result) };
+      return { thread: result, intent, message: getLastMessage(result), currentAgent: "calendar" };
     }
 
     default:

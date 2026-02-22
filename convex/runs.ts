@@ -3,19 +3,23 @@ import { v } from "convex/values";
 
 export const create = mutation({
   args: {
-    agent: v.string(),
     input: v.string(),
     discordChannelId: v.string(),
     discordMessageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("agentRuns", {
-      agent: args.agent,
+    const runId = await ctx.db.insert("agentRuns", {
+      entryAgent: "router",
+      currentAgent: "router",
       status: "pending",
-      input: args.input,
+      thread: JSON.stringify([{ type: "user_input", data: args.input }]),
+    });
+    await ctx.db.insert("conversations", {
       discordChannelId: args.discordChannelId,
       discordMessageId: args.discordMessageId,
+      runId,
     });
+    return runId;
   },
 });
 
@@ -52,12 +56,12 @@ export const claim = mutation({
 export const finish = mutation({
   args: {
     id: v.id("agentRuns"),
-    output: v.string(),
+    thread: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, {
       status: "done",
-      output: args.output,
+      thread: args.thread,
     });
   },
 });
@@ -65,25 +69,26 @@ export const finish = mutation({
 export const fail = mutation({
   args: {
     id: v.id("agentRuns"),
-    output: v.string(),
+    thread: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, {
-      status: "failed",
-      output: args.output,
-    });
+    const patch: Record<string, unknown> = { status: "failed" as const };
+    if (args.thread !== undefined) patch.thread = args.thread;
+    await ctx.db.patch(args.id, patch);
   },
 });
 
 export const pause = mutation({
   args: {
     id: v.id("agentRuns"),
+    currentAgent: v.union(v.literal("router"), v.literal("calendar")),
     thread: v.string(),
     question: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, {
       status: "waiting_human",
+      currentAgent: args.currentAgent,
       thread: args.thread,
       question: args.question,
     });
@@ -99,7 +104,7 @@ export const resume = mutation({
     const run = await ctx.db.get(args.id);
     if (!run || run.status !== "waiting_human") return;
 
-    const events = run.thread ? JSON.parse(run.thread) : [];
+    const events = JSON.parse(run.thread);
     events.push({ type: "human_response", data: args.answer });
 
     await ctx.db.patch(args.id, {
@@ -122,11 +127,39 @@ export const listWaitingHuman = query({
 
 export const setDiscordThreadId = mutation({
   args: {
-    id: v.id("agentRuns"),
+    runId: v.id("agentRuns"),
     discordThreadId: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { discordThreadId: args.discordThreadId });
+    const conv = await ctx.db
+      .query("conversations")
+      .withIndex("by_run", (q) => q.eq("runId", args.runId))
+      .first();
+    if (conv) {
+      await ctx.db.patch(conv._id, { discordThreadId: args.discordThreadId });
+    }
+  },
+});
+
+export const getConversationByThread = query({
+  args: { discordThreadId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("conversations")
+      .withIndex("by_discord_thread", (q) =>
+        q.eq("discordThreadId", args.discordThreadId)
+      )
+      .first();
+  },
+});
+
+export const getConversationByRun = query({
+  args: { runId: v.id("agentRuns") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("conversations")
+      .withIndex("by_run", (q) => q.eq("runId", args.runId))
+      .first();
   },
 });
 
@@ -143,10 +176,7 @@ export const cancelStale = mutation({
       .collect();
     const stale = [...running, ...waiting];
     for (const run of stale) {
-      await ctx.db.patch(run._id, {
-        status: "failed",
-        output: "Worker restarted — run was in progress. Please try again.",
-      });
+      await ctx.db.patch(run._id, { status: "failed" });
     }
     return stale.length;
   },

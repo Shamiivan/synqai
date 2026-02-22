@@ -1,6 +1,7 @@
 import { Thread } from "@synqai/human-loop";
 import { api } from "../convex/_generated/api.js";
 import { runRouter } from "./agents/router";
+import { agentLoop, getLastIntent, getLastMessage } from "@synqai/gworkspace-calendar/src/agent";
 import { classifyError, type Logger, type WorkerDeps } from "./lib";
 
 export function startWorker(deps: WorkerDeps) {
@@ -19,42 +20,62 @@ export function startWorker(deps: WorkerDeps) {
 }
 
 async function processRun(
-  run: { _id: any; agent: string; input: string; thread?: string | null },
+  run: { _id: any; currentAgent: "router" | "calendar"; thread: string },
   deps: WorkerDeps,
 ) {
   const { convex } = deps;
   const runId = String(run._id).slice(-4);
   const log = deps.log.child(`run-${runId}`);
 
-  log.info("Processing", { agent: run.agent, input: run.input });
-
-  const thread = run.thread
-    ? Thread.fromJSON(JSON.parse(run.thread))
-    : new Thread([{ type: "user_input", data: run.input }]);
+  const thread = Thread.fromJSON(JSON.parse(run.thread));
+  log.info("Processing", { currentAgent: run.currentAgent });
 
   try {
-    const result = await runRouter(thread, { log });
+    let intent: string;
+    let message: string | undefined;
+    let resultThread: Thread;
+    let currentAgent: "router" | "calendar" = run.currentAgent;
 
-    if (result.intent === "request_info") {
+    if (run.currentAgent === "calendar") {
+      log.info("Resuming calendar agent");
+      resultThread = await agentLoop(thread, { log: log.child("calendar") });
+      intent = getLastIntent(resultThread);
+      message = getLastMessage(resultThread);
+    } else {
+      const result = await runRouter(thread, { log });
+      resultThread = result.thread;
+      intent = result.intent;
+      message = result.message;
+      if (result.currentAgent) currentAgent = result.currentAgent;
+    }
+
+    if (intent === "request_info") {
       await convex.mutation(api.runs.pause, {
         id: run._id,
-        thread: JSON.stringify(result.thread.toJSON()),
-        question: result.message ?? "Need more information",
+        currentAgent,
+        thread: JSON.stringify(resultThread.toJSON()),
+        question: message ?? "Need more information",
       });
-      log.info("Paused — waiting for human", { question: result.message });
+      log.info("Paused — waiting for human", { question: message });
     } else {
+      // Ensure the final message is in the thread for downstream consumers
+      const events = resultThread.toJSON() as any[];
+      const hasOutput = events.some((e: any) => e.type === "agent_output");
+      if (message && !hasOutput) {
+        events.push({ type: "agent_output", data: message });
+      }
       await convex.mutation(api.runs.finish, {
         id: run._id,
-        output: result.message ?? "Done.",
+        thread: JSON.stringify(events),
       });
-      log.info("Finished");
+      log.info("Finished", { message });
     }
   } catch (err) {
     const runErr = classifyError(err);
     log.error("Agent error", { reason: runErr.reason, status: runErr.status });
     await convex.mutation(api.runs.fail, {
       id: run._id,
-      output: `[${runErr.reason}] ${runErr.message}`,
+      thread: JSON.stringify(thread.toJSON()),
     });
   }
 }

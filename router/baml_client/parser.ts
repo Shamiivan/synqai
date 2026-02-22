@@ -23,7 +23,7 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow} from "./types"
+import type {DoneForNow, Handoff} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
@@ -33,7 +33,7 @@ export class LlmResponseParser {
   DetermineNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.DoneForNow {
+  ): types.DoneForNow | types.Handoff {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -47,7 +47,7 @@ export class LlmResponseParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.DoneForNow
+      ) as types.DoneForNow | types.Handoff
     } catch (error) {
       throw toBamlError(error);
     }
@@ -62,7 +62,7 @@ export class LlmStreamParser {
   DetermineNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.DoneForNow {
+  ): partial_types.DoneForNow | partial_types.Handoff {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -76,7 +76,7 @@ export class LlmStreamParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.DoneForNow
+      ) as partial_types.DoneForNow | partial_types.Handoff
     } catch (error) {
       throw toBamlError(error);
     }

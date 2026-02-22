@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow } from "./types"
+import type {  DoneForNow,  Handoff } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -40,4 +40,11 @@ export namespace partial_types {
       intent?: "done_for_now" | null
       message?: string | null
     }
+    export interface Handoff {
+      intent?: "handoff" | null
+      agent?: "calendar" | null
+      task?: string | null
+    }
+export type RouterStep = DoneForNow | Handoff | null
+
 }

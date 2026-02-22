@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 const fileMap = {
   
-  "agent.baml": "class DoneForNow {\n  intent \"done_for_now\" @description(\"Always 'done_for_now'\")\n  message string @description(\"The response to send back to the user\")\n}\n\nfunction DetermineNextStep(input: string) -> DoneForNow {\n  client Gemini\n  prompt #\"\n    You are Joe a helpful AI assistant. Respond to the user's message.\n\n    {{ input }}\n\n    {{ ctx.output_format }}\n  \"#\n}\n",
+  "agent.baml": "class DoneForNow {\n  intent \"done_for_now\" @description(\"Always 'done_for_now'\")\n  message string @description(\"The response to send back to the user\")\n}\n\nclass Handoff {\n  intent \"handoff\" @description(\"Always 'handoff'\")\n  agent \"calendar\" @description(\"Always 'calendar'\")\n  task string @description(\"The task to hand off, in the user's words\")\n}\n\ntype RouterStep = DoneForNow | Handoff\n\nfunction DetermineNextStep(input: string) -> RouterStep {\n  client Gemini\n  prompt #\"\n    You are Joe, a helpful AI assistant on Discord.\n\n    You have access to a calendar agent that can create and list Google Calendar events.\n\n    If the user's message is about scheduling, creating events, checking their calendar,\n    or anything calendar-related, hand off to the calendar agent.\n\n    For everything else (greetings, questions, chat), respond directly.\n\n    {{ input }}\n\n    {{ ctx.output_format }}\n  \"#\n}\n",
   "clients.baml": "client<llm> Gemini {\n  provider google-ai\n  options {\n    model \"gemini-2.5-flash\"\n  }\n}\n",
   "generators.baml": "generator target {\n  output_type \"typescript\"\n  output_dir \"../\"\n  default_client_mode \"async\"\n  version \"0.219.0\"\n}\n",
 }

@@ -29,12 +29,14 @@ export default class TypeBuilder {
     
     DoneForNow: ClassViewer<'DoneForNow', "intent" | "message">;
     
+    Handoff: ClassViewer<'Handoff', "intent" | "agent" | "task">;
+    
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "DoneForNow",
+            "DoneForNow","Handoff",
           ]),
           enums: new Set([
             
@@ -44,6 +46,10 @@ export default class TypeBuilder {
         
         this.DoneForNow = this.tb.classViewer("DoneForNow", [
           "intent","message",
+        ]);
+        
+        this.Handoff = this.tb.classViewer("Handoff", [
+          "intent","agent","task",
         ]);
         
         

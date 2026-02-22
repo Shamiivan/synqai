@@ -39,7 +39,7 @@ function CalendarNextStep(thread: string, today: string) -> CalendarStep {
     - What date (YYYY-MM-DD)
     - Start and end time (HH:MM 24h)
     - Description
-    - Timezone (default to America/New_York if not specified)
+    - Timezone (default to America/Toronto if not specified)
 
     If any required info is missing, use request_info to ask the human.
     When you have everything, use create_event.

@@ -52,3 +52,12 @@ export interface DoneForNow {
   message: string
   
 }
+
+export interface Handoff {
+  intent: "handoff"
+  agent: "calendar"
+  task: string
+  
+}
+
+export type RouterStep = DoneForNow | Handoff

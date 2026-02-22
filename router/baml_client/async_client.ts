@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow} from "./types"
+import type {DoneForNow, Handoff} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -100,7 +100,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         async DetermineNextStep(
         input: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.DoneForNow> {
+        ): Promise<types.DoneForNow | types.Handoff> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -147,7 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.DoneForNow
+            return __raw__.parsed(false) as types.DoneForNow | types.Handoff
             } catch (error) {
             throw toBamlError(error);
             }
@@ -170,7 +170,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             DetermineNextStep(
             input: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.DoneForNow, types.DoneForNow>
+            ): BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -229,10 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.DoneForNow, types.DoneForNow>(
+                return new BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>(
                   __raw__,
-                  (a): partial_types.DoneForNow => a,
-                  (a): types.DoneForNow => a,
+                  (a): partial_types.DoneForNow | partial_types.Handoff => a,
+                  (a): types.DoneForNow | types.Handoff => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

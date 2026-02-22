@@ -81,7 +81,7 @@ export const fail = mutation({
 export const pause = mutation({
   args: {
     id: v.id("agentRuns"),
-    currentAgent: v.union(v.literal("router"), v.literal("calendar")),
+    currentAgent: v.union(v.literal("router"), v.literal("calendar"), v.literal("gmail")),
     thread: v.string(),
     question: v.string(),
   },

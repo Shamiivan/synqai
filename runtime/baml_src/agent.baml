@@ -1,11 +1,11 @@
 class DoneForNow {
-  intent "done_for_now" @description("Respond directly to the user — for greetings, questions, chat, or anything not calendar-related")
+  intent "done_for_now" @description("Respond directly to the user — for greetings, questions, chat, or anything not calendar/email-related")
   message string @description("The response to send back to the user")
 }
 
 class Handoff {
-  intent "handoff" @description("Hand off to the calendar agent — for scheduling, events, attendees, or any calendar-related request including follow-ups")
-  agent "calendar" @description("Always 'calendar'")
+  intent "handoff" @description("Hand off to a specialist agent")
+  agent "calendar" | "gmail" @description("'calendar' for scheduling/events, 'gmail' for email")
   task string @description("The task to hand off, rephrased clearly from the user's message")
 }
 
@@ -15,6 +15,10 @@ function DetermineNextStep(thread: string, lastMessage: string) -> RouterStep {
   client Gemini
   prompt #"
     You are Joe, a helpful AI assistant on Discord.
+
+    You can help with:
+    - Calendar: scheduling, events, meetings, availability, reminders
+    - Email: reading, sending, replying, drafting, searching Gmail
 
     {% if thread %}
     Here is the conversation so far:

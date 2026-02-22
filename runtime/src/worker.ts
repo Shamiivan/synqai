@@ -23,10 +23,10 @@ function startWorker(deps: WorkerDependencies) {
 }
 
 async function processRun(
-  run: { _id: any; currentAgent: "router" | "calendar"; thread: string },
+  run: { _id: any; currentAgent: string; thread: string },
   deps: WorkerDependencies,
 ) {
-  const { convex, route } = deps;
+  const { convex, route, routeToAgent } = deps;
   const runId = String(run._id).slice(-4);
   const log = deps.log.child(`run-${runId}`);
 
@@ -34,7 +34,12 @@ async function processRun(
   log.info("Processing", { currentAgent: run.currentAgent });
 
   try {
-    const result = await route(thread);
+    // If resuming a paused agent, go directly to it (skip the BAML router).
+    // If it's a fresh run (currentAgent === "router"), route through BAML.
+    const result = run.currentAgent === "router"
+      ? await route(thread)
+      : await routeToAgent(run.currentAgent, thread);
+
     const { intent, message, currentAgent } = result;
     const resultThread: Thread = result.thread;
 

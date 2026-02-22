@@ -42,7 +42,7 @@ export namespace partial_types {
     }
     export interface Handoff {
       intent?: "handoff" | null
-      agent?: "calendar" | null
+      agent?: "calendar" | "gmail" | null
       task?: string | null
     }
 export type RouterStep = DoneForNow | Handoff | null

@@ -55,7 +55,7 @@ export interface DoneForNow {
 
 export interface Handoff {
   intent: "handoff"
-  agent: "calendar"
+  agent: "calendar" | "gmail"
   task: string
   
 }

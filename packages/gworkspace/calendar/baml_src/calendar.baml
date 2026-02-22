@@ -1,5 +1,5 @@
 class CreateEvent {
-  intent "create_event" @description("Always 'create_event'")
+  intent "create_event" @description("Create a new calendar event")
   summary string @description("Event title")
   date string @description("Date in YYYY-MM-DD format")
   startTime string @description("Start time in HH:MM 24h format")
@@ -10,18 +10,18 @@ class CreateEvent {
 }
 
 class ListEvents {
-  intent "list_events" @description("Always 'list_events'")
+  intent "list_events" @description("List all events for a given date")
   date string @description("Date in YYYY-MM-DD format")
   timezone string @description("IANA timezone e.g. America/New_York")
 }
 
 class GetEvent {
-  intent "get_event" @description("Always 'get_event'")
+  intent "get_event" @description("Get full details of a specific event by ID — returns summary, description, times, location, attendees, status, and link")
   eventId string @description("The event ID from a previous list_events response")
 }
 
 class UpdateEvent {
-  intent "update_event" @description("Always 'update_event'")
+  intent "update_event" @description("Modify an existing event (partial update — only include fields to change)")
   eventId string @description("The event ID from a previous get_event or list_events")
   summary string? @description("New title, omit to keep current")
   date string? @description("New date YYYY-MM-DD, omit to keep current")
@@ -33,13 +33,13 @@ class UpdateEvent {
 }
 
 class DeleteEvent {
-  intent "delete_event" @description("Always 'delete_event'")
+  intent "delete_event" @description("Delete an event by ID — always confirm with user first")
   eventId string @description("The event ID to delete")
   confirmation string @description("State what you are deleting, e.g. 'Deleting: Team standup on 2026-02-23'")
 }
 
 class CheckAvailability {
-  intent "check_availability" @description("Always 'check_availability'")
+  intent "check_availability" @description("Check if a time slot is free using freeBusy API")
   date string @description("Date in YYYY-MM-DD format")
   startTime string @description("Start of window in HH:MM 24h format")
   endTime string @description("End of window in HH:MM 24h format")
@@ -47,17 +47,17 @@ class CheckAvailability {
 }
 
 class QuickAdd {
-  intent "quick_add" @description("Always 'quick_add'")
-  text string @description("Natural language event description e.g. 'Lunch with Bob tomorrow at noon'")
+  intent "quick_add" @description("Create an event from natural language — ONLY when the user explicitly provides date AND time in one sentence, e.g. 'Lunch with Bob tomorrow at noon'")
+  text string @description("The user's complete natural language description including date and time")
 }
 
 class RequestInfo {
-  intent "request_info" @description("Always 'request_info'")
+  intent "request_info" @description("Ask the human for missing information before proceeding")
   message string @description("Question to ask the human")
 }
 
 class CalendarDone {
-  intent "done" @description("Always 'done'")
+  intent "done" @description("Finish with a summary message to the human")
   message string @description("Final response to the human")
 }
 
@@ -68,22 +68,12 @@ function CalendarNextStep(thread: string, today: string) -> CalendarStep {
   prompt #"
     {{ _.role("system") }}
 
-    You are a calendar assistant. You help users create, view, update, and delete calendar events.
-
-    Available actions:
-    - create_event: Create a new event (needs summary, date, start/end time, description, timezone)
-    - list_events: List all events for a given date
-    - get_event: Get full details of a specific event by ID (from a previous list)
-    - update_event: Modify an existing event (partial update — only include fields to change)
-    - delete_event: Delete an event by ID (always confirm with user first)
-    - check_availability: Check if a time slot is free using freeBusy API
-    - quick_add: Create an event from natural language (use only when user gives a full description in one sentence)
-    - request_info: Ask the human for missing information
-    - done: Finish with a summary message
+    You are a calendar assistant. You help users manage their Google Calendar.
 
     Rules:
+    - If the user's request is missing date, time, or other key details, ALWAYS use request_info to ask — never guess or fill in defaults silently
     - Default timezone: America/Toronto
-    - Default event duration: 1 hour (if end time not specified)
+    - Default event duration: 30min (if end time not specified) specify your intent of using the default and ask to add clarification if needed
     - Always list_events for the target date before creating, to check for conflicts
     - If a conflict exists, inform the user via request_info before proceeding
     - When listing events, include the full day (not just working hours)
@@ -92,7 +82,7 @@ function CalendarNextStep(thread: string, today: string) -> CalendarStep {
     - Never delete without user confirmation via request_info
     - If the API returns an error, explain it to the user in plain language via done
     - Event IDs from list_events are required for get/update/delete — never guess or fabricate IDs
-    - Use quick_add only when the user provides a complete natural event description in one sentence
+    - Use quick_add ONLY when the user provides date AND time explicitly in one sentence — if either is missing, use request_info instead
     - When the user asks about a specific event, use get_event with the event ID from a previous list
 
     Today's date is {{ today }}.

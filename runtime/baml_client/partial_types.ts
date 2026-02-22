@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow,  Handoff } from "./types"
+import type {  DoneForNow,  Handoff,  RunCalendar,  RunDocs,  RunGmail,  RunMeet,  RunSheets,  SupervisorDone,  SupervisorRequestInfo } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -45,6 +45,36 @@ export namespace partial_types {
       agent?: "calendar" | "gmail" | "docs" | "sheets" | "meet" | null
       task?: string | null
     }
+    export interface RunCalendar {
+      intent?: "run_calendar" | null
+      task?: string | null
+    }
+    export interface RunDocs {
+      intent?: "run_docs" | null
+      task?: string | null
+    }
+    export interface RunGmail {
+      intent?: "run_gmail" | null
+      task?: string | null
+    }
+    export interface RunMeet {
+      intent?: "run_meet" | null
+      task?: string | null
+    }
+    export interface RunSheets {
+      intent?: "run_sheets" | null
+      task?: string | null
+    }
+    export interface SupervisorDone {
+      intent?: "done" | null
+      message?: string | null
+    }
+    export interface SupervisorRequestInfo {
+      intent?: "request_info" | null
+      question?: string | null
+    }
 export type RouterStep = DoneForNow | Handoff | null
+
+export type SupervisorStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | SupervisorRequestInfo | SupervisorDone | null
 
 }

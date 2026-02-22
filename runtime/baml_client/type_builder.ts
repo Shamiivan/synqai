@@ -31,12 +31,26 @@ export default class TypeBuilder {
     
     Handoff: ClassViewer<'Handoff', "intent" | "agent" | "task">;
     
+    RunCalendar: ClassViewer<'RunCalendar', "intent" | "task">;
+    
+    RunDocs: ClassViewer<'RunDocs', "intent" | "task">;
+    
+    RunGmail: ClassViewer<'RunGmail', "intent" | "task">;
+    
+    RunMeet: ClassViewer<'RunMeet', "intent" | "task">;
+    
+    RunSheets: ClassViewer<'RunSheets', "intent" | "task">;
+    
+    SupervisorDone: ClassViewer<'SupervisorDone', "intent" | "message">;
+    
+    SupervisorRequestInfo: ClassViewer<'SupervisorRequestInfo', "intent" | "question">;
+    
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "DoneForNow","Handoff",
+            "DoneForNow","Handoff","RunCalendar","RunDocs","RunGmail","RunMeet","RunSheets","SupervisorDone","SupervisorRequestInfo",
           ]),
           enums: new Set([
             
@@ -50,6 +64,34 @@ export default class TypeBuilder {
         
         this.Handoff = this.tb.classViewer("Handoff", [
           "intent","agent","task",
+        ]);
+        
+        this.RunCalendar = this.tb.classViewer("RunCalendar", [
+          "intent","task",
+        ]);
+        
+        this.RunDocs = this.tb.classViewer("RunDocs", [
+          "intent","task",
+        ]);
+        
+        this.RunGmail = this.tb.classViewer("RunGmail", [
+          "intent","task",
+        ]);
+        
+        this.RunMeet = this.tb.classViewer("RunMeet", [
+          "intent","task",
+        ]);
+        
+        this.RunSheets = this.tb.classViewer("RunSheets", [
+          "intent","task",
+        ]);
+        
+        this.SupervisorDone = this.tb.classViewer("SupervisorDone", [
+          "intent","message",
+        ]);
+        
+        this.SupervisorRequestInfo = this.tb.classViewer("SupervisorRequestInfo", [
+          "intent","question",
         ]);
         
         

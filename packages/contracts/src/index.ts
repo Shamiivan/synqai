@@ -156,11 +156,11 @@ export interface MeetAgentDependencies {
 
 export type AgentRunner = (thread: any, log?: Logger) => Promise<any>;
 
-// ── Router ──
+// ── Supervisor ──
 
-export interface RouterDependencies {
+export interface SupervisorDependencies {
   baml: {
-    determineNextStep: (thread: string, lastMessage: string) => Promise<unknown>;
+    supervisorNextStep: (thread: string, today: string, artifacts: string) => Promise<unknown>;
   };
   agents: Record<string, AgentRunner>;
   log: Logger;
@@ -170,8 +170,7 @@ export interface RouterDependencies {
 
 export interface WorkerDependencies {
   convex: ConvexClient;
-  route: (thread: any) => Promise<any>;
-  routeToAgent: (agent: string, thread: any) => Promise<any>;
+  run: (thread: any) => Promise<any>;
   log: Logger;
 }
 

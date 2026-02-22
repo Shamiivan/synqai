@@ -60,4 +60,48 @@ export interface Handoff {
   
 }
 
+export interface RunCalendar {
+  intent: "run_calendar"
+  task: string
+  
+}
+
+export interface RunDocs {
+  intent: "run_docs"
+  task: string
+  
+}
+
+export interface RunGmail {
+  intent: "run_gmail"
+  task: string
+  
+}
+
+export interface RunMeet {
+  intent: "run_meet"
+  task: string
+  
+}
+
+export interface RunSheets {
+  intent: "run_sheets"
+  task: string
+  
+}
+
+export interface SupervisorDone {
+  intent: "done"
+  message: string
+  
+}
+
+export interface SupervisorRequestInfo {
+  intent: "request_info"
+  question: string
+  
+}
+
 export type RouterStep = DoneForNow | Handoff
+
+export type SupervisorStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | SupervisorRequestInfo | SupervisorDone

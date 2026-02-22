@@ -66,6 +66,28 @@ export interface DocsRequestInfo {
   
 }
 
+export interface FormatParagraph {
+  intent: "format_paragraph"
+  documentId: string
+  target: string
+  headingLevel?: number | null
+  alignment?: string | null
+  bulletType?: string | null
+  
+}
+
+export interface FormatText {
+  intent: "format_text"
+  documentId: string
+  target: string
+  bold?: boolean | null
+  italic?: boolean | null
+  underline?: boolean | null
+  fontSize?: number | null
+  fontFamily?: string | null
+  
+}
+
 export interface GetDocument {
   intent: "get_document"
   documentId: string
@@ -94,4 +116,4 @@ export interface ReplaceText {
   
 }
 
-export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | DocsRequestInfo | DocsDone
+export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | DocsRequestInfo | DocsDone

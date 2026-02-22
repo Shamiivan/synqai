@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CreateDocument, DocsDone, DocsRequestInfo, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
+import type {CreateDocument, DocsDone, DocsRequestInfo, FormatParagraph, FormatText, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -100,7 +100,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         async DocsNextStep(
         thread: string,today: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone> {
+        ): Promise<types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -147,7 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone
+            return __raw__.parsed(false) as types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone
             } catch (error) {
             throw toBamlError(error);
             }
@@ -170,7 +170,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             DocsNextStep(
             thread: string,today: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.DocsRequestInfo | partial_types.DocsDone, types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone>
+            ): BamlStream<partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.DocsRequestInfo | partial_types.DocsDone, types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -229,10 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.DocsRequestInfo | partial_types.DocsDone, types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone>(
+                return new BamlStream<partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.DocsRequestInfo | partial_types.DocsDone, types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone>(
                   __raw__,
-                  (a): partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.DocsRequestInfo | partial_types.DocsDone => a,
-                  (a): types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone => a,
+                  (a): partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.DocsRequestInfo | partial_types.DocsDone => a,
+                  (a): types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

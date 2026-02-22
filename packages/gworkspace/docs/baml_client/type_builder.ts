@@ -33,6 +33,10 @@ export default class TypeBuilder {
     
     DocsRequestInfo: ClassViewer<'DocsRequestInfo', "intent" | "message">;
     
+    FormatParagraph: ClassViewer<'FormatParagraph', "intent" | "documentId" | "target" | "headingLevel" | "alignment" | "bulletType">;
+    
+    FormatText: ClassViewer<'FormatText', "intent" | "documentId" | "target" | "bold" | "italic" | "underline" | "fontSize" | "fontFamily">;
+    
     GetDocument: ClassViewer<'GetDocument', "intent" | "documentId">;
     
     InsertText: ClassViewer<'InsertText', "intent" | "documentId" | "text" | "position">;
@@ -46,7 +50,7 @@ export default class TypeBuilder {
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "CreateDocument","DocsDone","DocsRequestInfo","GetDocument","InsertText","ListDocuments","ReplaceText",
+            "CreateDocument","DocsDone","DocsRequestInfo","FormatParagraph","FormatText","GetDocument","InsertText","ListDocuments","ReplaceText",
           ]),
           enums: new Set([
             
@@ -64,6 +68,14 @@ export default class TypeBuilder {
         
         this.DocsRequestInfo = this.tb.classViewer("DocsRequestInfo", [
           "intent","message",
+        ]);
+        
+        this.FormatParagraph = this.tb.classViewer("FormatParagraph", [
+          "intent","documentId","target","headingLevel","alignment","bulletType",
+        ]);
+        
+        this.FormatText = this.tb.classViewer("FormatText", [
+          "intent","documentId","target","bold","italic","underline","fontSize","fontFamily",
         ]);
         
         this.GetDocument = this.tb.classViewer("GetDocument", [

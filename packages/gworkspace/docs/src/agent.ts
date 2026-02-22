@@ -62,6 +62,12 @@ async function agentLoop(thread: Thread, deps: DocsAgentDependencies): Promise<T
         case "list_documents":
           result = await tools.handleListDocuments(nextStep);
           break;
+        case "format_text":
+          result = await tools.handleFormatText(nextStep);
+          break;
+        case "format_paragraph":
+          result = await tools.handleFormatParagraph(nextStep);
+          break;
         default:
           result = { error: { code: "unknown", reason: "unknown_intent", message: `Unknown intent: ${(nextStep as any).intent}` } };
           success = false;

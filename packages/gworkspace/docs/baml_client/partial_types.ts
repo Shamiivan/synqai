@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  CreateDocument,  DocsDone,  DocsRequestInfo,  GetDocument,  InsertText,  ListDocuments,  ReplaceText } from "./types"
+import type {  CreateDocument,  DocsDone,  DocsRequestInfo,  FormatParagraph,  FormatText,  GetDocument,  InsertText,  ListDocuments,  ReplaceText } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -49,6 +49,24 @@ export namespace partial_types {
       intent?: "request_info" | null
       message?: string | null
     }
+    export interface FormatParagraph {
+      intent?: "format_paragraph" | null
+      documentId?: string | null
+      target?: string | null
+      headingLevel?: number | null
+      alignment?: string | null
+      bulletType?: string | null
+    }
+    export interface FormatText {
+      intent?: "format_text" | null
+      documentId?: string | null
+      target?: string | null
+      bold?: boolean | null
+      italic?: boolean | null
+      underline?: boolean | null
+      fontSize?: number | null
+      fontFamily?: string | null
+    }
     export interface GetDocument {
       intent?: "get_document" | null
       documentId?: string | null
@@ -69,6 +87,6 @@ export namespace partial_types {
       find?: string | null
       replaceWith?: string | null
     }
-export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | DocsRequestInfo | DocsDone | null
+export type DocsStep = CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | DocsRequestInfo | DocsDone | null
 
 }

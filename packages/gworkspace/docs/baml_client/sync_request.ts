@@ -22,7 +22,7 @@ import type { BamlRuntime, BamlCtxManager, Image, Audio, Pdf, Video } from "@bou
 import { toBamlError, HTTPRequest, ClientRegistry } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {CreateDocument, DocsDone, DocsRequestInfo, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
+import type {CreateDocument, DocsDone, DocsRequestInfo, FormatParagraph, FormatText, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 

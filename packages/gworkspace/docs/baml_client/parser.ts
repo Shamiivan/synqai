@@ -23,7 +23,7 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CreateDocument, DocsDone, DocsRequestInfo, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
+import type {CreateDocument, DocsDone, DocsRequestInfo, FormatParagraph, FormatText, GetDocument, InsertText, ListDocuments, ReplaceText} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
@@ -33,7 +33,7 @@ export class LlmResponseParser {
   DocsNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone {
+  ): types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -47,7 +47,7 @@ export class LlmResponseParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.DocsRequestInfo | types.DocsDone
+      ) as types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.DocsRequestInfo | types.DocsDone
     } catch (error) {
       throw toBamlError(error);
     }
@@ -62,7 +62,7 @@ export class LlmStreamParser {
   DocsNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.DocsRequestInfo | partial_types.DocsDone {
+  ): partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.DocsRequestInfo | partial_types.DocsDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -76,7 +76,7 @@ export class LlmStreamParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.DocsRequestInfo | partial_types.DocsDone
+      ) as partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.DocsRequestInfo | partial_types.DocsDone
     } catch (error) {
       throw toBamlError(error);
     }

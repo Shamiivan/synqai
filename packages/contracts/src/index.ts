@@ -84,6 +84,8 @@ export interface DocsTools {
   handleInsertText: (step: any) => Promise<any>;
   handleReplaceText: (step: any) => Promise<any>;
   handleListDocuments: (step: any) => Promise<any>;
+  handleFormatText: (step: any) => Promise<any>;
+  handleFormatParagraph: (step: any) => Promise<any>;
 }
 
 // ── Docs Agent ──

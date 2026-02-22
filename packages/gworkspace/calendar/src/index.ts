@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { resolve } from "path";
-import { cli } from "@synqai/human-loop";
-import { run } from "./agent";
+import { Thread, cli } from "@synqai/human-loop";
+import { agentLoop, getLastIntent, getLastMessage } from "./agent";
 
 // Load .env.local from monorepo root
 config({ path: resolve(__dirname, "../../../../.env.local") });
@@ -15,8 +15,28 @@ async function main() {
     process.exit(1);
   }
 
-  const result = await run(input, cli());
-  console.log("\n" + result.message);
+  const ask = cli();
+  let thread = new Thread([{ type: "user_input", data: input }]);
+
+  // Outer loop: re-run agentLoop after each human answer
+  while (true) {
+    thread = await agentLoop(thread);
+    const intent = getLastIntent(thread);
+
+    if (intent === "done") {
+      console.log("\n" + getLastMessage(thread));
+      break;
+    }
+
+    if (intent === "request_info") {
+      const answer = await ask(getLastMessage(thread) ?? "Need more info:");
+      thread.events.push({ type: "human_response", data: answer });
+      continue;
+    }
+
+    console.log("Unexpected intent:", intent);
+    break;
+  }
 }
 
 main().catch((err) => {

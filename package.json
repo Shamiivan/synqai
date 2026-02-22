@@ -15,6 +15,7 @@
     "@synqai/contracts": "workspace:*",
     "@synqai/gateway-discord": "workspace:*",
     "@synqai/gworkspace-calendar": "workspace:*",
+    "@synqai/gworkspace-gmail": "workspace:*",
     "@synqai/human-loop": "workspace:*",
     "@types/node": "^25.3.0",
     "convex": "^1.32.0",

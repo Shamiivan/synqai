@@ -1,5 +1,5 @@
 import type { ConvexClient } from "convex/browser";
-import type { calendar_v3 } from "googleapis";
+import type { calendar_v3, gmail_v1 } from "googleapis";
 
 // ── Logger (shared by all layers) ──
 
@@ -38,13 +38,42 @@ export interface CalendarAgentDependencies {
   log: Logger;
 }
 
+// ── Gmail Tools ──
+
+export interface GmailToolsDependencies {
+  gmail: gmail_v1.Gmail;
+  userId: string;
+}
+
+export interface GmailTools {
+  handleListEmails: (step: any) => Promise<any>;
+  handleReadEmail: (step: any) => Promise<any>;
+  handleSendEmail: (step: any) => Promise<any>;
+  handleReplyToEmail: (step: any) => Promise<any>;
+  handleCreateDraft: (step: any) => Promise<any>;
+}
+
+// ── Gmail Agent ──
+
+export interface GmailAgentDependencies {
+  baml: {
+    gmailNextStep: (thread: string, today: string) => Promise<unknown>;
+  };
+  tools: GmailTools;
+  log: Logger;
+}
+
+// ── Agent Registry ──
+
+export type AgentRunner = (thread: any, log?: Logger) => Promise<any>;
+
 // ── Router ──
 
 export interface RouterDependencies {
   baml: {
     determineNextStep: (thread: string, lastMessage: string) => Promise<unknown>;
   };
-  runCalendarAgent: (thread: any, log?: Logger) => Promise<any>;
+  agents: Record<string, AgentRunner>;
   log: Logger;
 }
 
@@ -53,6 +82,7 @@ export interface RouterDependencies {
 export interface WorkerDependencies {
   convex: ConvexClient;
   route: (thread: any) => Promise<any>;
+  routeToAgent: (agent: string, thread: any) => Promise<any>;
   log: Logger;
 }
 

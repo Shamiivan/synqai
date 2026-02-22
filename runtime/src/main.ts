@@ -5,9 +5,13 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { ConvexClient } from "convex/browser";
 import { b as routerBaml } from "../baml_client";
 import { b as calendarBaml } from "@synqai/gworkspace-calendar/baml_client";
+import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
 import { getCalendarClient, calendarId } from "@synqai/gworkspace-calendar/src/google-auth";
 import { createCalendarTools } from "@synqai/gworkspace-calendar/src/tools";
 import { createCalendarAgent } from "@synqai/gworkspace-calendar/src/agent";
+import { getGmailClient, userId } from "@synqai/gworkspace-gmail/src/google-auth";
+import { createGmailTools } from "@synqai/gworkspace-gmail/src/tools";
+import { createGmailAgent } from "@synqai/gworkspace-gmail/src/agent";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 import { createLogger } from "./logging";
 import { createRouter } from "./agents/router";
@@ -22,19 +26,33 @@ const convex = new ConvexClient(process.env.CONVEX_URL!);
 
 // ── Google Calendar ──
 const calendar = getCalendarClient();
-const tools = createCalendarTools({ calendar, calendarId });
+const calendarTools = createCalendarTools({ calendar, calendarId });
 
 // ── Calendar Agent ──
 const calendarAgent = createCalendarAgent({
   baml: { calendarNextStep: (thread, today) => calendarBaml.CalendarNextStep(thread, today) },
-  tools,
+  tools: calendarTools,
   log: log.child("calendar"),
 });
 
-// ── Router ──
+// ── Gmail ──
+const gmail = getGmailClient();
+const gmailTools = createGmailTools({ gmail, userId });
+
+// ── Gmail Agent ──
+const gmailAgent = createGmailAgent({
+  baml: { gmailNextStep: (thread, today) => gmailBaml.GmailNextStep(thread, today) },
+  tools: gmailTools,
+  log: log.child("gmail"),
+});
+
+// ── Router (agent registry) ──
 const router = createRouter({
   baml: { determineNextStep: (thread, lastMsg) => routerBaml.DetermineNextStep(thread, lastMsg) },
-  runCalendarAgent: (thread, childLog) => calendarAgent.run(thread, childLog),
+  agents: {
+    calendar: (thread, childLog) => calendarAgent.run(thread, childLog),
+    gmail: (thread, childLog) => gmailAgent.run(thread, childLog),
+  },
   log: log.child("router"),
 });
 
@@ -42,6 +60,7 @@ const router = createRouter({
 const worker = createWorker({
   convex,
   route: (thread) => router.route(thread),
+  routeToAgent: (agent, thread) => router.routeToAgent(agent, thread),
   log: log.child("worker"),
 });
 

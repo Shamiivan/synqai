@@ -14,6 +14,12 @@ importers:
       '@google/genai':
         specifier: ^1.42.0
         version: 1.42.0
+      '@synqai/gworkspace-calendar':
+        specifier: workspace:*
+        version: link:packages/gworkspace/calendar
+      '@synqai/human-loop':
+        specifier: workspace:*
+        version: link:packages/human-loop
       '@types/node':
         specifier: ^25.3.0
         version: 25.3.0

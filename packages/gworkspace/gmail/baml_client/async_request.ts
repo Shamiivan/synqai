@@ -23,7 +23,7 @@ import type { BamlRuntime, BamlCtxManager, Image, Audio, Pdf, Video, FunctionLog
 import { toBamlError, HTTPRequest, ClientRegistry } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {CreateDraft, GmailDone, GmailRequestInfo, ListEmails, ReadEmail, ReplyToEmail, SendEmail} from "./types"
+import type {ArchiveEmail, CreateDraft, ForwardEmail, GmailDone, GmailRequestInfo, ListEmails, MarkRead, MarkUnread, ModifyLabels, ReadEmail, ReplyToEmail, SendEmail, StarEmail, TrashEmail, UnstarEmail} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 

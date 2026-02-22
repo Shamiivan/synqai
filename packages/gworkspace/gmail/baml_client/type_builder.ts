@@ -27,7 +27,11 @@ export { FieldType, EnumBuilder, ClassBuilder }
 export default class TypeBuilder {
     private tb: _TypeBuilder;
     
+    ArchiveEmail: ClassViewer<'ArchiveEmail', "intent" | "messageId">;
+    
     CreateDraft: ClassViewer<'CreateDraft', "intent" | "to" | "subject" | "body">;
+    
+    ForwardEmail: ClassViewer<'ForwardEmail', "intent" | "messageId" | "to" | "comment">;
     
     GmailDone: ClassViewer<'GmailDone', "intent" | "message">;
     
@@ -35,18 +39,30 @@ export default class TypeBuilder {
     
     ListEmails: ClassViewer<'ListEmails', "intent" | "query" | "maxResults">;
     
+    MarkRead: ClassViewer<'MarkRead', "intent" | "messageId">;
+    
+    MarkUnread: ClassViewer<'MarkUnread', "intent" | "messageId">;
+    
+    ModifyLabels: ClassViewer<'ModifyLabels', "intent" | "messageId" | "addLabels" | "removeLabels">;
+    
     ReadEmail: ClassViewer<'ReadEmail', "intent" | "messageId">;
     
     ReplyToEmail: ClassViewer<'ReplyToEmail', "intent" | "messageId" | "body">;
     
     SendEmail: ClassViewer<'SendEmail', "intent" | "to" | "subject" | "body">;
     
+    StarEmail: ClassViewer<'StarEmail', "intent" | "messageId">;
+    
+    TrashEmail: ClassViewer<'TrashEmail', "intent" | "messageId">;
+    
+    UnstarEmail: ClassViewer<'UnstarEmail', "intent" | "messageId">;
+    
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "CreateDraft","GmailDone","GmailRequestInfo","ListEmails","ReadEmail","ReplyToEmail","SendEmail",
+            "ArchiveEmail","CreateDraft","ForwardEmail","GmailDone","GmailRequestInfo","ListEmails","MarkRead","MarkUnread","ModifyLabels","ReadEmail","ReplyToEmail","SendEmail","StarEmail","TrashEmail","UnstarEmail",
           ]),
           enums: new Set([
             
@@ -54,8 +70,16 @@ export default class TypeBuilder {
           runtime: DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
         });
         
+        this.ArchiveEmail = this.tb.classViewer("ArchiveEmail", [
+          "intent","messageId",
+        ]);
+        
         this.CreateDraft = this.tb.classViewer("CreateDraft", [
           "intent","to","subject","body",
+        ]);
+        
+        this.ForwardEmail = this.tb.classViewer("ForwardEmail", [
+          "intent","messageId","to","comment",
         ]);
         
         this.GmailDone = this.tb.classViewer("GmailDone", [
@@ -70,6 +94,18 @@ export default class TypeBuilder {
           "intent","query","maxResults",
         ]);
         
+        this.MarkRead = this.tb.classViewer("MarkRead", [
+          "intent","messageId",
+        ]);
+        
+        this.MarkUnread = this.tb.classViewer("MarkUnread", [
+          "intent","messageId",
+        ]);
+        
+        this.ModifyLabels = this.tb.classViewer("ModifyLabels", [
+          "intent","messageId","addLabels","removeLabels",
+        ]);
+        
         this.ReadEmail = this.tb.classViewer("ReadEmail", [
           "intent","messageId",
         ]);
@@ -80,6 +116,18 @@ export default class TypeBuilder {
         
         this.SendEmail = this.tb.classViewer("SendEmail", [
           "intent","to","subject","body",
+        ]);
+        
+        this.StarEmail = this.tb.classViewer("StarEmail", [
+          "intent","messageId",
+        ]);
+        
+        this.TrashEmail = this.tb.classViewer("TrashEmail", [
+          "intent","messageId",
+        ]);
+        
+        this.UnstarEmail = this.tb.classViewer("UnstarEmail", [
+          "intent","messageId",
         ]);
         
         

@@ -51,6 +51,14 @@ export interface GmailTools {
   handleSendEmail: (step: any) => Promise<any>;
   handleReplyToEmail: (step: any) => Promise<any>;
   handleCreateDraft: (step: any) => Promise<any>;
+  handleArchiveEmail: (step: any) => Promise<any>;
+  handleTrashEmail: (step: any) => Promise<any>;
+  handleForwardEmail: (step: any) => Promise<any>;
+  handleMarkRead: (step: any) => Promise<any>;
+  handleMarkUnread: (step: any) => Promise<any>;
+  handleStarEmail: (step: any) => Promise<any>;
+  handleUnstarEmail: (step: any) => Promise<any>;
+  handleModifyLabels: (step: any) => Promise<any>;
 }
 
 // ── Gmail Agent ──

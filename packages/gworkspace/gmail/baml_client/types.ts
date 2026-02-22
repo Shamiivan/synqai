@@ -47,11 +47,25 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
+export interface ArchiveEmail {
+  intent: "archive_email"
+  messageId: string
+  
+}
+
 export interface CreateDraft {
   intent: "create_draft"
   to: string
   subject: string
   body: string
+  
+}
+
+export interface ForwardEmail {
+  intent: "forward_email"
+  messageId: string
+  to: string
+  comment?: string | null
   
 }
 
@@ -71,6 +85,26 @@ export interface ListEmails {
   intent: "list_emails"
   query: string
   maxResults?: number | null
+  
+}
+
+export interface MarkRead {
+  intent: "mark_read"
+  messageId: string
+  
+}
+
+export interface MarkUnread {
+  intent: "mark_unread"
+  messageId: string
+  
+}
+
+export interface ModifyLabels {
+  intent: "modify_labels"
+  messageId: string
+  addLabels: string[]
+  removeLabels: string[]
   
 }
 
@@ -95,4 +129,22 @@ export interface SendEmail {
   
 }
 
-export type GmailStep = ListEmails | ReadEmail | SendEmail | ReplyToEmail | CreateDraft | GmailRequestInfo | GmailDone
+export interface StarEmail {
+  intent: "star_email"
+  messageId: string
+  
+}
+
+export interface TrashEmail {
+  intent: "trash_email"
+  messageId: string
+  
+}
+
+export interface UnstarEmail {
+  intent: "unstar_email"
+  messageId: string
+  
+}
+
+export type GmailStep = ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | GmailRequestInfo | GmailDone

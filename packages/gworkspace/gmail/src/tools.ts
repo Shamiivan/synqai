@@ -4,14 +4,24 @@ import type {
   ReadEmail,
   SendEmail,
   ReplyToEmail,
+  ForwardEmail,
   CreateDraft,
+  ArchiveEmail,
+  TrashEmail,
+  MarkRead,
+  MarkUnread,
+  StarEmail,
+  UnstarEmail,
+  ModifyLabels,
 } from "../baml_client";
 import type { GmailToolsDependencies, GmailTools } from "@synqai/contracts";
 import { classifyGmailError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
 
-export function createGmailTools(dependencies: GmailToolsDependencies): GmailTools {
+export function createGmailTools(
+  dependencies: GmailToolsDependencies,
+): GmailTools {
   const { gmail, userId } = dependencies;
   return {
     handleListEmails: (step) => handleListEmails(step, gmail, userId),
@@ -19,12 +29,22 @@ export function createGmailTools(dependencies: GmailToolsDependencies): GmailToo
     handleSendEmail: (step) => handleSendEmail(step, gmail, userId),
     handleReplyToEmail: (step) => handleReplyToEmail(step, gmail, userId),
     handleCreateDraft: (step) => handleCreateDraft(step, gmail, userId),
+    handleArchiveEmail: (step) => handleArchiveEmail(step, gmail, userId),
+    handleTrashEmail: (step) => handleTrashEmail(step, gmail, userId),
+    handleForwardEmail: (step) => handleForwardEmail(step, gmail, userId),
+    handleMarkRead: (step) => handleMarkRead(step, gmail, userId),
+    handleMarkUnread: (step) => handleMarkUnread(step, gmail, userId),
+    handleStarEmail: (step) => handleStarEmail(step, gmail, userId),
+    handleUnstarEmail: (step) => handleUnstarEmail(step, gmail, userId),
+    handleModifyLabels: (step) => handleModifyLabels(step, gmail, userId),
   };
 }
 
-// ── List ─────────────────────────────────────────────────
-
-async function handleListEmails(step: ListEmails, gmail: gmail_v1.Gmail, userId: string) {
+async function handleListEmails(
+  step: ListEmails,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
   try {
     const listRes = await gmail.users.messages.list({
       userId,
@@ -45,7 +65,8 @@ async function handleListEmails(step: ListEmails, gmail: gmail_v1.Gmail, userId:
           metadataHeaders: ["Subject", "From", "Date"],
         });
         const headers = msg.data.payload?.headers ?? [];
-        const header = (name: string) => headers.find((h) => h.name === name)?.value ?? "";
+        const header = (name: string) =>
+          headers.find((h) => h.name === name)?.value ?? "";
         return {
           id: msg.data.id,
           threadId: msg.data.threadId,
@@ -54,6 +75,7 @@ async function handleListEmails(step: ListEmails, gmail: gmail_v1.Gmail, userId:
           date: header("Date"),
           snippet: msg.data.snippet,
           unread: (msg.data.labelIds ?? []).includes("UNREAD"),
+          starred: (msg.data.labelIds ?? []).includes("STARRED"),
         };
       }),
     );
@@ -66,7 +88,11 @@ async function handleListEmails(step: ListEmails, gmail: gmail_v1.Gmail, userId:
 
 // ── Read ─────────────────────────────────────────────────
 
-async function handleReadEmail(step: ReadEmail, gmail: gmail_v1.Gmail, userId: string) {
+async function handleReadEmail(
+  step: ReadEmail,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
   try {
     const msg = await gmail.users.messages.get({
       userId,
@@ -75,7 +101,8 @@ async function handleReadEmail(step: ReadEmail, gmail: gmail_v1.Gmail, userId: s
     });
 
     const headers = msg.data.payload?.headers ?? [];
-    const header = (name: string) => headers.find((h) => h.name === name)?.value ?? "";
+    const header = (name: string) =>
+      headers.find((h) => h.name === name)?.value ?? "";
 
     return {
       id: msg.data.id,
@@ -94,10 +121,21 @@ async function handleReadEmail(step: ReadEmail, gmail: gmail_v1.Gmail, userId: s
 
 // ── Send ─────────────────────────────────────────────────
 
-async function handleSendEmail(step: SendEmail, gmail: gmail_v1.Gmail, userId: string) {
+async function handleSendEmail(
+  step: SendEmail,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
   try {
-    const raw = buildRawMessage({ to: step.to, subject: step.subject, body: step.body });
-    const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
+    const raw = buildRawMessage({
+      to: step.to,
+      subject: step.subject,
+      body: step.body,
+    });
+    const res = await gmail.users.messages.send({
+      userId,
+      requestBody: { raw },
+    });
     return { id: res.data.id, threadId: res.data.threadId, sent: true };
   } catch (err) {
     return { error: classifyGmailError(err) };
@@ -106,7 +144,11 @@ async function handleSendEmail(step: SendEmail, gmail: gmail_v1.Gmail, userId: s
 
 // ── Reply ────────────────────────────────────────────────
 
-async function handleReplyToEmail(step: ReplyToEmail, gmail: gmail_v1.Gmail, userId: string) {
+async function handleReplyToEmail(
+  step: ReplyToEmail,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
   try {
     // Get original message for threading headers
     const original = await gmail.users.messages.get({
@@ -117,7 +159,8 @@ async function handleReplyToEmail(step: ReplyToEmail, gmail: gmail_v1.Gmail, use
     });
 
     const headers = original.data.payload?.headers ?? [];
-    const header = (name: string) => headers.find((h) => h.name === name)?.value ?? "";
+    const header = (name: string) =>
+      headers.find((h) => h.name === name)?.value ?? "";
     const messageId = header("Message-ID");
     const subject = header("Subject");
     const from = header("From");
@@ -147,14 +190,166 @@ async function handleReplyToEmail(step: ReplyToEmail, gmail: gmail_v1.Gmail, use
 
 // ── Draft ────────────────────────────────────────────────
 
-async function handleCreateDraft(step: CreateDraft, gmail: gmail_v1.Gmail, userId: string) {
+async function handleCreateDraft(
+  step: CreateDraft,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
   try {
-    const raw = buildRawMessage({ to: step.to, subject: step.subject, body: step.body });
+    const raw = buildRawMessage({
+      to: step.to,
+      subject: step.subject,
+      body: step.body,
+    });
     const res = await gmail.users.drafts.create({
       userId,
       requestBody: { message: { raw } },
     });
     return { id: res.data.id, draftCreated: true };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Archive ──────────────────────────────────────────────
+
+async function handleArchiveEmail(
+  step: ArchiveEmail,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
+  try {
+    await gmail.users.messages.modify({
+      userId,
+      id: step.messageId,
+      requestBody: { removeLabelIds: ["INBOX"] },
+    });
+    return { archived: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Trash ────────────────────────────────────────────────
+
+async function handleTrashEmail(
+  step: TrashEmail,
+  gmail: gmail_v1.Gmail,
+  userId: string,
+) {
+  try {
+    await gmail.users.messages.trash({ userId, id: step.messageId });
+    return { trashed: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Forward ──────────────────────────────────────────────
+
+async function handleForwardEmail(step: ForwardEmail, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    const original = await gmail.users.messages.get({
+      userId,
+      id: step.messageId,
+      format: "full",
+    });
+
+    const headers = original.data.payload?.headers ?? [];
+    const header = (name: string) => headers.find((h) => h.name === name)?.value ?? "";
+    const subject = header("Subject");
+    const from = header("From");
+    const date = header("Date");
+    const to = header("To");
+
+    const originalBody = extractBody(original.data.payload);
+    const forwardHeader = [
+      "---------- Forwarded message ----------",
+      `From: ${from}`,
+      `Date: ${date}`,
+      `Subject: ${subject}`,
+      `To: ${to}`,
+      "",
+    ].join("\n");
+
+    const body = step.comment
+      ? `${step.comment}\n\n${forwardHeader}\n${originalBody}`
+      : `${forwardHeader}\n${originalBody}`;
+
+    const fwdSubject = subject.startsWith("Fwd:") ? subject : `Fwd: ${subject}`;
+    const raw = buildRawMessage({ to: step.to, subject: fwdSubject, body });
+    const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
+    return { id: res.data.id, threadId: res.data.threadId, forwarded: true };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Mark Read ────────────────────────────────────────────
+
+async function handleMarkRead(step: MarkRead, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    await gmail.users.messages.modify({
+      userId, id: step.messageId,
+      requestBody: { removeLabelIds: ["UNREAD"] },
+    });
+    return { markedRead: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Mark Unread ──────────────────────────────────────────
+
+async function handleMarkUnread(step: MarkUnread, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    await gmail.users.messages.modify({
+      userId, id: step.messageId,
+      requestBody: { addLabelIds: ["UNREAD"] },
+    });
+    return { markedUnread: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Star ─────────────────────────────────────────────────
+
+async function handleStarEmail(step: StarEmail, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    await gmail.users.messages.modify({
+      userId, id: step.messageId,
+      requestBody: { addLabelIds: ["STARRED"] },
+    });
+    return { starred: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Unstar ───────────────────────────────────────────────
+
+async function handleUnstarEmail(step: UnstarEmail, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    await gmail.users.messages.modify({
+      userId, id: step.messageId,
+      requestBody: { removeLabelIds: ["STARRED"] },
+    });
+    return { unstarred: true, messageId: step.messageId };
+  } catch (err) {
+    return { error: classifyGmailError(err) };
+  }
+}
+
+// ── Modify Labels ────────────────────────────────────────
+
+async function handleModifyLabels(step: ModifyLabels, gmail: gmail_v1.Gmail, userId: string) {
+  try {
+    await gmail.users.messages.modify({
+      userId, id: step.messageId,
+      requestBody: { addLabelIds: step.addLabels, removeLabelIds: step.removeLabels },
+    });
+    return { labelsModified: true, messageId: step.messageId, added: step.addLabels, removed: step.removeLabels };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }

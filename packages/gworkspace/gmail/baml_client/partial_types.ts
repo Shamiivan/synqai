@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  CreateDraft,  GmailDone,  GmailRequestInfo,  ListEmails,  ReadEmail,  ReplyToEmail,  SendEmail } from "./types"
+import type {  ArchiveEmail,  CreateDraft,  ForwardEmail,  GmailDone,  GmailRequestInfo,  ListEmails,  MarkRead,  MarkUnread,  ModifyLabels,  ReadEmail,  ReplyToEmail,  SendEmail,  StarEmail,  TrashEmail,  UnstarEmail } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -36,11 +36,21 @@ export interface StreamState<T> {
 }
 
 export namespace partial_types {
+    export interface ArchiveEmail {
+      intent?: "archive_email" | null
+      messageId?: string | null
+    }
     export interface CreateDraft {
       intent?: "create_draft" | null
       to?: string | null
       subject?: string | null
       body?: string | null
+    }
+    export interface ForwardEmail {
+      intent?: "forward_email" | null
+      messageId?: string | null
+      to?: string | null
+      comment?: string | null
     }
     export interface GmailDone {
       intent?: "done" | null
@@ -54,6 +64,20 @@ export namespace partial_types {
       intent?: "list_emails" | null
       query?: string | null
       maxResults?: number | null
+    }
+    export interface MarkRead {
+      intent?: "mark_read" | null
+      messageId?: string | null
+    }
+    export interface MarkUnread {
+      intent?: "mark_unread" | null
+      messageId?: string | null
+    }
+    export interface ModifyLabels {
+      intent?: "modify_labels" | null
+      messageId?: string | null
+      addLabels: string[]
+      removeLabels: string[]
     }
     export interface ReadEmail {
       intent?: "read_email" | null
@@ -70,6 +94,18 @@ export namespace partial_types {
       subject?: string | null
       body?: string | null
     }
-export type GmailStep = ListEmails | ReadEmail | SendEmail | ReplyToEmail | CreateDraft | GmailRequestInfo | GmailDone | null
+    export interface StarEmail {
+      intent?: "star_email" | null
+      messageId?: string | null
+    }
+    export interface TrashEmail {
+      intent?: "trash_email" | null
+      messageId?: string | null
+    }
+    export interface UnstarEmail {
+      intent?: "unstar_email" | null
+      messageId?: string | null
+    }
+export type GmailStep = ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | GmailRequestInfo | GmailDone | null
 
 }

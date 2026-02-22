@@ -67,8 +67,32 @@ async function agentLoop(thread: Thread, deps: GmailAgentDependencies): Promise<
         case "reply_to_email":
           result = await tools.handleReplyToEmail(nextStep);
           break;
+        case "forward_email":
+          result = await tools.handleForwardEmail(nextStep);
+          break;
         case "create_draft":
           result = await tools.handleCreateDraft(nextStep);
+          break;
+        case "archive_email":
+          result = await tools.handleArchiveEmail(nextStep);
+          break;
+        case "trash_email":
+          result = await tools.handleTrashEmail(nextStep);
+          break;
+        case "mark_read":
+          result = await tools.handleMarkRead(nextStep);
+          break;
+        case "mark_unread":
+          result = await tools.handleMarkUnread(nextStep);
+          break;
+        case "star_email":
+          result = await tools.handleStarEmail(nextStep);
+          break;
+        case "unstar_email":
+          result = await tools.handleUnstarEmail(nextStep);
+          break;
+        case "modify_labels":
+          result = await tools.handleModifyLabels(nextStep);
           break;
         default:
           result = { error: { code: "unknown", reason: "unknown_intent", message: `Unknown intent: ${(nextStep as any).intent}` } };

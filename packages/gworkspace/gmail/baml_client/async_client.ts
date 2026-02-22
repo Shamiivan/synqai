@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CreateDraft, GmailDone, GmailRequestInfo, ListEmails, ReadEmail, ReplyToEmail, SendEmail} from "./types"
+import type {ArchiveEmail, CreateDraft, ForwardEmail, GmailDone, GmailRequestInfo, ListEmails, MarkRead, MarkUnread, ModifyLabels, ReadEmail, ReplyToEmail, SendEmail, StarEmail, TrashEmail, UnstarEmail} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -100,7 +100,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         async GmailNextStep(
         thread: string,today: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone> {
+        ): Promise<types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -147,7 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone
+            return __raw__.parsed(false) as types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone
             } catch (error) {
             throw toBamlError(error);
             }
@@ -170,7 +170,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             GmailNextStep(
             thread: string,today: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.CreateDraft | partial_types.GmailRequestInfo | partial_types.GmailDone, types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone>
+            ): BamlStream<partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.GmailRequestInfo | partial_types.GmailDone, types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -229,10 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.CreateDraft | partial_types.GmailRequestInfo | partial_types.GmailDone, types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone>(
+                return new BamlStream<partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.GmailRequestInfo | partial_types.GmailDone, types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone>(
                   __raw__,
-                  (a): partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.CreateDraft | partial_types.GmailRequestInfo | partial_types.GmailDone => a,
-                  (a): types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone => a,
+                  (a): partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.GmailRequestInfo | partial_types.GmailDone => a,
+                  (a): types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

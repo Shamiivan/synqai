@@ -23,7 +23,7 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {CreateDraft, GmailDone, GmailRequestInfo, ListEmails, ReadEmail, ReplyToEmail, SendEmail} from "./types"
+import type {ArchiveEmail, CreateDraft, ForwardEmail, GmailDone, GmailRequestInfo, ListEmails, MarkRead, MarkUnread, ModifyLabels, ReadEmail, ReplyToEmail, SendEmail, StarEmail, TrashEmail, UnstarEmail} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
@@ -33,7 +33,7 @@ export class LlmResponseParser {
   GmailNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone {
+  ): types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -47,7 +47,7 @@ export class LlmResponseParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.CreateDraft | types.GmailRequestInfo | types.GmailDone
+      ) as types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.GmailRequestInfo | types.GmailDone
     } catch (error) {
       throw toBamlError(error);
     }
@@ -62,7 +62,7 @@ export class LlmStreamParser {
   GmailNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.CreateDraft | partial_types.GmailRequestInfo | partial_types.GmailDone {
+  ): partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.GmailRequestInfo | partial_types.GmailDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -76,7 +76,7 @@ export class LlmStreamParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.CreateDraft | partial_types.GmailRequestInfo | partial_types.GmailDone
+      ) as partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.GmailRequestInfo | partial_types.GmailDone
     } catch (error) {
       throw toBamlError(error);
     }

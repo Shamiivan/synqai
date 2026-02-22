@@ -156,13 +156,27 @@ export interface MeetAgentDependencies {
 
 export type AgentRunner = (thread: any, log?: Logger) => Promise<any>;
 
-// ── Supervisor ──
+export interface TopLevelAgent {
+  run: (thread: any, log?: Logger) => Promise<any>;
+}
 
-export interface SupervisorDependencies {
+// ── GWorkspace Agent ──
+
+export interface GWorkspaceDependencies {
   baml: {
-    supervisorNextStep: (thread: string, today: string, artifacts: string) => Promise<unknown>;
+    gworkspaceNextStep: (thread: string, today: string, artifacts: string) => Promise<unknown>;
   };
   agents: Record<string, AgentRunner>;
+  log: Logger;
+}
+
+// ── Router ──
+
+export interface RouterDependencies {
+  baml: {
+    determineNextStep: (thread: string, lastMessage: string) => Promise<unknown>;
+  };
+  agents: Record<string, TopLevelAgent>;
   log: Logger;
 }
 
@@ -170,7 +184,8 @@ export interface SupervisorDependencies {
 
 export interface WorkerDependencies {
   convex: ConvexClient;
-  run: (thread: any) => Promise<any>;
+  route: (thread: any) => Promise<any>;
+  routeToAgent: (agent: string, thread: any) => Promise<any>;
   log: Logger;
 }
 

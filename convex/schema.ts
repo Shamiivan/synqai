@@ -15,7 +15,7 @@ export default defineSchema({
 
   agentRuns: defineTable({
     entryAgent: v.string(),
-    currentAgent: v.union(v.literal("supervisor"), v.literal("router"), v.literal("calendar"), v.literal("gmail"), v.literal("docs"), v.literal("sheets"), v.literal("meet")),
+    currentAgent: v.union(v.literal("router"), v.literal("gworkspace"), v.literal("calendar"), v.literal("gmail"), v.literal("docs"), v.literal("sheets"), v.literal("meet")),
     status: v.union(
       v.literal("pending"),
       v.literal("running"),

@@ -3,7 +3,7 @@ dotenv.config({ path: ".env.local" });
 
 import { Client, GatewayIntentBits } from "discord.js";
 import { ConvexClient } from "convex/browser";
-import { b as supervisorBaml } from "../baml_client";
+import { b as routerBaml } from "../baml_client";
 import { b as calendarBaml } from "@synqai/gworkspace-calendar/baml_client";
 import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
 import { b as docsBaml } from "@synqai/gworkspace-docs/baml_client";
@@ -26,7 +26,8 @@ import { createMeetTools } from "@synqai/gworkspace-meet/src/tools";
 import { createMeetAgent } from "@synqai/gworkspace-meet/src/agent";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 import { createLogger } from "./logging";
-import { createSupervisor } from "./agents/supervisor";
+import { createGWorkspaceAgent } from "./agents/gworkspace";
+import { createRouter } from "./agents/router";
 import { createWorker } from "./worker";
 import { createBot } from "./bot";
 
@@ -93,11 +94,11 @@ const meetAgent = createMeetAgent({
   log: log.child("meet"),
 });
 
-// ── Supervisor (replaces router) ──
-const supervisor = createSupervisor({
+// ── GWorkspace Agent (coordinates domain agents) ──
+const gworkspaceAgent = createGWorkspaceAgent({
   baml: {
-    supervisorNextStep: (thread, today, artifacts) =>
-      supervisorBaml.SupervisorNextStep(thread, today, artifacts),
+    gworkspaceNextStep: (thread, today, artifacts) =>
+      routerBaml.GWorkspaceNextStep(thread, today, artifacts),
   },
   agents: {
     calendar: (thread, childLog) => calendarAgent.run(thread, childLog),
@@ -106,13 +107,23 @@ const supervisor = createSupervisor({
     sheets: (thread, childLog) => sheetsAgent.run(thread, childLog),
     meet: (thread, childLog) => meetAgent.run(thread, childLog),
   },
-  log: log.child("supervisor"),
+  log: log.child("gworkspace"),
+});
+
+// ── Router (top-level intent classification) ──
+const router = createRouter({
+  baml: { determineNextStep: (thread, lastMsg) => routerBaml.DetermineNextStep(thread, lastMsg) },
+  agents: {
+    gworkspace: gworkspaceAgent,
+  },
+  log: log.child("router"),
 });
 
 // ── Worker ──
 const worker = createWorker({
   convex,
-  run: (thread) => supervisor.run(thread),
+  route: (thread) => router.route(thread),
+  routeToAgent: (agent, thread) => router.routeToAgent(agent, thread),
   log: log.child("worker"),
 });
 

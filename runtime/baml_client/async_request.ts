@@ -23,7 +23,7 @@ import type { BamlRuntime, BamlCtxManager, Image, Audio, Pdf, Video, FunctionLog
 import { toBamlError, HTTPRequest, ClientRegistry } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {DoneForNow, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets, SupervisorDone, SupervisorRequestInfo} from "./types"
+import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 
@@ -75,7 +75,7 @@ env?: Record<string, string | undefined>
       }
       }
       
-  async SupervisorNextStep(
+  async GWorkspaceNextStep(
   thread: string,today: string,artifacts: string,
   __baml_options__?: BamlCallOptions<never>
   ): Promise<HTTPRequest> {
@@ -93,7 +93,7 @@ env?: Record<string, string | undefined>
       }
 
       return await this.runtime.buildRequest(
-      "SupervisorNextStep",
+      "GWorkspaceNextStep",
       {
       "thread": thread,"today": today,"artifacts": artifacts
       },
@@ -147,7 +147,7 @@ env?: Record<string, string | undefined>
           }
           }
           
-      async SupervisorNextStep(
+      async GWorkspaceNextStep(
       thread: string,today: string,artifacts: string,
       __baml_options__?: BamlCallOptions<never>
       ): Promise<HTTPRequest> {
@@ -165,7 +165,7 @@ env?: Record<string, string | undefined>
           }
 
           return await this.runtime.buildRequest(
-          "SupervisorNextStep",
+          "GWorkspaceNextStep",
           {
           "thread": thread,"today": today,"artifacts": artifacts
           },

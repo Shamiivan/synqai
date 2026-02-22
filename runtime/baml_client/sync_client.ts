@@ -22,7 +22,7 @@ import type { BamlRuntime, FunctionResult, BamlCtxManager, Image, Audio, Pdf, Vi
 import { toBamlError, BamlAbortError, ClientRegistry, type HTTPRequest } from "@boundaryml/baml"
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type * as types from "./types"
-import type {DoneForNow, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets, SupervisorDone, SupervisorRequestInfo} from "./types"
+import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets} from "./types"
 import type TypeBuilder from "./type_builder"
 import { HttpRequest, HttpStreamRequest } from "./sync_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -147,10 +147,10 @@ export class BamlSyncClient {
     }
   }
   
-  SupervisorNextStep(
+  GWorkspaceNextStep(
       thread: string,today: string,artifacts: string,
       __baml_options__?: BamlCallOptions<never>
-  ): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone {
+  ): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone {
     try {
       const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
       const __signal__ = __options__.signal;
@@ -178,7 +178,7 @@ export class BamlSyncClient {
       }
 
       const __raw__ = this.runtime.callFunctionSync(
-        "SupervisorNextStep",
+        "GWorkspaceNextStep",
         {
           "thread": thread,"today": today,"artifacts": artifacts
         },
@@ -191,7 +191,7 @@ export class BamlSyncClient {
         __signal__,
         __options__.watchers,
       )
-      return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone
+      return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone
     } catch (error: any) {
       throw toBamlError(error);
     }

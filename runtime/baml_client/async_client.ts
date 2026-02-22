@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets, SupervisorDone, SupervisorRequestInfo} from "./types"
+import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -153,10 +153,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
             }
             
-        async SupervisorNextStep(
+        async GWorkspaceNextStep(
         thread: string,today: string,artifacts: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone> {
+        ): Promise<types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -167,7 +167,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
           // Check if onTick is provided - route through streaming if so
           if (__options__.onTick) {
-          const __stream__ = this.stream.SupervisorNextStep(
+          const __stream__ = this.stream.GWorkspaceNextStep(
           thread,today,artifacts,
           __baml_options__
           );
@@ -190,7 +190,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             const __raw__ = await this.runtime.callFunction(
-            "SupervisorNextStep",
+            "GWorkspaceNextStep",
             {
             "thread": thread,"today": today,"artifacts": artifacts
             },
@@ -203,7 +203,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone
+            return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone
             } catch (error) {
             throw toBamlError(error);
             }
@@ -297,10 +297,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                   }
                   }
                   
-            SupervisorNextStep(
+            GWorkspaceNextStep(
             thread: string,today: string,artifacts: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.SupervisorRequestInfo | partial_types.SupervisorDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone>
+            ): BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -326,7 +326,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
               try {
               __options__.onTick!("Unknown", __log__);
               } catch (error) {
-              console.error("Error in onTick callback for SupervisorNextStep", error);
+              console.error("Error in onTick callback for GWorkspaceNextStep", error);
               }
               }
               };
@@ -345,7 +345,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 }
 
                 const __raw__ = this.runtime.streamFunction(
-                "SupervisorNextStep",
+                "GWorkspaceNextStep",
                 {
                 "thread": thread,"today": today,"artifacts": artifacts
                 },
@@ -359,10 +359,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.SupervisorRequestInfo | partial_types.SupervisorDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone>(
+                return new BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone>(
                   __raw__,
-                  (a): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.SupervisorRequestInfo | partial_types.SupervisorDone => a,
-                  (a): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.SupervisorRequestInfo | types.SupervisorDone => a,
+                  (a): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone => a,
+                  (a): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

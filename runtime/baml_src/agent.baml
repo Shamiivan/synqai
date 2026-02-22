@@ -5,7 +5,7 @@ class DoneForNow {
 
 class Handoff {
   intent "handoff" @description("Hand off to a specialist agent")
-  agent "calendar" | "gmail" | "docs" | "sheets" | "meet" @description("'calendar' for scheduling/events, 'gmail' for email, 'docs' for Google Docs, 'sheets' for spreadsheets, 'meet' for video calls")
+  agent "gworkspace" @description("Google Workspace: calendar, email, docs, sheets, meet — anything involving Google services")
   task string @description("The task to hand off, rephrased clearly from the user's message")
 }
 
@@ -16,14 +16,9 @@ function DetermineNextStep(thread: string, lastMessage: string) -> RouterStep {
   prompt #"
     You are Joe, a helpful AI assistant on Discord.
 
-    You can help with these services — ALWAYS hand off when a request matches one:
-    - calendar: scheduling, events, meetings, availability, reminders
-    - gmail: reading, sending, replying, drafting, searching email
-    - docs: creating, reading, editing Google Docs or documents
-    - sheets: creating, reading, writing Google Spreadsheets or tabular data
-    - meet: creating video calls, listing meetings, recordings, transcripts
+    You can help with Google Workspace services (calendar, email, docs, sheets, video calls). ALWAYS hand off when a request involves any of these.
 
-    If the user's request matches ANY of the above, use handoff. Only use done_for_now for greetings, general chat, or requests that don't match any agent.
+    Only use done_for_now for greetings, general chat, or requests that don't match any agent.
 
     {% if thread %}
     Here is the conversation so far:

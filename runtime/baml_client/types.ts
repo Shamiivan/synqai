@@ -53,9 +53,21 @@ export interface DoneForNow {
   
 }
 
+export interface GWorkspaceDone {
+  intent: "done"
+  message: string
+  
+}
+
+export interface GWorkspaceRequestInfo {
+  intent: "request_info"
+  question: string
+  
+}
+
 export interface Handoff {
   intent: "handoff"
-  agent: "calendar" | "gmail" | "docs" | "sheets" | "meet"
+  agent: "gworkspace"
   task: string
   
 }
@@ -90,18 +102,6 @@ export interface RunSheets {
   
 }
 
-export interface SupervisorDone {
-  intent: "done"
-  message: string
-  
-}
-
-export interface SupervisorRequestInfo {
-  intent: "request_info"
-  question: string
-  
-}
+export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | GWorkspaceRequestInfo | GWorkspaceDone
 
 export type RouterStep = DoneForNow | Handoff
-
-export type SupervisorStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | SupervisorRequestInfo | SupervisorDone

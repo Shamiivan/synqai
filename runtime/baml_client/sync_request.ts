@@ -22,7 +22,7 @@ import type { BamlRuntime, BamlCtxManager, Image, Audio, Pdf, Video } from "@bou
 import { toBamlError, HTTPRequest, ClientRegistry } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {DoneForNow, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets, SupervisorDone, SupervisorRequestInfo} from "./types"
+import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 
@@ -71,7 +71,7 @@ export class HttpRequest {
     }
   }
   
-  SupervisorNextStep(
+  GWorkspaceNextStep(
       thread: string,today: string,artifacts: string,
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
@@ -89,7 +89,7 @@ export class HttpRequest {
       }
 
       return this.runtime.buildRequestSync(
-        "SupervisorNextStep",
+        "GWorkspaceNextStep",
         {
           "thread": thread,"today": today,"artifacts": artifacts
         },
@@ -143,7 +143,7 @@ export class HttpStreamRequest {
     }
   }
   
-  SupervisorNextStep(
+  GWorkspaceNextStep(
       thread: string,today: string,artifacts: string,
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
@@ -161,7 +161,7 @@ export class HttpStreamRequest {
       }
 
       return this.runtime.buildRequestSync(
-        "SupervisorNextStep",
+        "GWorkspaceNextStep",
         {
           "thread": thread,"today": today,"artifacts": artifacts
         },

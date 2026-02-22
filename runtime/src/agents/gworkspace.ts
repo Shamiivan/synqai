@@ -1,5 +1,5 @@
 import { Thread } from "@synqai/human-loop";
-import type { SupervisorDependencies, Logger } from "@synqai/contracts";
+import type { GWorkspaceDependencies, Logger } from "@synqai/contracts";
 
 const MAX_TURNS = 10;
 const TODAY = new Date().toISOString().split("T")[0];
@@ -11,28 +11,29 @@ export interface AgentResult {
   currentAgent?: string;
 }
 
-export function createSupervisor(dependencies: SupervisorDependencies) {
+export function createGWorkspaceAgent(dependencies: GWorkspaceDependencies) {
   return {
-    run: (thread: Thread) => supervisorLoop(thread, dependencies),
+    run: (thread: Thread, log?: Logger) =>
+      gworkspaceLoop(thread, { ...dependencies, log: log ?? dependencies.log }),
   };
 }
 
-async function supervisorLoop(
+async function gworkspaceLoop(
   thread: Thread,
-  deps: SupervisorDependencies,
+  deps: GWorkspaceDependencies,
 ): Promise<AgentResult> {
   const { baml, agents, log } = deps;
   const artifacts: Record<string, unknown> = {};
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const serialized = thread.serializeCompact(3);
-    const nextStep = (await baml.supervisorNextStep(
+    const nextStep = (await baml.gworkspaceNextStep(
       serialized,
       TODAY,
       JSON.stringify(artifacts),
     )) as any;
 
-    log.info("supervisor_step", { intent: nextStep.intent, turn });
+    log.info("gworkspace_step", { intent: nextStep.intent, turn });
     thread.events.push({ type: "tool_call", data: nextStep });
 
     // ── Exit intents ──
@@ -43,7 +44,7 @@ async function supervisorLoop(
       return { thread, intent: "done", message: nextStep.message };
     }
 
-    // ── Dispatch to subagent ──
+    // ── Dispatch to domain agent ──
     const agentName = nextStep.intent.replace("run_", "");
     const runner = agents[agentName];
     if (!runner) {
@@ -54,7 +55,7 @@ async function supervisorLoop(
       continue;
     }
 
-    // Fresh subagent thread — context isolation
+    // Fresh domain thread — context isolation
     const subThread = new Thread();
     if (Object.keys(artifacts).length > 0) {
       subThread.events.push({
@@ -68,7 +69,7 @@ async function supervisorLoop(
     const subIntent = getLastIntent(result);
     const subMessage = getLastMessage(result);
 
-    // Extract artifacts from subagent results
+    // Extract artifacts from domain agent results
     for (const e of result.events) {
       if (e.type === "tool_response" && typeof e.data === "object" && e.data && !e.data.error) {
         for (const [k, v] of Object.entries(e.data as Record<string, unknown>)) {
@@ -79,7 +80,7 @@ async function supervisorLoop(
       }
     }
 
-    // ── FAST PATH: single-domain, first turn, success → skip final supervisor call ──
+    // ── FAST PATH: single-domain, first turn, success → skip final LLM call ──
     if (turn === 0 && subIntent === "done" && subMessage) {
       thread.events.push({
         type: "tool_response",
@@ -89,17 +90,15 @@ async function supervisorLoop(
         type: "tool_call",
         data: { intent: "done", message: subMessage },
       });
-      return { thread, intent: "done", message: subMessage, currentAgent: agentName };
+      return { thread, intent: "done", message: subMessage, currentAgent: "gworkspace" };
     }
 
-    // Push subagent result for supervisor's next turn
+    // Push domain agent result for next turn
     if (subIntent === "request_info") {
-      // Subagent needs human input — bubble up
       thread.events.push({
         type: "tool_response",
         data: { status: "needs_info", question: subMessage },
       });
-      // Supervisor should ask the user
       thread.events.push({
         type: "tool_call",
         data: { intent: "request_info", question: subMessage ?? "Need more information" },
@@ -108,7 +107,7 @@ async function supervisorLoop(
         thread,
         intent: "request_info",
         message: subMessage,
-        currentAgent: "supervisor",
+        currentAgent: "gworkspace",
       };
     } else if (subIntent === "done") {
       thread.events.push({
@@ -126,9 +125,9 @@ async function supervisorLoop(
   // Max turns reached
   thread.events.push({
     type: "tool_call",
-    data: { intent: "done", message: "Reached maximum supervisor turns." },
+    data: { intent: "done", message: "Reached maximum turns." },
   });
-  return { thread, intent: "done", message: "Reached maximum supervisor turns." };
+  return { thread, intent: "done", message: "Reached maximum turns." };
 }
 
 function getLastIntent(thread: Thread): string {

@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow,  Handoff,  RunCalendar,  RunDocs,  RunGmail,  RunMeet,  RunSheets,  SupervisorDone,  SupervisorRequestInfo } from "./types"
+import type {  DoneForNow,  GWorkspaceDone,  GWorkspaceRequestInfo,  Handoff,  RunCalendar,  RunDocs,  RunGmail,  RunMeet,  RunSheets } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -40,9 +40,17 @@ export namespace partial_types {
       intent?: "done_for_now" | null
       message?: string | null
     }
+    export interface GWorkspaceDone {
+      intent?: "done" | null
+      message?: string | null
+    }
+    export interface GWorkspaceRequestInfo {
+      intent?: "request_info" | null
+      question?: string | null
+    }
     export interface Handoff {
       intent?: "handoff" | null
-      agent?: "calendar" | "gmail" | "docs" | "sheets" | "meet" | null
+      agent?: "gworkspace" | null
       task?: string | null
     }
     export interface RunCalendar {
@@ -65,16 +73,8 @@ export namespace partial_types {
       intent?: "run_sheets" | null
       task?: string | null
     }
-    export interface SupervisorDone {
-      intent?: "done" | null
-      message?: string | null
-    }
-    export interface SupervisorRequestInfo {
-      intent?: "request_info" | null
-      question?: string | null
-    }
-export type RouterStep = DoneForNow | Handoff | null
+export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | GWorkspaceRequestInfo | GWorkspaceDone | null
 
-export type SupervisorStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | SupervisorRequestInfo | SupervisorDone | null
+export type RouterStep = DoneForNow | Handoff | null
 
 }

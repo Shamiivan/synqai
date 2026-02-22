@@ -26,25 +26,27 @@ async function processRun(
   run: { _id: any; currentAgent: string; thread: string },
   deps: WorkerDependencies,
 ) {
-  const { convex, run: runSupervisor } = deps;
+  const { convex, route, routeToAgent } = deps;
   const runId = String(run._id).slice(-4);
   const log = deps.log.child(`run-${runId}`);
 
   const thread = Thread.fromJSON(JSON.parse(run.thread));
-  log.info("Processing");
+  log.info("Processing", { currentAgent: run.currentAgent });
 
   try {
-    // Supervisor handles both fresh runs and resumes — it reads
-    // the thread state and decides what to do next.
-    const result = await runSupervisor(thread);
+    // Fresh run (router) → classify and hand off.
+    // Resumed run (gworkspace) → go directly to that agent.
+    const result = run.currentAgent === "router"
+      ? await route(thread)
+      : await routeToAgent(run.currentAgent, thread);
 
-    const { intent, message } = result;
+    const { intent, message, currentAgent } = result;
     const resultThread: Thread = result.thread;
 
     if (intent === "request_info") {
       await convex.mutation(api.runs.pause, {
         id: run._id,
-        currentAgent: "supervisor",
+        currentAgent: currentAgent ?? run.currentAgent,
         thread: JSON.stringify(resultThread.toJSON()),
         question: message ?? "Need more information",
       });

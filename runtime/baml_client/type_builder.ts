@@ -29,6 +29,10 @@ export default class TypeBuilder {
     
     DoneForNow: ClassViewer<'DoneForNow', "intent" | "message">;
     
+    GWorkspaceDone: ClassViewer<'GWorkspaceDone', "intent" | "message">;
+    
+    GWorkspaceRequestInfo: ClassViewer<'GWorkspaceRequestInfo', "intent" | "question">;
+    
     Handoff: ClassViewer<'Handoff', "intent" | "agent" | "task">;
     
     RunCalendar: ClassViewer<'RunCalendar', "intent" | "task">;
@@ -41,16 +45,12 @@ export default class TypeBuilder {
     
     RunSheets: ClassViewer<'RunSheets', "intent" | "task">;
     
-    SupervisorDone: ClassViewer<'SupervisorDone', "intent" | "message">;
-    
-    SupervisorRequestInfo: ClassViewer<'SupervisorRequestInfo', "intent" | "question">;
-    
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "DoneForNow","Handoff","RunCalendar","RunDocs","RunGmail","RunMeet","RunSheets","SupervisorDone","SupervisorRequestInfo",
+            "DoneForNow","GWorkspaceDone","GWorkspaceRequestInfo","Handoff","RunCalendar","RunDocs","RunGmail","RunMeet","RunSheets",
           ]),
           enums: new Set([
             
@@ -60,6 +60,14 @@ export default class TypeBuilder {
         
         this.DoneForNow = this.tb.classViewer("DoneForNow", [
           "intent","message",
+        ]);
+        
+        this.GWorkspaceDone = this.tb.classViewer("GWorkspaceDone", [
+          "intent","message",
+        ]);
+        
+        this.GWorkspaceRequestInfo = this.tb.classViewer("GWorkspaceRequestInfo", [
+          "intent","question",
         ]);
         
         this.Handoff = this.tb.classViewer("Handoff", [
@@ -84,14 +92,6 @@ export default class TypeBuilder {
         
         this.RunSheets = this.tb.classViewer("RunSheets", [
           "intent","task",
-        ]);
-        
-        this.SupervisorDone = this.tb.classViewer("SupervisorDone", [
-          "intent","message",
-        ]);
-        
-        this.SupervisorRequestInfo = this.tb.classViewer("SupervisorRequestInfo", [
-          "intent","question",
         ]);
         
         

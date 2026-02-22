@@ -163,6 +163,69 @@ export const getConversationByRun = query({
   },
 });
 
+/**
+ * Create a follow-up run seeded with the previous run's conversation thread.
+ * Strips exit signals (done, agent_output) so the LLM sees a clean continuation.
+ */
+export const createFollowUp = mutation({
+  args: {
+    previousRunId: v.id("agentRuns"),
+    input: v.string(),
+    discordChannelId: v.string(),
+    discordMessageId: v.optional(v.string()),
+    discordThreadId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const previousRun = await ctx.db.get(args.previousRunId);
+    if (!previousRun) throw new Error("Previous run not found");
+
+    const prevEvents = JSON.parse(previousRun.thread) as any[];
+    const contextEvents = prevEvents.filter((e: any) => {
+      if (e.type === "agent_output") return false;
+      if (e.type === "tool_call" && e.data?.intent === "done") return false;
+      return true;
+    });
+    contextEvents.push({ type: "user_input", data: args.input });
+
+    const runId = await ctx.db.insert("agentRuns", {
+      entryAgent: "router",
+      currentAgent: "router",
+      status: "pending",
+      thread: JSON.stringify(contextEvents),
+    });
+
+    await ctx.db.insert("conversations", {
+      discordChannelId: args.discordChannelId,
+      discordMessageId: args.discordMessageId,
+      discordThreadId: args.discordThreadId,
+      runId,
+    });
+
+    return runId;
+  },
+});
+
+/** Find the most recent done run in a channel. */
+export const getRecentByChannel = query({
+  args: { discordChannelId: v.string() },
+  handler: async (ctx, args) => {
+    const convs = await ctx.db
+      .query("conversations")
+      .withIndex("by_channel", (q) => q.eq("discordChannelId", args.discordChannelId))
+      .order("desc")
+      .take(5);
+
+    for (const conv of convs) {
+      const run = await ctx.db.get(conv.runId);
+      if (!run) continue;
+      if (run.status !== "done") continue;
+      return { runId: run._id };
+    }
+
+    return null;
+  },
+});
+
 export const cancelStale = mutation({
   args: {},
   handler: async (ctx) => {

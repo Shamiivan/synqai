@@ -29,7 +29,7 @@ async function handleListEmails(step: ListEmails, gmail: gmail_v1.Gmail, userId:
     const listRes = await gmail.users.messages.list({
       userId,
       q: step.query,
-      maxResults: Math.min(step.maxResults, 20),
+      maxResults: Math.min(step.maxResults ?? 10, 20),
     });
 
     const messageIds = (listRes.data.messages ?? []).map((m) => m.id!);

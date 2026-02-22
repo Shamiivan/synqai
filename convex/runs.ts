@@ -8,6 +8,15 @@ export const create = mutation({
     discordMessageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Idempotent: if a run already exists for this Discord message, return it
+    if (args.discordMessageId) {
+      const existing = await ctx.db
+        .query("conversations")
+        .withIndex("by_discord_message", (q) => q.eq("discordMessageId", args.discordMessageId))
+        .first();
+      if (existing) return existing.runId;
+    }
+
     const runId = await ctx.db.insert("agentRuns", {
       entryAgent: "router",
       currentAgent: "router",
@@ -227,8 +236,11 @@ export const getRecentByChannel = query({
 });
 
 export const cancelStale = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    cutoff: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Cancel running + waiting_human unconditionally (no worker owns them after restart)
     const running = await ctx.db
       .query("agentRuns")
       .withIndex("by_status", (q) => q.eq("status", "running"))
@@ -237,7 +249,16 @@ export const cancelStale = mutation({
       .query("agentRuns")
       .withIndex("by_status", (q) => q.eq("status", "waiting_human"))
       .collect();
-    const stale = [...running, ...waiting];
+
+    // Cancel pending runs created before cutoff (stale from previous session)
+    const pending = await ctx.db
+      .query("agentRuns")
+      .withIndex("by_status", (q) => q.eq("status", "pending"))
+      .collect();
+    const cutoff = args.cutoff ?? Date.now();
+    const stalePending = pending.filter((r) => r._creationTime < cutoff);
+
+    const stale = [...running, ...waiting, ...stalePending];
     for (const run of stale) {
       await ctx.db.patch(run._id, { status: "failed" });
     }

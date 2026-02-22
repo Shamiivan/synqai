@@ -28,7 +28,7 @@ export function classifyGmailError(err: unknown): ClassifiedError {
     if (reason === "rateLimitExceeded" || reason === "userRateLimitExceeded") {
       return { code: "quota", reason, message: "Google API quota exceeded. Try again later.", retryable: true };
     }
-    return { code: "auth", reason: reason || "forbidden", message: "Authentication failed or access denied.", retryable: false };
+    return { code: "auth", reason: reason || "forbidden", message: msg, retryable: false };
   }
 
   if (status === 404) {

@@ -2,7 +2,7 @@
  * One-time script: opens your browser for Google OAuth consent,
  * then prints the refresh token to paste into .env.local.
  *
- * Requests all scopes needed by calendar + gmail agents at once.
+ * Requests ALL scopes configured on the Google Cloud project in one consent flow.
  *
  * Usage:
  *   GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy pnpm exec tsx scripts/get-token.ts
@@ -16,14 +16,60 @@ import path from "node:path";
 import { exec } from "node:child_process";
 import dotenv from "dotenv";
 
-// Load .env.local from monorepo root (4 levels up from scripts/)
-dotenv.config({ path: path.resolve(__dirname, "../../../../../.env.local") });
+// Load .env.local from monorepo root (scripts/ → auth/ → gworkspace/ → packages/ → synqai/)
+dotenv.config({ path: path.resolve(__dirname, "../../../../.env.local") });
 
 const SCOPES = [
+  // Calendar
+  "https://www.googleapis.com/auth/calendar",
   "https://www.googleapis.com/auth/calendar.events",
-  "https://www.googleapis.com/auth/gmail.readonly",
-  "https://www.googleapis.com/auth/gmail.send",
+  "https://www.googleapis.com/auth/calendar.events.owned",
+  "https://www.googleapis.com/auth/calendar.events.owned.readonly",
+  "https://www.googleapis.com/auth/calendar.events.public.readonly",
+  "https://www.googleapis.com/auth/calendar.events.freebusy",
+  "https://www.googleapis.com/auth/calendar.readonly",
+  "https://www.googleapis.com/auth/calendar.calendarlist",
+  "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+  "https://www.googleapis.com/auth/calendar.calendars",
+  "https://www.googleapis.com/auth/calendar.calendars.readonly",
+  "https://www.googleapis.com/auth/calendar.acls",
+  "https://www.googleapis.com/auth/calendar.acls.readonly",
+  "https://www.googleapis.com/auth/calendar.settings.readonly",
+  "https://www.googleapis.com/auth/calendar.freebusy",
+  "https://www.googleapis.com/auth/calendar.app.created",
+
+  // Gmail — only broad scopes; gmail.metadata conflicts with q parameter when
+  // present alongside gmail.readonly (Google enforces narrowest scope first)
+  "https://mail.google.com/",
   "https://www.googleapis.com/auth/gmail.modify",
+  "https://www.googleapis.com/auth/gmail.compose",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.insert",
+  "https://www.googleapis.com/auth/gmail.settings.basic",
+  "https://www.googleapis.com/auth/gmail.settings.sharing",
+
+  // Drive
+  "https://www.googleapis.com/auth/drive",
+  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/drive.meet.readonly",
+  "https://www.googleapis.com/auth/drive.metadata",
+  "https://www.googleapis.com/auth/drive.metadata.readonly",
+  "https://www.googleapis.com/auth/drive.scripts",
+  "https://www.googleapis.com/auth/drive.activity",
+  "https://www.googleapis.com/auth/drive.activity.readonly",
+
+  // Meet
+  "https://www.googleapis.com/auth/meetings.conference.media.readonly",
+  "https://www.googleapis.com/auth/meetings.conference.media.audio.readonly",
+  "https://www.googleapis.com/auth/meetings.conference.media.video.readonly",
+
+  // User info
+  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/userinfo.profile",
+  "openid",
+
+  // IAM
+  "https://www.googleapis.com/auth/iam.test",
 ];
 const PORT = 3199;
 const REDIRECT_URI = `http://localhost:${PORT}/callback`;

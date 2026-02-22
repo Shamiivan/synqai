@@ -57,7 +57,7 @@ export function createBot(dependencies: BotDependencies) {
     log.info("Posted follow-up question", { thread: conv.discordThreadId, run: run._id });
   }
 
-  function watchRun(runId: string, replyChannelId: string, replyMessageId: string) {
+  function watchRun(runId: string, replyChannelId: string, replyMessageId: string, existingThreadId?: string) {
     pendingReplies.set(runId, { channelId: replyChannelId, messageId: replyMessageId });
 
     const unsub = convex.onUpdate(api.runs.get, { id: runId as any }, async (r) => {
@@ -71,15 +71,43 @@ export function createBot(dependencies: BotDependencies) {
           if (r.status === "failed") {
             log.error("Run failed", { run: runId });
             await discord.reply(replyChannelId, replyMessageId, "Sorry, something went wrong. Please try again.");
-          } else {
+            return;
+          }
+
+          let content: string;
+          try {
+            const events = JSON.parse(r.thread);
+            const lastOutput = [...events].reverse().find((e: any) => e.type === "agent_output");
+            content = lastOutput?.data ?? "Done.";
+          } catch {
+            content = "Done.";
+          }
+
+          // Reply in a thread so follow-ups carry conversation context
+          let thread;
+          if (existingThreadId) {
+            thread = await discord.fetchThread(existingThreadId);
+          }
+          if (!thread) {
             try {
-              const events = JSON.parse(r.thread);
-              const lastOutput = [...events].reverse().find((e: any) => e.type === "agent_output");
-              await discord.reply(replyChannelId, replyMessageId, lastOutput?.data ?? "Done.");
+              thread = await discord.startThread(replyChannelId, replyMessageId, "Joe");
             } catch {
-              await discord.reply(replyChannelId, replyMessageId, "Done.");
+              // Thread creation can fail (e.g. already exists) — fallback to flat reply
+              await discord.reply(replyChannelId, replyMessageId, content);
+              return;
             }
           }
+
+          await thread.send(content);
+
+          // Persist thread ID so future replies are linked
+          await convex.mutation(api.runs.setDiscordThreadId, {
+            runId: runId as any,
+            discordThreadId: thread.id,
+          });
+          threadToRun.set(thread.id, runId);
+
+          log.info("Replied in thread", { run: runId, thread: thread.id });
         } catch (err) {
           log.error("Failed to reply", { run: runId, error: String(err) });
         }
@@ -123,7 +151,7 @@ export function createBot(dependencies: BotDependencies) {
           input: msg.content.trim(),
         });
         threadToRun.set(threadId, String(newRunId));
-        watchRun(String(newRunId), msg.channelId, msg.id);
+        watchRun(String(newRunId), msg.channelId, msg.id, threadId);
       }
     } catch (err) {
       log.error("Thread reply error", { run: runId, error: String(err) });
@@ -154,7 +182,7 @@ export function createBot(dependencies: BotDependencies) {
   return {
     start: () => {
       discord.onReady(async () => {
-        const cancelled = await convex.mutation(api.runs.cancelStale, {});
+        const cancelled = await convex.mutation(api.runs.cancelStale, { cutoff: Date.now() });
         if (cancelled > 0) log.info("Cleaned up stale runs", { count: cancelled });
 
         startWorker();

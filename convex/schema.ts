@@ -9,6 +9,7 @@ export default defineSchema({
     runId: v.id("agentRuns"),
   })
     .index("by_discord_thread", ["discordThreadId"])
+    .index("by_discord_message", ["discordMessageId"])
     .index("by_run", ["runId"])
     .index("by_channel", ["discordChannelId"]),
 

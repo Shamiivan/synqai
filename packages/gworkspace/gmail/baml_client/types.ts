@@ -70,7 +70,7 @@ export interface GmailRequestInfo {
 export interface ListEmails {
   intent: "list_emails"
   query: string
-  maxResults: number
+  maxResults?: number | null
   
 }
 

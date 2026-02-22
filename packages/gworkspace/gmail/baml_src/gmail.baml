@@ -1,7 +1,7 @@
 class ListEmails {
   intent "list_emails" @description("Search and list emails")
   query string @description("Gmail search query — supports from:, to:, subject:, is:unread, label:, newer_than:, older_than:, etc. Use 'is:unread' for unread, 'in:inbox' for inbox")
-  maxResults int @description("Number of emails to return, default 10, max 20")
+  maxResults int? @description("Number of emails to return, default 10, max 20")
 }
 
 class ReadEmail {

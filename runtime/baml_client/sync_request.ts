@@ -39,7 +39,7 @@ export class HttpRequest {
 
   
   DetermineNextStep(
-      input: string,
+      thread: string,lastMessage: string,
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
     try {
@@ -58,7 +58,7 @@ export class HttpRequest {
       return this.runtime.buildRequestSync(
         "DetermineNextStep",
         {
-          "input": input
+          "thread": thread,"lastMessage": lastMessage
         },
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),
@@ -78,7 +78,7 @@ export class HttpStreamRequest {
 
   
   DetermineNextStep(
-      input: string,
+      thread: string,lastMessage: string,
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
     try {
@@ -97,7 +97,7 @@ export class HttpStreamRequest {
       return this.runtime.buildRequestSync(
         "DetermineNextStep",
         {
-          "input": input
+          "thread": thread,"lastMessage": lastMessage
         },
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),

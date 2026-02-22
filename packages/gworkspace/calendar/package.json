@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@boundaryml/baml": "^0.219.0",
+    "@synqai/contracts": "workspace:*",
     "@synqai/human-loop": "workspace:*",
     "dotenv": "^17.3.1",
     "googleapis": "^148.0.0",

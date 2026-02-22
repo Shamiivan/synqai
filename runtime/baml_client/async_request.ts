@@ -43,7 +43,7 @@ env?: Record<string, string | undefined>
 
   
   async DetermineNextStep(
-  input: string,
+  thread: string,lastMessage: string,
   __baml_options__?: BamlCallOptions<never>
   ): Promise<HTTPRequest> {
     try {
@@ -62,7 +62,7 @@ env?: Record<string, string | undefined>
       return await this.runtime.buildRequest(
       "DetermineNextStep",
       {
-      "input": input
+      "thread": thread,"lastMessage": lastMessage
       },
       this.ctxManager.cloneContext(),
       __baml_options__?.tb?.__tb(),
@@ -82,7 +82,7 @@ env?: Record<string, string | undefined>
 
       
       async DetermineNextStep(
-      input: string,
+      thread: string,lastMessage: string,
       __baml_options__?: BamlCallOptions<never>
       ): Promise<HTTPRequest> {
         try {
@@ -101,7 +101,7 @@ env?: Record<string, string | undefined>
           return await this.runtime.buildRequest(
           "DetermineNextStep",
           {
-          "input": input
+          "thread": thread,"lastMessage": lastMessage
           },
           this.ctxManager.cloneContext(),
           __baml_options__?.tb?.__tb(),

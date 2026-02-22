@@ -1,32 +1,24 @@
 import { Thread } from "@synqai/human-loop";
-import { b } from "../baml_client";
-import {
-  handleCreateEvent,
-  handleListEvents,
-  handleGetEvent,
-  handleUpdateEvent,
-  handleDeleteEvent,
-  handleCheckAvailability,
-  handleQuickAdd,
-} from "./tools";
+import type { CalendarAgentDependencies, CalendarTools, Logger } from "@synqai/contracts";
 
 const MAX_TURNS = 20;
 const TOKEN_WARN = 15_000;
 const TOKEN_HARD_STOP = 25_000;
 const TODAY = new Date().toISOString().split("T")[0];
 
-/** Minimal logger interface — avoids importing from router. */
-interface MinimalLogger {
-  info(msg: string, meta?: Record<string, unknown>): void;
-  child?(name: string): MinimalLogger;
+export function createCalendarAgent(dependencies: CalendarAgentDependencies) {
+  return {
+    run: (thread: Thread, log?: Logger) =>
+      agentLoop(thread, { ...dependencies, log: log ?? dependencies.log }),
+  };
 }
 
 /**
  * Runs the calendar BAML loop. Returns the thread when it hits
  * request_info (needs human) or done (task complete). Never blocks.
  */
-export async function agentLoop(thread: Thread, deps?: { log?: MinimalLogger }): Promise<Thread> {
-  const log = deps?.log;
+async function agentLoop(thread: Thread, deps: CalendarAgentDependencies): Promise<Thread> {
+  const { baml, tools, log } = deps;
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     // ── Context window guard ──
@@ -34,7 +26,7 @@ export async function agentLoop(thread: Thread, deps?: { log?: MinimalLogger }):
     const estimatedTokens = Math.ceil(serialized.length / 4);
 
     if (estimatedTokens > TOKEN_HARD_STOP) {
-      log?.info("context_overflow", { estimatedTokens, turn });
+      log.info("context_overflow", { estimatedTokens, turn });
       thread.events.push({
         type: "tool_call",
         data: { intent: "done", message: "Conversation is too long. Please start a new request." },
@@ -43,12 +35,12 @@ export async function agentLoop(thread: Thread, deps?: { log?: MinimalLogger }):
     }
 
     if (estimatedTokens > TOKEN_WARN) {
-      log?.info("context_warning", { estimatedTokens, turn });
+      log.info("context_warning", { estimatedTokens, turn });
     }
 
     // ── LLM call ──
-    const nextStep = await b.CalendarNextStep(serialized, TODAY);
-    log?.info("step", { intent: nextStep.intent, turn });
+    const nextStep = await baml.calendarNextStep(serialized, TODAY) as any;
+    log.info("step", { intent: nextStep.intent, turn });
     thread.events.push({ type: "tool_call", data: nextStep });
 
     // ── Exit intents (no tool call) ──
@@ -64,25 +56,25 @@ export async function agentLoop(thread: Thread, deps?: { log?: MinimalLogger }):
     try {
       switch (nextStep.intent) {
         case "create_event":
-          result = await handleCreateEvent(nextStep);
+          result = await tools.handleCreateEvent(nextStep);
           break;
         case "list_events":
-          result = await handleListEvents(nextStep);
+          result = await tools.handleListEvents(nextStep);
           break;
         case "get_event":
-          result = await handleGetEvent(nextStep);
+          result = await tools.handleGetEvent(nextStep);
           break;
         case "update_event":
-          result = await handleUpdateEvent(nextStep);
+          result = await tools.handleUpdateEvent(nextStep);
           break;
         case "delete_event":
-          result = await handleDeleteEvent(nextStep);
+          result = await tools.handleDeleteEvent(nextStep);
           break;
         case "check_availability":
-          result = await handleCheckAvailability(nextStep);
+          result = await tools.handleCheckAvailability(nextStep);
           break;
         case "quick_add":
-          result = await handleQuickAdd(nextStep);
+          result = await tools.handleQuickAdd(nextStep);
           break;
         default:
           result = { error: { code: "unknown", reason: "unknown_intent", message: `Unknown intent: ${(nextStep as any).intent}` } };
@@ -95,12 +87,11 @@ export async function agentLoop(thread: Thread, deps?: { log?: MinimalLogger }):
 
     const durationMs = Date.now() - start;
 
-    // Check if the tool handler itself returned an error
     if (result && typeof result === "object" && "error" in (result as any)) {
       success = false;
-      log?.info("tool_error", { intent: nextStep.intent, turn, durationMs, error: (result as any).error });
+      log.info("tool_error", { intent: nextStep.intent, turn, durationMs, error: (result as any).error });
     } else {
-      log?.info("tool_end", { intent: nextStep.intent, turn, durationMs, success });
+      log.info("tool_end", { intent: nextStep.intent, turn, durationMs, success });
     }
 
     thread.events.push({ type: "tool_response", data: result });

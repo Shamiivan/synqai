@@ -98,7 +98,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
         
         async DetermineNextStep(
-        input: string,
+        thread: string,lastMessage: string,
         __baml_options__?: BamlCallOptions<never>
         ): Promise<types.DoneForNow | types.Handoff> {
           try {
@@ -112,7 +112,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
           // Check if onTick is provided - route through streaming if so
           if (__options__.onTick) {
           const __stream__ = this.stream.DetermineNextStep(
-          input,
+          thread,lastMessage,
           __baml_options__
           );
 
@@ -136,7 +136,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             const __raw__ = await this.runtime.callFunction(
             "DetermineNextStep",
             {
-            "input": input
+            "thread": thread,"lastMessage": lastMessage
             },
             this.ctxManager.cloneContext(),
             __options__.tb?.__tb(),
@@ -168,7 +168,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
             
             DetermineNextStep(
-            input: string,
+            thread: string,lastMessage: string,
             __baml_options__?: BamlCallOptions<never>
             ): BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>
               {
@@ -217,7 +217,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 const __raw__ = this.runtime.streamFunction(
                 "DetermineNextStep",
                 {
-                "input": input
+                "thread": thread,"lastMessage": lastMessage
                 },
                 undefined,
                 this.ctxManager.cloneContext(),

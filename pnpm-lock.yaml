@@ -14,6 +14,12 @@ importers:
       '@google/genai':
         specifier: ^1.42.0
         version: 1.42.0
+      '@synqai/contracts':
+        specifier: workspace:*
+        version: link:packages/contracts
+      '@synqai/gateway-discord':
+        specifier: workspace:*
+        version: link:packages/gateway/discord
       '@synqai/gworkspace-calendar':
         specifier: workspace:*
         version: link:packages/gworkspace/calendar
@@ -39,11 +45,32 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/contracts:
+    dependencies:
+      convex:
+        specifier: ^1.32.0
+        version: 1.32.0
+      googleapis:
+        specifier: ^148.0.0
+        version: 148.0.0
+
+  packages/gateway/discord:
+    dependencies:
+      '@synqai/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
+      discord.js:
+        specifier: ^14.25.1
+        version: 14.25.1
+
   packages/gworkspace/calendar:
     dependencies:
       '@boundaryml/baml':
         specifier: ^0.219.0
         version: 0.219.0
+      '@synqai/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
       '@synqai/human-loop':
         specifier: workspace:*
         version: link:../../human-loop

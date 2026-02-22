@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev:convex": "npx convex dev",
-    "bot": "npx tsx router/bot.ts",
-    "baml:generate": "npx baml-cli generate --from router/baml_src"
+    "start": "npx tsx runtime/src/main.ts",
+    "bot": "npx tsx runtime/src/main.ts",
+    "baml:generate": "npx baml-cli generate --from runtime/baml_src"
   },
   "packageManager": "pnpm@10.26.1",
   "dependencies": {
     "@boundaryml/baml": "^0.219.0",
     "@google/genai": "^1.42.0",
+    "@synqai/contracts": "workspace:*",
+    "@synqai/gateway-discord": "workspace:*",
     "@synqai/gworkspace-calendar": "workspace:*",
     "@synqai/human-loop": "workspace:*",
     "@types/node": "^25.3.0",

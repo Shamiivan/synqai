@@ -1,3 +1,4 @@
+import type { calendar_v3 } from "googleapis";
 import type {
   CreateEvent,
   ListEvents,
@@ -7,14 +8,28 @@ import type {
   CheckAvailability,
   QuickAdd,
 } from "../baml_client";
-import { getCalendarClient, calendarId } from "./google-auth";
+import type { CalendarToolsDependencies, CalendarTools } from "@synqai/contracts";
 import { classifyCalendarError } from "./errors";
+
+// ── Factory ──────────────────────────────────────────────
+
+export function createCalendarTools(dependencies: CalendarToolsDependencies): CalendarTools {
+  const { calendar, calendarId } = dependencies;
+  return {
+    handleCreateEvent: (step) => handleCreateEvent(step, calendar, calendarId),
+    handleListEvents: (step) => handleListEvents(step, calendar, calendarId),
+    handleGetEvent: (step) => handleGetEvent(step, calendar, calendarId),
+    handleUpdateEvent: (step) => handleUpdateEvent(step, calendar, calendarId),
+    handleDeleteEvent: (step) => handleDeleteEvent(step, calendar, calendarId),
+    handleCheckAvailability: (step) => handleCheckAvailability(step, calendar, calendarId),
+    handleQuickAdd: (step) => handleQuickAdd(step, calendar, calendarId),
+  };
+}
 
 // ── Create ────────────────────────────────────────────────
 
-export async function handleCreateEvent(event: CreateEvent) {
+async function handleCreateEvent(event: CreateEvent, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const res = await calendar.events.insert({
       calendarId,
       requestBody: {
@@ -33,9 +48,8 @@ export async function handleCreateEvent(event: CreateEvent) {
 
 // ── List ──────────────────────────────────────────────────
 
-export async function handleListEvents(query: ListEvents) {
+async function handleListEvents(query: ListEvents, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const timeMin = `${query.date}T00:00:00`;
     const timeMax = `${query.date}T23:59:59`;
     const res = await calendar.events.list({
@@ -60,9 +74,8 @@ export async function handleListEvents(query: ListEvents) {
 
 // ── Get ───────────────────────────────────────────────────
 
-export async function handleGetEvent(query: GetEvent) {
+async function handleGetEvent(query: GetEvent, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const res = await calendar.events.get({ calendarId, eventId: query.eventId });
     const e = res.data;
     return {
@@ -83,9 +96,8 @@ export async function handleGetEvent(query: GetEvent) {
 
 // ── Update ────────────────────────────────────────────────
 
-export async function handleUpdateEvent(update: UpdateEvent) {
+async function handleUpdateEvent(update: UpdateEvent, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const body: Record<string, unknown> = {};
 
     if (update.summary != null) body.summary = update.summary;
@@ -93,7 +105,6 @@ export async function handleUpdateEvent(update: UpdateEvent) {
     if (update.location != null) body.location = update.location;
 
     if (update.date != null || update.startTime != null) {
-      // Need to build start — fetch current event for defaults
       const current = await calendar.events.get({ calendarId, eventId: update.eventId });
       const curStart = current.data.start?.dateTime ?? "";
       const curDate = update.date ?? curStart.slice(0, 10);
@@ -118,9 +129,8 @@ export async function handleUpdateEvent(update: UpdateEvent) {
 
 // ── Delete ────────────────────────────────────────────────
 
-export async function handleDeleteEvent(del: DeleteEvent) {
+async function handleDeleteEvent(del: DeleteEvent, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     await calendar.events.delete({ calendarId, eventId: del.eventId });
     return { deleted: true, eventId: del.eventId };
   } catch (err) {
@@ -130,9 +140,8 @@ export async function handleDeleteEvent(del: DeleteEvent) {
 
 // ── Check Availability ───────────────────────────────────
 
-export async function handleCheckAvailability(query: CheckAvailability) {
+async function handleCheckAvailability(query: CheckAvailability, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const timeMin = new Date(`${query.date}T${query.startTime}:00${getUtcOffset(query.timezone)}`).toISOString();
     const timeMax = new Date(`${query.date}T${query.endTime}:00${getUtcOffset(query.timezone)}`).toISOString();
     const res = await calendar.freebusy.query({
@@ -150,9 +159,8 @@ export async function handleCheckAvailability(query: CheckAvailability) {
 
 // ── Quick Add ─────────────────────────────────────────────
 
-export async function handleQuickAdd(query: QuickAdd) {
+async function handleQuickAdd(query: QuickAdd, calendar: calendar_v3.Calendar, calendarId: string) {
   try {
-    const calendar = getCalendarClient();
     const res = await calendar.events.quickAdd({ calendarId, text: query.text });
     const e = res.data;
     return {
@@ -169,7 +177,6 @@ export async function handleQuickAdd(query: QuickAdd) {
 
 // ── Helpers ───────────────────────────────────────────────
 
-/** Convert IANA timezone to a UTC offset string for date parsing. */
 function getUtcOffset(timezone: string): string {
   try {
     const now = new Date();

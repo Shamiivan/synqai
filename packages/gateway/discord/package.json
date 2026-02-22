@@ -1,0 +1,10 @@
+{
+  "name": "@synqai/gateway-discord",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "@synqai/contracts": "workspace:*",
+    "discord.js": "^14.25.1"
+  }
+}

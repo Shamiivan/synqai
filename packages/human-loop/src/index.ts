@@ -1,10 +1,7 @@
-import { createInterface } from "readline";
-import type { Client, TextChannel } from "discord.js";
-
 // ─── Thread (serializable conversation state) ───
 
 export interface Event {
-  type: "user_input" | "tool_call" | "tool_response" | "human_response";
+  type: "user_input" | "tool_call" | "tool_response" | "human_response" | "agent_output";
   data: any;
 }
 
@@ -41,48 +38,4 @@ export class Thread {
   static fromJSON(events: Event[]): Thread {
     return new Thread(events);
   }
-}
-
-// ─── AskHuman (legacy, kept for CLI usage) ───
-
-export type AskHuman = (message: string) => Promise<string>;
-
-export function discord(client: Client, channelId: string, messageId: string): AskHuman {
-  let thread: Awaited<ReturnType<TextChannel["threads"]["create"]>> | null = null;
-
-  return async (question: string) => {
-    const channel = await client.channels.fetch(channelId);
-    if (!channel || !("messages" in channel)) {
-      throw new Error(`Channel ${channelId} not found or not text-based`);
-    }
-
-    if (!thread) {
-      const msg = await (channel as TextChannel).messages.fetch(messageId);
-      const name = `Clarification: ${msg.content.slice(0, 85)}`;
-      thread = await msg.startThread({ name });
-    }
-
-    await thread.send(question);
-
-    const collected = await thread.awaitMessages({
-      max: 1,
-      time: 120_000,
-      errors: ["time"],
-      filter: (m) => !m.author.bot,
-    });
-
-    return collected.first()!.content.trim();
-  };
-}
-
-export function cli(): AskHuman {
-  return (message: string) => {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
-    return new Promise((resolve) => {
-      rl.question(`${message}\n> `, (answer) => {
-        rl.close();
-        resolve(answer);
-      });
-    });
-  };
 }

@@ -1,0 +1,10 @@
+{
+  "name": "@synqai/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "convex": "^1.32.0",
+    "googleapis": "^148.0.0"
+  }
+}

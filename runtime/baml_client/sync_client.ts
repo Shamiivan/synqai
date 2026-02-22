@@ -98,7 +98,7 @@ export class BamlSyncClient {
 
   
   DetermineNextStep(
-      input: string,
+      thread: string,lastMessage: string,
       __baml_options__?: BamlCallOptions<never>
   ): types.DoneForNow | types.Handoff {
     try {
@@ -130,7 +130,7 @@ export class BamlSyncClient {
       const __raw__ = this.runtime.callFunctionSync(
         "DetermineNextStep",
         {
-          "input": input
+          "thread": thread,"lastMessage": lastMessage
         },
         this.ctxManager.cloneContext(),
         __options__.tb?.__tb(),

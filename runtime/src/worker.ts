@@ -26,27 +26,25 @@ async function processRun(
   run: { _id: any; currentAgent: string; thread: string },
   deps: WorkerDependencies,
 ) {
-  const { convex, route, routeToAgent } = deps;
+  const { convex, run: runSupervisor } = deps;
   const runId = String(run._id).slice(-4);
   const log = deps.log.child(`run-${runId}`);
 
   const thread = Thread.fromJSON(JSON.parse(run.thread));
-  log.info("Processing", { currentAgent: run.currentAgent });
+  log.info("Processing");
 
   try {
-    // If resuming a paused agent, go directly to it (skip the BAML router).
-    // If it's a fresh run (currentAgent === "router"), route through BAML.
-    const result = run.currentAgent === "router"
-      ? await route(thread)
-      : await routeToAgent(run.currentAgent, thread);
+    // Supervisor handles both fresh runs and resumes — it reads
+    // the thread state and decides what to do next.
+    const result = await runSupervisor(thread);
 
-    const { intent, message, currentAgent } = result;
+    const { intent, message } = result;
     const resultThread: Thread = result.thread;
 
     if (intent === "request_info") {
       await convex.mutation(api.runs.pause, {
         id: run._id,
-        currentAgent: currentAgent ?? run.currentAgent,
+        currentAgent: "supervisor",
         thread: JSON.stringify(resultThread.toJSON()),
         question: message ?? "Need more information",
       });

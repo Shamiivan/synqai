@@ -3,7 +3,7 @@ dotenv.config({ path: ".env.local" });
 
 import { Client, GatewayIntentBits } from "discord.js";
 import { ConvexClient } from "convex/browser";
-import { b as routerBaml } from "../baml_client";
+import { b as supervisorBaml } from "../baml_client";
 import { b as calendarBaml } from "@synqai/gworkspace-calendar/baml_client";
 import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
 import { b as docsBaml } from "@synqai/gworkspace-docs/baml_client";
@@ -26,7 +26,7 @@ import { createMeetTools } from "@synqai/gworkspace-meet/src/tools";
 import { createMeetAgent } from "@synqai/gworkspace-meet/src/agent";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 import { createLogger } from "./logging";
-import { createRouter } from "./agents/router";
+import { createSupervisor } from "./agents/supervisor";
 import { createWorker } from "./worker";
 import { createBot } from "./bot";
 
@@ -93,9 +93,12 @@ const meetAgent = createMeetAgent({
   log: log.child("meet"),
 });
 
-// ── Router (agent registry) ──
-const router = createRouter({
-  baml: { determineNextStep: (thread, lastMsg) => routerBaml.DetermineNextStep(thread, lastMsg) },
+// ── Supervisor (replaces router) ──
+const supervisor = createSupervisor({
+  baml: {
+    supervisorNextStep: (thread, today, artifacts) =>
+      supervisorBaml.SupervisorNextStep(thread, today, artifacts),
+  },
   agents: {
     calendar: (thread, childLog) => calendarAgent.run(thread, childLog),
     gmail: (thread, childLog) => gmailAgent.run(thread, childLog),
@@ -103,14 +106,13 @@ const router = createRouter({
     sheets: (thread, childLog) => sheetsAgent.run(thread, childLog),
     meet: (thread, childLog) => meetAgent.run(thread, childLog),
   },
-  log: log.child("router"),
+  log: log.child("supervisor"),
 });
 
 // ── Worker ──
 const worker = createWorker({
   convex,
-  route: (thread) => router.route(thread),
-  routeToAgent: (agent, thread) => router.routeToAgent(agent, thread),
+  run: (thread) => supervisor.run(thread),
   log: log.child("worker"),
 });
 

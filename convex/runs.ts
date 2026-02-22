@@ -18,8 +18,8 @@ export const create = mutation({
     }
 
     const runId = await ctx.db.insert("agentRuns", {
-      entryAgent: "router",
-      currentAgent: "router",
+      entryAgent: "supervisor",
+      currentAgent: "supervisor",
       status: "pending",
       thread: JSON.stringify([{ type: "user_input", data: args.input }]),
     });
@@ -90,7 +90,7 @@ export const fail = mutation({
 export const pause = mutation({
   args: {
     id: v.id("agentRuns"),
-    currentAgent: v.union(v.literal("router"), v.literal("calendar"), v.literal("gmail")),
+    currentAgent: v.union(v.literal("supervisor"), v.literal("calendar"), v.literal("gmail"), v.literal("docs"), v.literal("sheets"), v.literal("meet")),
     thread: v.string(),
     question: v.string(),
   },
@@ -197,8 +197,8 @@ export const createFollowUp = mutation({
     contextEvents.push({ type: "user_input", data: args.input });
 
     const runId = await ctx.db.insert("agentRuns", {
-      entryAgent: "router",
-      currentAgent: "router",
+      entryAgent: "supervisor",
+      currentAgent: "supervisor",
       status: "pending",
       thread: JSON.stringify(contextEvents),
     });

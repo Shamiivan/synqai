@@ -106,13 +106,17 @@ async function agentLoop(thread: Thread, deps: GmailAgentDependencies): Promise<
     const durationMs = Date.now() - start;
 
     if (result && typeof result === "object" && "error" in (result as any)) {
+      const err = (result as any).error;
       success = false;
-      log.info("tool_error", { intent: nextStep.intent, turn, durationMs, error: (result as any).error });
+      log.info("tool_error", { intent: nextStep.intent, turn, durationMs, error: err });
+      thread.events.push({
+        type: "tool_response",
+        data: { error: { message: err.message, code: err.code, retryable: err.retryable } },
+      });
     } else {
       log.info("tool_end", { intent: nextStep.intent, turn, durationMs, success });
+      thread.events.push({ type: "tool_response", data: result });
     }
-
-    thread.events.push({ type: "tool_response", data: result });
   }
 
   thread.events.push({

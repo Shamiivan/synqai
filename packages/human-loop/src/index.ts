@@ -26,7 +26,10 @@ export class Thread {
     }
     const fields = Object.keys(e.data)
       .filter((k) => k !== "intent")
-      .map((k) => `${k}: ${e.data[k]}`)
+      .map((k) => {
+        const v = e.data[k];
+        return `${k}: ${typeof v === "object" && v !== null ? JSON.stringify(v) : v}`;
+      })
       .join("\n");
     return `<${tag}>\n${fields}\n</${tag}>`;
   }

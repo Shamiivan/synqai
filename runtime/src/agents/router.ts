@@ -50,8 +50,12 @@ async function runRouter(thread: Thread, deps: RouterDependencies): Promise<Agen
       }
 
       const result = await runner.run(thread, log.child(agentName));
-      const intent = getLastIntent(result);
-      return { thread: result, intent, message: getLastMessage(result), currentAgent: agentName };
+      return {
+        thread: result.thread,
+        intent: result.intent,
+        message: result.message,
+        currentAgent: result.currentAgent ?? agentName,
+      };
     }
 
     default:
@@ -69,24 +73,10 @@ async function routeToAgent(agent: string, thread: Thread, deps: RouterDependenc
 
   log.info("Direct dispatch", { agent });
   const result = await runner.run(thread, log.child(agent));
-  const intent = getLastIntent(result);
-  return { thread: result, intent, message: getLastMessage(result), currentAgent: agent };
-}
-
-function getLastIntent(thread: Thread): string {
-  for (let i = thread.events.length - 1; i >= 0; i--) {
-    if (thread.events[i].type === "tool_call") {
-      return thread.events[i].data?.intent ?? "unknown";
-    }
-  }
-  return "unknown";
-}
-
-function getLastMessage(thread: Thread): string | undefined {
-  for (let i = thread.events.length - 1; i >= 0; i--) {
-    if (thread.events[i].type === "tool_call") {
-      return thread.events[i].data?.message;
-    }
-  }
-  return undefined;
+  return {
+    thread: result.thread,
+    intent: result.intent,
+    message: result.message,
+    currentAgent: result.currentAgent ?? agent,
+  };
 }

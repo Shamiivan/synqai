@@ -22,7 +22,7 @@ async function agentLoop(thread: Thread, deps: CalendarAgentDependencies): Promi
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     // ── Context window guard ──
-    const serialized = thread.serializeForLLM();
+    const serialized = thread.serializeCompact(3);
     const estimatedTokens = Math.ceil(serialized.length / 4);
 
     if (estimatedTokens > TOKEN_HARD_STOP) {

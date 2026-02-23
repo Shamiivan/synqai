@@ -78,7 +78,7 @@ async function handleGetEvent(query: GetEvent, calendar: calendar_v3.Calendar, c
   try {
     const res = await calendar.events.get({ calendarId, eventId: query.eventId });
     const e = res.data;
-    return {
+    const result: Record<string, unknown> = {
       id: e.id,
       summary: e.summary,
       description: e.description,
@@ -89,6 +89,14 @@ async function handleGetEvent(query: GetEvent, calendar: calendar_v3.Calendar, c
       htmlLink: e.htmlLink,
       status: e.status,
     };
+    if (e.attachments && e.attachments.length > 0) {
+      result.attachments = e.attachments.map((a) => ({
+        title: a.title,
+        fileUrl: a.fileUrl,
+        mimeType: a.mimeType,
+      }));
+    }
+    return result;
   } catch (err) {
     return { error: classifyCalendarError(err) };
   }

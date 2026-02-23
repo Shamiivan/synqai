@@ -25,7 +25,7 @@ export class Thread {
   serializeCompact(recentTurns = 3): string {
     // Find the boundary: count tool_call events backwards to find where "recent" starts
     let callsSeen = 0;
-    let recentStart = this.events.length;
+    let recentStart = 0; // default: everything is recent
     for (let i = this.events.length - 1; i >= 0; i--) {
       if (this.events[i].type === "tool_call") {
         callsSeen++;

@@ -33,7 +33,17 @@ async function agentLoop(thread: Thread, deps: DocsAgentDependencies): Promise<T
       log.info("context_warning", { estimatedTokens, turn });
     }
 
-    const nextStep = await baml.docsNextStep(serialized, TODAY) as any;
+    let nextStep: any;
+    try {
+      nextStep = await baml.docsNextStep(serialized, TODAY) as any;
+    } catch (err: any) {
+      log.info("llm_error", { turn, error: err.message });
+      thread.events.push({
+        type: "tool_response",
+        data: { error: { message: "Failed to parse response. Please reply in JSON.", code: "llm_parse", retryable: true } },
+      });
+      continue;
+    }
     log.info("step", { intent: nextStep.intent, turn });
     thread.events.push({ type: "tool_call", data: nextStep });
 

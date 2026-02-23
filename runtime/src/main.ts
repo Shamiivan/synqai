@@ -2,13 +2,13 @@ import "./env"; // must be first — loads .env.local before other modules
 
 import { Client, GatewayIntentBits } from "discord.js";
 import { ConvexClient } from "convex/browser";
-import { b as routerBaml } from "../baml_client";
-import { b as calendarBaml } from "@synqai/gworkspace-calendar/baml_client";
-import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
-import { b as docsBaml } from "@synqai/gworkspace-docs/baml_client";
-import { b as sheetsBaml } from "@synqai/gworkspace-sheets/baml_client";
-import { b as meetBaml } from "@synqai/gworkspace-meet/baml_client";
-import { b as driveBaml } from "@synqai/gworkspace-drive/baml_client";
+import { b as routerBaml, onLogEvent as onRouterLog } from "../baml_client";
+import { b as calendarBaml, onLogEvent as onCalendarLog } from "@synqai/gworkspace-calendar/baml_client";
+import { b as gmailBaml, onLogEvent as onGmailLog } from "@synqai/gworkspace-gmail/baml_client";
+import { b as docsBaml, onLogEvent as onDocsLog } from "@synqai/gworkspace-docs/baml_client";
+import { b as sheetsBaml, onLogEvent as onSheetsLog } from "@synqai/gworkspace-sheets/baml_client";
+import { b as meetBaml, onLogEvent as onMeetLog } from "@synqai/gworkspace-meet/baml_client";
+import { b as driveBaml, onLogEvent as onDriveLog } from "@synqai/gworkspace-drive/baml_client";
 import { getCalendarClient, calendarId } from "@synqai/gworkspace-calendar/src/google-auth";
 import { createCalendarTools } from "@synqai/gworkspace-calendar/src/tools";
 import { createCalendarAgent } from "@synqai/gworkspace-calendar/src/agent";
@@ -36,6 +36,20 @@ import { createBot } from "./bot";
 
 // ── Logger ──
 const log = createLogger("synqai");
+
+// ── BAML → Pino bridge (sends prompt/output to Axiom) ──
+const bamlLog = log.child("baml");
+const bamlLogHandler = (event: { prompt?: string; rawOutput?: string; parsedOutput?: string; startTime: string }) => {
+  bamlLog.info("llm_call", {
+    prompt: event.prompt,
+    rawOutput: event.rawOutput,
+    parsedOutput: event.parsedOutput,
+    startTime: event.startTime,
+  });
+};
+for (const register of [onRouterLog, onCalendarLog, onGmailLog, onDocsLog, onSheetsLog, onMeetLog, onDriveLog]) {
+  register(bamlLogHandler);
+}
 
 // ── Convex ──
 const convex = new ConvexClient(process.env.CONVEX_URL!);

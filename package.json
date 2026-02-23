@@ -6,9 +6,15 @@
     "dev:convex": "npx convex dev",
     "start": "npx tsx runtime/src/main.ts",
     "bot": "npx tsx runtime/src/main.ts",
-    "baml:generate": "npx baml-cli generate --from runtime/baml_src"
+    "baml:generate": "npx baml-cli generate --from runtime/baml_src",
+    "test:convex": "vitest --config convex/vitest.config.ts"
   },
   "packageManager": "pnpm@10.26.1",
+  "devDependencies": {
+    "vitest": "^3.1.1",
+    "convex-test": "^0.0.41",
+    "@edge-runtime/vm": "^5.0.0"
+  },
   "dependencies": {
     "@boundaryml/baml": "^0.219.0",
     "@google/genai": "^1.42.0",
@@ -16,6 +22,7 @@
     "@synqai/gateway-discord": "workspace:*",
     "@synqai/gworkspace-calendar": "workspace:*",
     "@synqai/gworkspace-docs": "workspace:*",
+    "@synqai/gworkspace-drive": "workspace:*",
     "@synqai/gworkspace-gmail": "workspace:*",
     "@synqai/gworkspace-meet": "workspace:*",
     "@synqai/gworkspace-sheets": "workspace:*",

@@ -1,5 +1,16 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Doc } from "./_generated/dataModel";
+
+function assertStatus(
+  run: Doc<"agentRuns"> | null,
+  allowed: string[],
+  action: string,
+) {
+  if (!run) throw new Error(`Run not found`);
+  if (!allowed.includes(run.status))
+    throw new Error(`Cannot ${action}: status is ${run.status}`);
+}
 
 export const create = mutation({
   args: {
@@ -68,6 +79,8 @@ export const finish = mutation({
     thread: v.string(),
   },
   handler: async (ctx, args) => {
+    const run = await ctx.db.get(args.id);
+    assertStatus(run, ["running"], "finish");
     await ctx.db.patch(args.id, {
       status: "done",
       thread: args.thread,
@@ -81,6 +94,8 @@ export const fail = mutation({
     thread: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const run = await ctx.db.get(args.id);
+    assertStatus(run, ["pending", "running", "waiting_human"], "fail");
     const patch: Record<string, unknown> = { status: "failed" as const };
     if (args.thread !== undefined) patch.thread = args.thread;
     await ctx.db.patch(args.id, patch);
@@ -95,6 +110,8 @@ export const pause = mutation({
     question: v.string(),
   },
   handler: async (ctx, args) => {
+    const run = await ctx.db.get(args.id);
+    assertStatus(run, ["running"], "pause");
     await ctx.db.patch(args.id, {
       status: "waiting_human",
       currentAgent: args.currentAgent,
@@ -111,7 +128,7 @@ export const resume = mutation({
   },
   handler: async (ctx, args) => {
     const run = await ctx.db.get(args.id);
-    if (!run || run.status !== "waiting_human") return;
+    assertStatus(run, ["waiting_human"], "resume");
 
     const events = JSON.parse(run.thread);
     events.push({ type: "human_response", data: args.answer });
@@ -240,14 +257,10 @@ export const cancelStale = mutation({
     cutoff: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Cancel running + waiting_human unconditionally (no worker owns them after restart)
+    // Cancel running runs unconditionally (no worker owns them after restart)
     const running = await ctx.db
       .query("agentRuns")
       .withIndex("by_status", (q) => q.eq("status", "running"))
-      .collect();
-    const waiting = await ctx.db
-      .query("agentRuns")
-      .withIndex("by_status", (q) => q.eq("status", "waiting_human"))
       .collect();
 
     // Cancel pending runs created before cutoff (stale from previous session)
@@ -258,7 +271,8 @@ export const cancelStale = mutation({
     const cutoff = args.cutoff ?? Date.now();
     const stalePending = pending.filter((r) => r._creationTime < cutoff);
 
-    const stale = [...running, ...waiting, ...stalePending];
+    // Note: waiting_human runs are preserved — they have a human expecting a response
+    const stale = [...running, ...stalePending];
     for (const run of stale) {
       await ctx.db.patch(run._id, { status: "failed" });
     }

@@ -18,8 +18,12 @@ module.exports = {
       error_file: "/home/synqai/logs/error.log",
       out_file: "/home/synqai/logs/out.log",
       merge_logs: true,
-      // Env — loaded from .env.local by dotenv in main.ts
-      // No env vars here; they live in .env.local on the VM
+      // Env — most vars loaded from .env.local by dotenv in main.ts.
+      // NODE_ENV must live here so the process starts with it before
+      // any module-level code runs (dotenv loads later).
+      env: {
+        NODE_ENV: "production",
+      },
     },
   ],
 };

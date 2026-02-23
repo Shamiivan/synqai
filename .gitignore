@@ -2,3 +2,4 @@ node_modules/
 .env.local
 CLAUDE.md
 MEMORY.md
+deploy/DEPLOYMENT.md

@@ -43,7 +43,7 @@ async function gworkspaceLoop(
       continue;
     }
 
-    log.info("gworkspace_step", { intent: nextStep.intent, turn });
+    log.info("gworkspace_step", { intent: nextStep.intent, turn, step: nextStep });
     thread.events.push({ type: "tool_call", data: nextStep });
 
     // ── Exit intents ──

@@ -26,7 +26,7 @@ async function runRouter(thread: Thread, deps: RouterDependencies): Promise<Agen
   const lastMsg = typeof lastUserInput === "string" ? lastUserInput : String(lastUserInput);
 
   const nextStep = await baml.determineNextStep(serialized, lastMsg) as any;
-  log.info("Router decided", { intent: nextStep.intent });
+  log.info("Router decided", { intent: nextStep.intent, step: nextStep });
 
   switch (nextStep.intent) {
     case "done_for_now":

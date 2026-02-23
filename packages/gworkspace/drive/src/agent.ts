@@ -46,7 +46,7 @@ async function agentLoop(thread: Thread, deps: DriveAgentDependencies): Promise<
       });
       continue;
     }
-    log.info("step", { intent: nextStep.intent, turn });
+    log.info("step", { intent: nextStep.intent, turn, step: nextStep });
     thread.events.push({ type: "tool_call", data: nextStep });
 
     // ── Exit intents (no tool call) ──

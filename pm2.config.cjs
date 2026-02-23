@@ -18,7 +18,6 @@ module.exports = {
       error_file: "/home/synqai/logs/error.log",
       out_file: "/home/synqai/logs/out.log",
       merge_logs: true,
-      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       // Env — loaded from .env.local by dotenv in main.ts
       // No env vars here; they live in .env.local on the VM
     },

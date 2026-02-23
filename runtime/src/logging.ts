@@ -3,15 +3,35 @@ import type { Logger } from "@synqai/contracts";
 
 const isProd = process.env.NODE_ENV === "production";
 
+function buildTransport(): pino.TransportSingleOptions | pino.TransportMultiOptions {
+  // Dev: pretty-print to stdout
+  if (!isProd) {
+    return { target: "pino-pretty", options: { colorize: true } };
+  }
+
+  // Prod: always stdout (JSON for PM2), optionally Axiom
+  const targets: pino.TransportTargetOptions[] = [
+    { target: "pino/file", level: "info", options: { destination: 1 } },
+  ];
+
+  if (process.env.AXIOM_TOKEN) {
+    targets.push({
+      target: "@axiomhq/pino",
+      level: "info",
+      options: { dataset: process.env.AXIOM_DATASET || "synqai", token: process.env.AXIOM_TOKEN },
+    });
+  }
+
+  return { targets };
+}
+
 const pinoRoot = pino({
   level: process.env.LOG_LEVEL || "info",
   redact: [
     "token", "secret", "authorization", "password", "refreshToken",
     "*.token", "*.secret", "*.authorization", "*.password", "*.refreshToken",
   ],
-  transport: isProd
-    ? undefined // JSON to stdout in prod (transports added in slice 2)
-    : { target: "pino-pretty", options: { colorize: true } },
+  transport: buildTransport(),
 });
 
 /** Wrap a pino child to match the shared Logger interface. */

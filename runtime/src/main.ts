@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
+import "./env"; // must be first — loads .env.local before other modules
 
 import { Client, GatewayIntentBits } from "discord.js";
 import { ConvexClient } from "convex/browser";

@@ -3,3 +3,4 @@ node_modules/
 CLAUDE.md
 MEMORY.md
 deploy/DEPLOYMENT.md
+deploy/GOTCHAS.md

@@ -23,7 +23,7 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunGmail, RunMeet, RunSheets} from "./types"
+import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunDrive, RunGmail, RunMeet, RunSheets} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
@@ -56,7 +56,7 @@ export class LlmResponseParser {
   GWorkspaceNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone {
+  ): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -70,7 +70,7 @@ export class LlmResponseParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.GWorkspaceRequestInfo | types.GWorkspaceDone
+      ) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone
     } catch (error) {
       throw toBamlError(error);
     }
@@ -108,7 +108,7 @@ export class LlmStreamParser {
   GWorkspaceNextStep(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone {
+  ): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
@@ -122,7 +122,7 @@ export class LlmStreamParser {
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone
+      ) as partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone
     } catch (error) {
       throw toBamlError(error);
     }

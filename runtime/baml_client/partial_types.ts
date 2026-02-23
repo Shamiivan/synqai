@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow,  GWorkspaceDone,  GWorkspaceRequestInfo,  Handoff,  RunCalendar,  RunDocs,  RunGmail,  RunMeet,  RunSheets } from "./types"
+import type {  DoneForNow,  GWorkspaceDone,  GWorkspaceRequestInfo,  Handoff,  RunCalendar,  RunDocs,  RunDrive,  RunGmail,  RunMeet,  RunSheets } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -61,6 +61,10 @@ export namespace partial_types {
       intent?: "run_docs" | null
       task?: string | null
     }
+    export interface RunDrive {
+      intent?: "run_drive" | null
+      task?: string | null
+    }
     export interface RunGmail {
       intent?: "run_gmail" | null
       task?: string | null
@@ -73,7 +77,7 @@ export namespace partial_types {
       intent?: "run_sheets" | null
       task?: string | null
     }
-export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | GWorkspaceRequestInfo | GWorkspaceDone | null
+export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | RunDrive | GWorkspaceRequestInfo | GWorkspaceDone | null
 
 export type RouterStep = DoneForNow | Handoff | null
 

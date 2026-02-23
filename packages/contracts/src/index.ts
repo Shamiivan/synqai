@@ -126,6 +126,34 @@ export interface SheetsAgentDependencies {
   log: Logger;
 }
 
+// ── Drive Tools ──
+
+export interface DriveToolsDependencies {
+  drive: drive_v3.Drive;
+}
+
+export interface DriveTools {
+  handleSearchFiles: (step: any) => Promise<any>;
+  handleGetFile: (step: any) => Promise<any>;
+  handleCreateFolder: (step: any) => Promise<any>;
+  handleMoveFile: (step: any) => Promise<any>;
+  handleCopyFile: (step: any) => Promise<any>;
+  handleRenameFile: (step: any) => Promise<any>;
+  handleTrashFile: (step: any) => Promise<any>;
+  handleShareFile: (step: any) => Promise<any>;
+  handleListPermissions: (step: any) => Promise<any>;
+}
+
+// ── Drive Agent ──
+
+export interface DriveAgentDependencies {
+  baml: {
+    driveNextStep: (thread: string, today: string) => Promise<unknown>;
+  };
+  tools: DriveTools;
+  log: Logger;
+}
+
 // ── Meet Tools ──
 
 export interface MeetToolsDependencies {
@@ -204,7 +232,7 @@ export interface GatewayMessage {
 export interface DiscordGateway {
   onReady(handler: () => Promise<void>): void;
   onMessage(handler: (msg: GatewayMessage) => Promise<void>): void;
-  fetchThread(threadId: string): Promise<{ send(content: string): Promise<void> } | null>;
+  fetchThread(threadId: string): Promise<{ id: string; send(content: string): Promise<void> } | null>;
   startThread(channelId: string, messageId: string, name: string): Promise<{ id: string; send(content: string): Promise<void> }>;
   createThread(channelId: string, name: string): Promise<{ id: string; send(content: string): Promise<void> }>;
   reply(channelId: string, messageId: string, content: string): Promise<void>;

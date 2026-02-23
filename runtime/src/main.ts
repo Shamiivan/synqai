@@ -9,6 +9,7 @@ import { b as gmailBaml } from "@synqai/gworkspace-gmail/baml_client";
 import { b as docsBaml } from "@synqai/gworkspace-docs/baml_client";
 import { b as sheetsBaml } from "@synqai/gworkspace-sheets/baml_client";
 import { b as meetBaml } from "@synqai/gworkspace-meet/baml_client";
+import { b as driveBaml } from "@synqai/gworkspace-drive/baml_client";
 import { getCalendarClient, calendarId } from "@synqai/gworkspace-calendar/src/google-auth";
 import { createCalendarTools } from "@synqai/gworkspace-calendar/src/tools";
 import { createCalendarAgent } from "@synqai/gworkspace-calendar/src/agent";
@@ -24,6 +25,9 @@ import { createSheetsAgent } from "@synqai/gworkspace-sheets/src/agent";
 import { getMeetClient } from "@synqai/gworkspace-meet/src/google-auth";
 import { createMeetTools } from "@synqai/gworkspace-meet/src/tools";
 import { createMeetAgent } from "@synqai/gworkspace-meet/src/agent";
+import { getDriveClient } from "@synqai/gworkspace-drive/src/google-auth";
+import { createDriveTools } from "@synqai/gworkspace-drive/src/tools";
+import { createDriveAgent } from "@synqai/gworkspace-drive/src/agent";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 import { createLogger } from "./logging";
 import { createGWorkspaceAgent } from "./agents/gworkspace";
@@ -94,6 +98,17 @@ const meetAgent = createMeetAgent({
   log: log.child("meet"),
 });
 
+// ── Google Drive ──
+const driveClient = getDriveClient();
+const driveTools = createDriveTools({ drive: driveClient });
+
+// ── Drive Agent ──
+const driveAgent = createDriveAgent({
+  baml: { driveNextStep: (thread, today) => driveBaml.DriveNextStep(thread, today) },
+  tools: driveTools,
+  log: log.child("drive"),
+});
+
 // ── GWorkspace Agent (coordinates domain agents) ──
 const gworkspaceAgent = createGWorkspaceAgent({
   baml: {
@@ -106,6 +121,7 @@ const gworkspaceAgent = createGWorkspaceAgent({
     docs: (thread, childLog) => docsAgent.run(thread, childLog),
     sheets: (thread, childLog) => sheetsAgent.run(thread, childLog),
     meet: (thread, childLog) => meetAgent.run(thread, childLog),
+    drive: (thread, childLog) => driveAgent.run(thread, childLog),
   },
   log: log.child("gworkspace"),
 });

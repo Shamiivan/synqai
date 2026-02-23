@@ -27,11 +27,21 @@ async function gworkspaceLoop(
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const serialized = thread.serializeCompact(3);
-    const nextStep = (await baml.gworkspaceNextStep(
-      serialized,
-      TODAY,
-      JSON.stringify(artifacts),
-    )) as any;
+    let nextStep: any;
+    try {
+      nextStep = (await baml.gworkspaceNextStep(
+        serialized,
+        TODAY,
+        JSON.stringify(artifacts),
+      )) as any;
+    } catch (err: any) {
+      log.info("llm_error", { turn, error: err.message });
+      thread.events.push({
+        type: "tool_response",
+        data: { error: { message: "Failed to parse response. Please reply in JSON.", code: "llm_parse", retryable: true } },
+      });
+      continue;
+    }
 
     log.info("gworkspace_step", { intent: nextStep.intent, turn });
     thread.events.push({ type: "tool_call", data: nextStep });

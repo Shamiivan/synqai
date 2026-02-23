@@ -27,32 +27,34 @@ export { FieldType, EnumBuilder, ClassBuilder }
 export default class TypeBuilder {
     private tb: _TypeBuilder;
     
-    DoneForNow: ClassViewer<'DoneForNow', "intent" | "message">;
+    CopyFile: ClassViewer<'CopyFile', "intent" | "fileId" | "newName" | "destinationFolderId">;
     
-    GWorkspaceDone: ClassViewer<'GWorkspaceDone', "intent" | "message">;
+    CreateFolder: ClassViewer<'CreateFolder', "intent" | "name" | "parentId">;
     
-    GWorkspaceRequestInfo: ClassViewer<'GWorkspaceRequestInfo', "intent" | "question">;
+    DriveDone: ClassViewer<'DriveDone', "intent" | "message">;
     
-    Handoff: ClassViewer<'Handoff', "intent" | "agent" | "task">;
+    GetFile: ClassViewer<'GetFile', "intent" | "fileId">;
     
-    RunCalendar: ClassViewer<'RunCalendar', "intent" | "task">;
+    ListPermissions: ClassViewer<'ListPermissions', "intent" | "fileId">;
     
-    RunDocs: ClassViewer<'RunDocs', "intent" | "task">;
+    MoveFile: ClassViewer<'MoveFile', "intent" | "fileId" | "destinationFolderId">;
     
-    RunDrive: ClassViewer<'RunDrive', "intent" | "task">;
+    RenameFile: ClassViewer<'RenameFile', "intent" | "fileId" | "newName">;
     
-    RunGmail: ClassViewer<'RunGmail', "intent" | "task">;
+    RequestInfo: ClassViewer<'RequestInfo', "intent" | "message">;
     
-    RunMeet: ClassViewer<'RunMeet', "intent" | "task">;
+    SearchFiles: ClassViewer<'SearchFiles', "intent" | "query" | "mimeTypeFilter" | "folderId" | "maxResults">;
     
-    RunSheets: ClassViewer<'RunSheets', "intent" | "task">;
+    ShareFile: ClassViewer<'ShareFile', "intent" | "fileId" | "shareType" | "role" | "emailOrDomain" | "sendNotification">;
+    
+    TrashFile: ClassViewer<'TrashFile', "intent" | "fileId" | "confirmation">;
     
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "DoneForNow","GWorkspaceDone","GWorkspaceRequestInfo","Handoff","RunCalendar","RunDocs","RunDrive","RunGmail","RunMeet","RunSheets",
+            "CopyFile","CreateFolder","DriveDone","GetFile","ListPermissions","MoveFile","RenameFile","RequestInfo","SearchFiles","ShareFile","TrashFile",
           ]),
           enums: new Set([
             
@@ -60,44 +62,48 @@ export default class TypeBuilder {
           runtime: DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
         });
         
-        this.DoneForNow = this.tb.classViewer("DoneForNow", [
+        this.CopyFile = this.tb.classViewer("CopyFile", [
+          "intent","fileId","newName","destinationFolderId",
+        ]);
+        
+        this.CreateFolder = this.tb.classViewer("CreateFolder", [
+          "intent","name","parentId",
+        ]);
+        
+        this.DriveDone = this.tb.classViewer("DriveDone", [
           "intent","message",
         ]);
         
-        this.GWorkspaceDone = this.tb.classViewer("GWorkspaceDone", [
+        this.GetFile = this.tb.classViewer("GetFile", [
+          "intent","fileId",
+        ]);
+        
+        this.ListPermissions = this.tb.classViewer("ListPermissions", [
+          "intent","fileId",
+        ]);
+        
+        this.MoveFile = this.tb.classViewer("MoveFile", [
+          "intent","fileId","destinationFolderId",
+        ]);
+        
+        this.RenameFile = this.tb.classViewer("RenameFile", [
+          "intent","fileId","newName",
+        ]);
+        
+        this.RequestInfo = this.tb.classViewer("RequestInfo", [
           "intent","message",
         ]);
         
-        this.GWorkspaceRequestInfo = this.tb.classViewer("GWorkspaceRequestInfo", [
-          "intent","question",
+        this.SearchFiles = this.tb.classViewer("SearchFiles", [
+          "intent","query","mimeTypeFilter","folderId","maxResults",
         ]);
         
-        this.Handoff = this.tb.classViewer("Handoff", [
-          "intent","agent","task",
+        this.ShareFile = this.tb.classViewer("ShareFile", [
+          "intent","fileId","shareType","role","emailOrDomain","sendNotification",
         ]);
         
-        this.RunCalendar = this.tb.classViewer("RunCalendar", [
-          "intent","task",
-        ]);
-        
-        this.RunDocs = this.tb.classViewer("RunDocs", [
-          "intent","task",
-        ]);
-        
-        this.RunDrive = this.tb.classViewer("RunDrive", [
-          "intent","task",
-        ]);
-        
-        this.RunGmail = this.tb.classViewer("RunGmail", [
-          "intent","task",
-        ]);
-        
-        this.RunMeet = this.tb.classViewer("RunMeet", [
-          "intent","task",
-        ]);
-        
-        this.RunSheets = this.tb.classViewer("RunSheets", [
-          "intent","task",
+        this.TrashFile = this.tb.classViewer("TrashFile", [
+          "intent","fileId","confirmation",
         ]);
         
         

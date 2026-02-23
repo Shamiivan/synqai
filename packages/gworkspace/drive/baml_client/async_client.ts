@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunDrive, RunGmail, RunMeet, RunSheets} from "./types"
+import type {CopyFile, CreateFolder, DriveDone, GetFile, ListPermissions, MoveFile, RenameFile, RequestInfo, SearchFiles, ShareFile, TrashFile} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -97,10 +97,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         }
 
         
-        async DetermineNextStep(
-        thread: string,lastMessage: string,
+        async DriveNextStep(
+        thread: string,today: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.DoneForNow | types.Handoff> {
+        ): Promise<types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.RequestInfo | types.DriveDone> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -111,8 +111,8 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
           // Check if onTick is provided - route through streaming if so
           if (__options__.onTick) {
-          const __stream__ = this.stream.DetermineNextStep(
-          thread,lastMessage,
+          const __stream__ = this.stream.DriveNextStep(
+          thread,today,
           __baml_options__
           );
 
@@ -134,9 +134,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             const __raw__ = await this.runtime.callFunction(
-            "DetermineNextStep",
+            "DriveNextStep",
             {
-            "thread": thread,"lastMessage": lastMessage
+            "thread": thread,"today": today
             },
             this.ctxManager.cloneContext(),
             __options__.tb?.__tb(),
@@ -147,63 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.DoneForNow | types.Handoff
-            } catch (error) {
-            throw toBamlError(error);
-            }
-            }
-            
-        async GWorkspaceNextStep(
-        thread: string,today: string,artifacts: string,
-        __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone> {
-          try {
-          const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
-          const __signal__ = __options__.signal;
-
-          if (__signal__?.aborted) {
-          throw new BamlAbortError('Operation was aborted', __signal__.reason);
-          }
-
-          // Check if onTick is provided - route through streaming if so
-          if (__options__.onTick) {
-          const __stream__ = this.stream.GWorkspaceNextStep(
-          thread,today,artifacts,
-          __baml_options__
-          );
-
-          return await __stream__.getFinalResponse();
-          }
-
-          const __collector__ = __options__.collector ? (Array.isArray(__options__.collector) ? __options__.collector :
-          [__options__.collector]) : [];
-          const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
-          const __env__: Record<string, string> = Object.fromEntries(
-            Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
-            );
-
-            // Resolve client option to clientRegistry (client takes precedence)
-            let __clientRegistry__ = __options__.clientRegistry;
-            if (__options__.client) {
-              __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
-              __clientRegistry__.setPrimary(__options__.client);
-            }
-
-            const __raw__ = await this.runtime.callFunction(
-            "GWorkspaceNextStep",
-            {
-            "thread": thread,"today": today,"artifacts": artifacts
-            },
-            this.ctxManager.cloneContext(),
-            __options__.tb?.__tb(),
-            __clientRegistry__,
-            __collector__,
-            __options__.tags || {},
-            __env__,
-            __signal__,
-            __options__.watchers,
-            )
-            return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone
+            return __raw__.parsed(false) as types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.RequestInfo | types.DriveDone
             } catch (error) {
             throw toBamlError(error);
             }
@@ -223,10 +167,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             
-            DetermineNextStep(
-            thread: string,lastMessage: string,
+            DriveNextStep(
+            thread: string,today: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>
+            ): BamlStream<partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.RequestInfo | partial_types.DriveDone, types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.RequestInfo | types.DriveDone>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -252,7 +196,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
               try {
               __options__.onTick!("Unknown", __log__);
               } catch (error) {
-              console.error("Error in onTick callback for DetermineNextStep", error);
+              console.error("Error in onTick callback for DriveNextStep", error);
               }
               }
               };
@@ -271,9 +215,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 }
 
                 const __raw__ = this.runtime.streamFunction(
-                "DetermineNextStep",
+                "DriveNextStep",
                 {
-                "thread": thread,"lastMessage": lastMessage
+                "thread": thread,"today": today
                 },
                 undefined,
                 this.ctxManager.cloneContext(),
@@ -285,84 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>(
+                return new BamlStream<partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.RequestInfo | partial_types.DriveDone, types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.RequestInfo | types.DriveDone>(
                   __raw__,
-                  (a): partial_types.DoneForNow | partial_types.Handoff => a,
-                  (a): types.DoneForNow | types.Handoff => a,
-                  this.ctxManager.cloneContext(),
-                  __options__.signal,
-                  )
-                  } catch (error) {
-                  throw toBamlError(error);
-                  }
-                  }
-                  
-            GWorkspaceNextStep(
-            thread: string,today: string,artifacts: string,
-            __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone>
-              {
-              try {
-              const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
-              const __signal__ = __options__.signal;
-
-              if (__signal__?.aborted) {
-              throw new BamlAbortError('Operation was aborted', __signal__.reason);
-              }
-
-              let __collector__ = __options__.collector ? (Array.isArray(__options__.collector) ? __options__.collector :
-              [__options__.collector]) : [];
-
-              let __onTickWrapper__: (() => void) | undefined;
-
-              // Create collector and wrap onTick if provided
-              if (__options__.onTick) {
-              const __tickCollector__ = new Collector("on-tick-collector");
-              __collector__ = [...__collector__, __tickCollector__];
-
-              __onTickWrapper__ = () => {
-              const __log__ = __tickCollector__.last;
-              if (__log__) {
-              try {
-              __options__.onTick!("Unknown", __log__);
-              } catch (error) {
-              console.error("Error in onTick callback for GWorkspaceNextStep", error);
-              }
-              }
-              };
-              }
-
-              const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
-              const __env__: Record<string, string> = Object.fromEntries(
-                Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
-                );
-
-                // Resolve client option to clientRegistry (client takes precedence)
-                let __clientRegistry__ = __options__.clientRegistry;
-                if (__options__.client) {
-                  __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
-                  __clientRegistry__.setPrimary(__options__.client);
-                }
-
-                const __raw__ = this.runtime.streamFunction(
-                "GWorkspaceNextStep",
-                {
-                "thread": thread,"today": today,"artifacts": artifacts
-                },
-                undefined,
-                this.ctxManager.cloneContext(),
-                __options__.tb?.__tb(),
-                __clientRegistry__,
-                __collector__,
-                __options__.tags || {},
-                __env__,
-                __signal__,
-                __onTickWrapper__,
-                )
-                return new BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone>(
-                  __raw__,
-                  (a): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone => a,
-                  (a): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone => a,
+                  (a): partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.RequestInfo | partial_types.DriveDone => a,
+                  (a): types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.RequestInfo | types.DriveDone => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

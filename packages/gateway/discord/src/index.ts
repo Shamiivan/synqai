@@ -27,6 +27,7 @@ export function createDiscordGateway(client: Client): DiscordGateway {
       const channel = await client.channels.fetch(threadId);
       if (!channel || !("send" in channel)) return null;
       return {
+        id: channel.id,
         send: async (content: string) => {
           await (channel as any).send(content);
         },

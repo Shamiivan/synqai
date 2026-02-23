@@ -7,6 +7,10 @@ class RunGmail {
   intent "run_gmail" @description("Dispatch to gmail agent for reading, sending, replying, drafting, searching email")
   task string @description("Clear task instruction for the gmail agent")
 }
+class RunDrive {
+  intent "run_drive" @description("Dispatch to drive agent for searching, organizing, sharing, moving, copying, renaming files and folders in Google Drive")
+  task string @description("Clear task instruction for the drive agent")
+}
 
 class RunDocs {
   intent "run_docs" @description("Dispatch to docs agent for creating, reading, editing, formatting Google Docs")
@@ -33,7 +37,7 @@ class GWorkspaceDone {
   message string @description("Summary message for the user")
 }
 
-type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | GWorkspaceRequestInfo | GWorkspaceDone
+type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | RunDrive | GWorkspaceRequestInfo | GWorkspaceDone
 
 function GWorkspaceNextStep(thread: string, today: string, artifacts: string) -> GWorkspaceStep {
   client Gemini

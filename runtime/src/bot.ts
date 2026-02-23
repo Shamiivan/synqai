@@ -101,11 +101,13 @@ export function createBot(dependencies: BotDependencies) {
           await thread.send(content);
 
           // Persist thread ID so future replies are linked
-          await convex.mutation(api.runs.setDiscordThreadId, {
-            runId: runId as any,
-            discordThreadId: thread.id,
-          });
-          threadToRun.set(thread.id, runId);
+          if (thread.id) {
+            await convex.mutation(api.runs.setDiscordThreadId, {
+              runId: runId as any,
+              discordThreadId: thread.id,
+            });
+            threadToRun.set(thread.id, runId);
+          }
 
           log.info("Replied in thread", { run: runId, thread: thread.id });
         } catch (err) {

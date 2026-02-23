@@ -47,67 +47,83 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
-export interface DoneForNow {
-  intent: "done_for_now"
-  message: string
+export interface CopyFile {
+  intent: "copy_file"
+  fileId: string
+  newName?: string | null
+  destinationFolderId?: string | null
   
 }
 
-export interface GWorkspaceDone {
+export interface CreateFolder {
+  intent: "create_folder"
+  name: string
+  parentId?: string | null
+  
+}
+
+export interface DriveDone {
   intent: "done"
   message: string
   
 }
 
-export interface GWorkspaceRequestInfo {
+export interface GetFile {
+  intent: "get_file"
+  fileId: string
+  
+}
+
+export interface ListPermissions {
+  intent: "list_permissions"
+  fileId: string
+  
+}
+
+export interface MoveFile {
+  intent: "move_file"
+  fileId: string
+  destinationFolderId: string
+  
+}
+
+export interface RenameFile {
+  intent: "rename_file"
+  fileId: string
+  newName: string
+  
+}
+
+export interface RequestInfo {
   intent: "request_info"
-  question: string
+  message: string
   
 }
 
-export interface Handoff {
-  intent: "handoff"
-  agent: "gworkspace"
-  task: string
+export interface SearchFiles {
+  intent: "search_files"
+  query?: string | null
+  mimeTypeFilter?: string | null
+  folderId?: string | null
+  maxResults?: number | null
   
 }
 
-export interface RunCalendar {
-  intent: "run_calendar"
-  task: string
+export interface ShareFile {
+  intent: "share_file"
+  fileId: string
+  shareType: string
+  role: string
+  emailOrDomain?: string | null
+  sendNotification?: boolean | null
   
 }
 
-export interface RunDocs {
-  intent: "run_docs"
-  task: string
+export interface TrashFile {
+  intent: "trash_file"
+  fileId: string
+  confirmation: string
   
 }
 
-export interface RunDrive {
-  intent: "run_drive"
-  task: string
-  
-}
-
-export interface RunGmail {
-  intent: "run_gmail"
-  task: string
-  
-}
-
-export interface RunMeet {
-  intent: "run_meet"
-  task: string
-  
-}
-
-export interface RunSheets {
-  intent: "run_sheets"
-  task: string
-  
-}
-
-export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | RunDrive | GWorkspaceRequestInfo | GWorkspaceDone
-
-export type RouterStep = DoneForNow | Handoff
+export type DriveStep = SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | RequestInfo | DriveDone

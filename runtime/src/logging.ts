@@ -1,27 +1,33 @@
+import pino from "pino";
 import type { Logger } from "@synqai/contracts";
 
-function formatMeta(meta?: Record<string, unknown>): string {
-  if (!meta) return "";
-  return (
-    " " +
-    Object.entries(meta)
-      .map(([k, v]) => `${k}=${v}`)
-      .join(" ")
-  );
+const isProd = process.env.NODE_ENV === "production";
+
+const pinoRoot = pino({
+  level: process.env.LOG_LEVEL || "info",
+  redact: [
+    "token", "secret", "authorization", "password", "refreshToken",
+    "*.token", "*.secret", "*.authorization", "*.password", "*.refreshToken",
+  ],
+  transport: isProd
+    ? undefined // JSON to stdout in prod (transports added in slice 2)
+    : { target: "pino-pretty", options: { colorize: true } },
+});
+
+/** Wrap a pino child to match the shared Logger interface. */
+function wrapPino(p: pino.Logger, scope: string): Logger {
+  return {
+    info: (msg, meta) => (meta ? p.info(meta, msg) : p.info(msg)),
+    warn: (msg, meta) => (meta ? p.warn(meta, msg) : p.warn(msg)),
+    error: (msg, meta) => (meta ? p.error(meta, msg) : p.error(msg)),
+    debug: (msg, meta) => (meta ? p.debug(meta, msg) : p.debug(msg)),
+    child: (name) => {
+      const childScope = `${scope}/${name}`;
+      return wrapPino(p.child({ scope: childScope }), childScope);
+    },
+  };
 }
 
 export function createLogger(subsystem: string): Logger {
-  const prefix = `[${subsystem}]`;
-  return {
-    info: (msg, meta) => console.log(`${prefix} ${msg}${formatMeta(meta)}`),
-    warn: (msg, meta) =>
-      console.error(`${prefix} WARN ${msg}${formatMeta(meta)}`),
-    error: (msg, meta) =>
-      console.error(`${prefix} ERROR ${msg}${formatMeta(meta)}`),
-    debug: (msg, meta) => {
-      if (process.env.DEBUG)
-        console.log(`${prefix} DEBUG ${msg}${formatMeta(meta)}`);
-    },
-    child: (name) => createLogger(`${subsystem}/${name}`),
-  };
+  return wrapPino(pinoRoot.child({ scope: subsystem }), subsystem);
 }

@@ -39,13 +39,8 @@ const log = createLogger("synqai");
 
 // ── BAML → Pino bridge (sends prompt/output to Axiom) ──
 const bamlLog = log.child("baml");
-const bamlLogHandler = (event: { prompt?: string; rawOutput?: string; parsedOutput?: string; startTime: string }) => {
-  bamlLog.info("llm_call", {
-    prompt: event.prompt,
-    rawOutput: event.rawOutput,
-    parsedOutput: event.parsedOutput,
-    startTime: event.startTime,
-  });
+const bamlLogHandler = (event: any) => {
+  bamlLog.info("llm_call", { event, keys: Object.keys(event) });
 };
 for (const register of [onRouterLog, onCalendarLog, onGmailLog, onDocsLog, onSheetsLog, onMeetLog, onDriveLog]) {
   register(bamlLogHandler);

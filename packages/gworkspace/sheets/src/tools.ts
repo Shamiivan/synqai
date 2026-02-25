@@ -9,7 +9,7 @@ import type {
   AddSheet,
   ListSpreadsheets,
 } from "../baml_client";
-import type { SheetsToolsDependencies, SheetsTools } from "@synqai/contracts";
+import type { SheetsToolsDependencies, SheetsTools, Artifact } from "@synqai/contracts";
 import { classifySheetsError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
@@ -35,11 +35,20 @@ async function handleCreateSpreadsheet(step: CreateSpreadsheet, sheets: sheets_v
     const res = await sheets.spreadsheets.create({
       requestBody: { properties: { title: step.title } },
     });
-    return {
+    const result = {
       id: res.data.spreadsheetId!,
       title: res.data.properties?.title!,
       url: res.data.spreadsheetUrl!,
     };
+    const artifacts: Artifact[] = [{
+      ref: `sheets:sheet:${result.id}`,
+      kind: "sheet",
+      domain: "sheets",
+      id: result.id,
+      label: result.title,
+      data: { url: result.url },
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifySheetsError(err) };
   }
@@ -58,12 +67,21 @@ async function handleGetSpreadsheet(step: GetSpreadsheet, sheets: sheets_v4.Shee
       rowCount: s.properties?.gridProperties?.rowCount,
       columnCount: s.properties?.gridProperties?.columnCount,
     }));
-    return {
+    const result = {
       id: res.data.spreadsheetId,
       title: res.data.properties?.title,
       url: res.data.spreadsheetUrl,
       sheets: sheetTabs,
     };
+    const artifacts: Artifact[] = result.id ? [{
+      ref: `sheets:sheet:${result.id}`,
+      kind: "sheet",
+      domain: "sheets",
+      id: result.id,
+      label: result.title || undefined,
+      data: { url: result.url },
+    }] : [];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifySheetsError(err) };
   }
@@ -176,7 +194,17 @@ async function handleListSpreadsheets(step: ListSpreadsheets, drive: drive_v3.Dr
       url: f.webViewLink,
     }));
 
-    return { spreadsheets };
+    const artifacts: Artifact[] = spreadsheets
+      .filter((s) => s.id)
+      .map((s) => ({
+        ref: `sheets:sheet:${s.id}`,
+        kind: "sheet" as const,
+        domain: "sheets" as const,
+        id: s.id!,
+        label: s.name || undefined,
+        data: { url: s.url },
+      }));
+    return { spreadsheets, artifacts };
   } catch (err) {
     return { error: classifySheetsError(err) };
   }

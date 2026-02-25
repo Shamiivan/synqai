@@ -8,7 +8,7 @@ import type {
   ListTranscripts,
   GetTranscriptEntries,
 } from "../baml_client";
-import type { MeetToolsDependencies, MeetTools } from "@synqai/contracts";
+import type { MeetToolsDependencies, MeetTools, Artifact } from "@synqai/contracts";
 import { classifyMeetError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
@@ -31,11 +31,20 @@ export function createMeetTools(dependencies: MeetToolsDependencies): MeetTools 
 async function handleCreateMeeting(_step: CreateMeeting, meet: meet_v2.Meet) {
   try {
     const res = await meet.spaces.create({});
-    return {
+    const result = {
       name: res.data.name,
       meetingUri: res.data.meetingUri,
       meetingCode: res.data.meetingCode,
     };
+    const artifacts: Artifact[] = result.name ? [{
+      ref: `meet:space:${result.name}`,
+      kind: "meet_space",
+      domain: "meet",
+      id: result.name,
+      label: result.meetingCode || undefined,
+      data: { meetingUri: result.meetingUri },
+    }] : [];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyMeetError(err) };
   }
@@ -46,13 +55,22 @@ async function handleCreateMeeting(_step: CreateMeeting, meet: meet_v2.Meet) {
 async function handleGetMeeting(step: GetMeeting, meet: meet_v2.Meet) {
   try {
     const res = await meet.spaces.get({ name: step.spaceName });
-    return {
+    const result = {
       name: res.data.name,
       meetingUri: res.data.meetingUri,
       meetingCode: res.data.meetingCode,
       config: res.data.config,
       activeConference: res.data.activeConference,
     };
+    const artifacts: Artifact[] = result.name ? [{
+      ref: `meet:space:${result.name}`,
+      kind: "meet_space",
+      domain: "meet",
+      id: result.name,
+      label: result.meetingCode || undefined,
+      data: { meetingUri: result.meetingUri },
+    }] : [];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyMeetError(err) };
   }
@@ -122,7 +140,16 @@ async function handleListTranscripts(step: ListTranscripts, meet: meet_v2.Meet) 
       endTime: t.endTime,
       docsDestination: t.docsDestination,
     }));
-    return { transcripts };
+    const artifacts: Artifact[] = transcripts
+      .filter((t) => t.name)
+      .map((t) => ({
+        ref: `meet:transcript:${t.name}`,
+        kind: "meet_transcript" as const,
+        domain: "meet" as const,
+        id: t.name!,
+        label: undefined,
+      }));
+    return { transcripts, artifacts };
   } catch (err) {
     return { error: classifyMeetError(err) };
   }

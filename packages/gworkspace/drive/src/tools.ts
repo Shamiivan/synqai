@@ -10,7 +10,7 @@ import type {
   ShareFile,
   ListPermissions,
 } from "../baml_client";
-import type { DriveToolsDependencies, DriveTools } from "@synqai/contracts";
+import type { DriveToolsDependencies, DriveTools, Artifact } from "@synqai/contracts";
 import { classifyDriveError } from "./errors";
 
 const FILE_FIELDS = "id,name,mimeType,fileExtension,size,modifiedTime,createdTime,parents,webViewLink,owners(displayName,emailAddress),shared,starred,trashed,shortcutDetails(targetId,targetMimeType),driveId";
@@ -68,7 +68,7 @@ async function handleSearchFiles(step: SearchFiles, drive: drive_v3.Drive) {
     });
 
     const files = (res.data.files ?? []).map(formatFile);
-    return { files, count: files.length, incompleteSearch: res.data.incompleteSearch ?? false };
+    return { files, count: files.length, incompleteSearch: res.data.incompleteSearch ?? false, artifacts: files.map(fileArtifact) };
   } catch (err) {
     return { error: classifyDriveError(err), files: [] };
   }
@@ -83,7 +83,8 @@ async function handleGetFile(step: GetFile, drive: drive_v3.Drive) {
       fields: `${FILE_FIELDS},description,webContentLink,permissions(id,type,role,emailAddress,displayName)`,
       supportsAllDrives: true,
     });
-    return formatFile(res.data);
+    const file = formatFile(res.data);
+    return { ...file, artifacts: [fileArtifact(file)] };
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
@@ -102,7 +103,8 @@ async function handleCreateFolder(step: CreateFolder, drive: drive_v3.Drive) {
       fields: FILE_FIELDS,
       supportsAllDrives: true,
     });
-    return { ...formatFile(res.data), created: true };
+    const file = formatFile(res.data);
+    return { ...file, created: true, artifacts: [fileArtifact(file)] };
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
@@ -127,7 +129,8 @@ async function handleMoveFile(step: MoveFile, drive: drive_v3.Drive) {
       fields: FILE_FIELDS,
       supportsAllDrives: true,
     });
-    return { ...formatFile(res.data), moved: true };
+    const file = formatFile(res.data);
+    return { ...file, moved: true, artifacts: [fileArtifact(file)] };
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
@@ -146,7 +149,8 @@ async function handleCopyFile(step: CopyFile, drive: drive_v3.Drive) {
       fields: FILE_FIELDS,
       supportsAllDrives: true,
     });
-    return { ...formatFile(res.data), copied: true };
+    const file = formatFile(res.data);
+    return { ...file, copied: true, artifacts: [fileArtifact(file)] };
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
@@ -162,7 +166,8 @@ async function handleRenameFile(step: RenameFile, drive: drive_v3.Drive) {
       fields: FILE_FIELDS,
       supportsAllDrives: true,
     });
-    return { ...formatFile(res.data), renamed: true };
+    const file = formatFile(res.data);
+    return { ...file, renamed: true, artifacts: [fileArtifact(file)] };
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
@@ -224,6 +229,19 @@ async function handleListPermissions(step: ListPermissions, drive: drive_v3.Driv
   } catch (err) {
     return { error: classifyDriveError(err) };
   }
+}
+
+// ── Artifact Helpers ─────────────────────────────────────
+
+function fileArtifact(f: Record<string, unknown>): Artifact {
+  return {
+    ref: `drive:file:${f.id}`,
+    kind: "drive_file",
+    domain: "drive",
+    id: f.id as string,
+    label: f.name as string | undefined,
+    data: { mimeType: f.mimeType, webViewLink: f.webViewLink },
+  };
 }
 
 // ── Helpers ──────────────────────────────────────────────

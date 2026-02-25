@@ -83,6 +83,15 @@ export class Thread {
 const ARTIFACT_KEY = /[Ii]d$|[Uu]rl$|^title$|^name$|^success$|^error$|^code$/;
 
 function pickArtifacts(data: any): any {
+  // Preserve typed artifacts through compaction
+  if (Array.isArray(data?.artifacts)) {
+    return {
+      artifacts: data.artifacts.map((a: any) => ({
+        ref: a.ref, kind: a.kind, label: a.label,
+      })),
+    };
+  }
+  // Regex fallback for backward compat
   if (typeof data !== "object" || data === null) return data;
   const slim: Record<string, any> = {};
   for (const k of Object.keys(data)) {

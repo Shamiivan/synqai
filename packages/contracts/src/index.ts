@@ -1,6 +1,8 @@
 import type { ConvexClient } from "convex/browser";
 import type { calendar_v3, gmail_v1, docs_v1, sheets_v4, drive_v3, meet_v2 } from "googleapis";
 
+export type { Artifact, ArtifactKind, ArtifactDomain } from "./artifacts";
+
 // ── Logger (shared by all layers) ──
 
 export interface Logger {

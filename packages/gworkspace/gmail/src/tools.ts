@@ -14,7 +14,7 @@ import type {
   UnstarEmail,
   ModifyLabels,
 } from "../baml_client";
-import type { GmailToolsDependencies, GmailTools } from "@synqai/contracts";
+import type { GmailToolsDependencies, GmailTools, Artifact } from "@synqai/contracts";
 import { classifyGmailError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
@@ -80,7 +80,14 @@ async function handleListEmails(
       }),
     );
 
-    return { emails, total: listRes.data.resultSizeEstimate ?? emails.length };
+    const artifacts: Artifact[] = emails.map((e) => ({
+      ref: `gmail:message:${e.id}`,
+      kind: "gmail_message" as const,
+      domain: "gmail" as const,
+      id: e.id!,
+      label: e.subject || undefined,
+    }));
+    return { emails, total: listRes.data.resultSizeEstimate ?? emails.length, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }
@@ -104,7 +111,7 @@ async function handleReadEmail(
     const header = (name: string) =>
       headers.find((h) => h.name === name)?.value ?? "";
 
-    return {
+    const result = {
       id: msg.data.id,
       threadId: msg.data.threadId,
       subject: header("Subject"),
@@ -114,6 +121,14 @@ async function handleReadEmail(
       body: extractBody(msg.data.payload),
       labels: msg.data.labelIds,
     };
+    const artifacts: Artifact[] = [{
+      ref: `gmail:message:${result.id}`,
+      kind: "gmail_message",
+      domain: "gmail",
+      id: result.id!,
+      label: result.subject || undefined,
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }
@@ -136,7 +151,14 @@ async function handleSendEmail(
       userId,
       requestBody: { raw },
     });
-    return { id: res.data.id, threadId: res.data.threadId, sent: true };
+    const artifacts: Artifact[] = [{
+      ref: `gmail:message:${res.data.id}`,
+      kind: "gmail_message",
+      domain: "gmail",
+      id: res.data.id!,
+      label: step.subject || undefined,
+    }];
+    return { id: res.data.id, threadId: res.data.threadId, sent: true, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }
@@ -182,7 +204,14 @@ async function handleReplyToEmail(
       requestBody: { raw, threadId: original.data.threadId ?? undefined },
     });
 
-    return { id: res.data.id, threadId: res.data.threadId, replied: true };
+    const artifacts: Artifact[] = [{
+      ref: `gmail:message:${res.data.id}`,
+      kind: "gmail_message",
+      domain: "gmail",
+      id: res.data.id!,
+      label: replySubject || undefined,
+    }];
+    return { id: res.data.id, threadId: res.data.threadId, replied: true, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }
@@ -205,7 +234,14 @@ async function handleCreateDraft(
       userId,
       requestBody: { message: { raw } },
     });
-    return { id: res.data.id, draftCreated: true };
+    const artifacts: Artifact[] = [{
+      ref: `gmail:draft:${res.data.id}`,
+      kind: "gmail_draft",
+      domain: "gmail",
+      id: res.data.id!,
+      label: step.subject || undefined,
+    }];
+    return { id: res.data.id, draftCreated: true, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }
@@ -279,7 +315,14 @@ async function handleForwardEmail(step: ForwardEmail, gmail: gmail_v1.Gmail, use
     const fwdSubject = subject.startsWith("Fwd:") ? subject : `Fwd: ${subject}`;
     const raw = buildRawMessage({ to: step.to, subject: fwdSubject, body });
     const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
-    return { id: res.data.id, threadId: res.data.threadId, forwarded: true };
+    const artifacts: Artifact[] = [{
+      ref: `gmail:message:${res.data.id}`,
+      kind: "gmail_message",
+      domain: "gmail",
+      id: res.data.id!,
+      label: fwdSubject || undefined,
+    }];
+    return { id: res.data.id, threadId: res.data.threadId, forwarded: true, artifacts };
   } catch (err) {
     return { error: classifyGmailError(err) };
   }

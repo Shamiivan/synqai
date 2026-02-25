@@ -8,7 +8,7 @@ import type {
   CheckAvailability,
   QuickAdd,
 } from "../baml_client";
-import type { CalendarToolsDependencies, CalendarTools } from "@synqai/contracts";
+import type { CalendarToolsDependencies, CalendarTools, Artifact } from "@synqai/contracts";
 import { classifyCalendarError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
@@ -40,7 +40,16 @@ async function handleCreateEvent(event: CreateEvent, calendar: calendar_v3.Calen
         end: { dateTime: `${event.date}T${event.endTime}:00`, timeZone: event.timezone },
       },
     });
-    return { id: res.data.id!, summary: res.data.summary!, link: res.data.htmlLink! };
+    const result = { id: res.data.id!, summary: res.data.summary!, link: res.data.htmlLink! };
+    const artifacts: Artifact[] = [{
+      ref: `calendar:event:${result.id}`,
+      kind: "calendar_event",
+      domain: "calendar",
+      id: result.id,
+      label: result.summary,
+      data: { link: result.link },
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyCalendarError(err) };
   }
@@ -66,7 +75,16 @@ async function handleListEvents(query: ListEvents, calendar: calendar_v3.Calenda
       end: e.end?.dateTime ?? e.end?.date,
       location: e.location,
     }));
-    return { events };
+    const artifacts: Artifact[] = events
+      .filter((e) => e.id)
+      .map((e) => ({
+        ref: `calendar:event:${e.id}`,
+        kind: "calendar_event" as const,
+        domain: "calendar" as const,
+        id: e.id!,
+        label: e.summary || undefined,
+      }));
+    return { events, artifacts };
   } catch (err) {
     return { error: classifyCalendarError(err), events: [] };
   }
@@ -96,7 +114,15 @@ async function handleGetEvent(query: GetEvent, calendar: calendar_v3.Calendar, c
         mimeType: a.mimeType,
       }));
     }
-    return result;
+    const artifacts: Artifact[] = [{
+      ref: `calendar:event:${result.id}`,
+      kind: "calendar_event",
+      domain: "calendar",
+      id: result.id as string,
+      label: result.summary as string | undefined,
+      data: { htmlLink: result.htmlLink },
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyCalendarError(err) };
   }
@@ -129,7 +155,16 @@ async function handleUpdateEvent(update: UpdateEvent, calendar: calendar_v3.Cale
     }
 
     const res = await calendar.events.patch({ calendarId, eventId: update.eventId, requestBody: body });
-    return { id: res.data.id!, summary: res.data.summary!, link: res.data.htmlLink!, updated: true };
+    const result = { id: res.data.id!, summary: res.data.summary!, link: res.data.htmlLink!, updated: true };
+    const artifacts: Artifact[] = [{
+      ref: `calendar:event:${result.id}`,
+      kind: "calendar_event",
+      domain: "calendar",
+      id: result.id,
+      label: result.summary,
+      data: { link: result.link },
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyCalendarError(err) };
   }
@@ -171,13 +206,22 @@ async function handleQuickAdd(query: QuickAdd, calendar: calendar_v3.Calendar, c
   try {
     const res = await calendar.events.quickAdd({ calendarId, text: query.text });
     const e = res.data;
-    return {
+    const result = {
       id: e.id,
       summary: e.summary,
       start: e.start?.dateTime ?? e.start?.date,
       end: e.end?.dateTime ?? e.end?.date,
       link: e.htmlLink,
     };
+    const artifacts: Artifact[] = result.id ? [{
+      ref: `calendar:event:${result.id}`,
+      kind: "calendar_event",
+      domain: "calendar",
+      id: result.id,
+      label: result.summary || undefined,
+      data: { link: result.link },
+    }] : [];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyCalendarError(err) };
   }

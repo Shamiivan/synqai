@@ -55,9 +55,12 @@ function GWorkspaceNextStep(thread: string, today: string, artifacts: string) ->
 
     Today: {{ today }}
 
-    {% if artifacts != "{}" %}
-    Artifacts from previous steps:
+    {% if artifacts != "[]" %}
+    Available artifacts from previous steps:
     {{ artifacts }}
+
+    A ref like "drive:file:X" is a Drive file. "gmail:message:Y" is an email. "calendar:event:Z" is a calendar event.
+    Never use a drive ref as a gmail ID or vice versa. Use the ref's domain to know which agent owns it.
     {% endif %}
 
     {{ _.role("user") }}

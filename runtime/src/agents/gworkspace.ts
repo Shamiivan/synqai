@@ -1,5 +1,5 @@
 import { Thread } from "@synqai/human-loop";
-import type { GWorkspaceDependencies, Logger } from "@synqai/contracts";
+import type { GWorkspaceDependencies, Logger, Artifact } from "@synqai/contracts";
 
 const MAX_TURNS = 10;
 const TODAY = new Date().toISOString().split("T")[0];
@@ -18,12 +18,23 @@ export function createGWorkspaceAgent(dependencies: GWorkspaceDependencies) {
   };
 }
 
+// ── Artifact helpers ──
+
+function formatArtifactsForLLM(artifacts: Artifact[]): string {
+  if (artifacts.length === 0) return "[]";
+  return JSON.stringify(
+    artifacts.map((a) => ({ ref: a.ref, kind: a.kind, label: a.label })),
+  );
+}
+
+// ── Main loop ──
+
 async function gworkspaceLoop(
   thread: Thread,
   deps: GWorkspaceDependencies,
 ): Promise<AgentResult> {
   const { baml, agents, log } = deps;
-  const artifacts: Record<string, unknown> = {};
+  const artifacts: Artifact[] = [];
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const serialized = thread.serializeCompact(3);
@@ -32,7 +43,7 @@ async function gworkspaceLoop(
       nextStep = (await baml.gworkspaceNextStep(
         serialized,
         TODAY,
-        JSON.stringify(artifacts),
+        formatArtifactsForLLM(artifacts),
       )) as any;
     } catch (err: any) {
       log.info("llm_error", { turn, error: err.message });
@@ -65,12 +76,17 @@ async function gworkspaceLoop(
       continue;
     }
 
-    // Fresh domain thread — context isolation
+    // Fresh domain thread — context isolation, with typed artifact handoff
     const subThread = new Thread();
-    if (Object.keys(artifacts).length > 0) {
+    if (artifacts.length > 0) {
       subThread.events.push({
         type: "tool_response",
-        data: { _context: "artifacts", ...artifacts },
+        data: {
+          _context: "handoff",
+          artifacts: artifacts.map((a) => ({
+            ref: a.ref, kind: a.kind, label: a.label,
+          })),
+        },
       });
     }
     subThread.events.push({ type: "user_input", data: nextStep.task });
@@ -79,22 +95,25 @@ async function gworkspaceLoop(
     const subIntent = getLastIntent(result);
     const subMessage = getLastMessage(result);
 
-    // Extract artifacts from domain agent results
+    // Collect typed artifacts from domain agent results
     for (const e of result.events) {
-      if (e.type === "tool_response" && typeof e.data === "object" && e.data && !e.data.error) {
-        for (const [k, v] of Object.entries(e.data as Record<string, unknown>)) {
-          if (/[Ii]d$/.test(k) || /[Uu]rl$/.test(k) || k === "title" || k === "name") {
-            artifacts[k] = v;
+      if (e.type === "tool_response" && Array.isArray(e.data?.artifacts)) {
+        for (const a of e.data.artifacts) {
+          // Dedupe by ref
+          if (a.ref && !artifacts.some((existing) => existing.ref === a.ref)) {
+            artifacts.push(a);
           }
         }
       }
     }
 
+    const artifactsSummary = formatArtifactsForLLM(artifacts);
+
     // ── FAST PATH: single-domain, first turn, success → skip final LLM call ──
     if (turn === 0 && subIntent === "done" && subMessage) {
       thread.events.push({
         type: "tool_response",
-        data: { status: "success", message: subMessage, artifacts },
+        data: { status: "success", message: subMessage, artifacts: artifactsSummary },
       });
       thread.events.push({
         type: "tool_call",
@@ -122,7 +141,7 @@ async function gworkspaceLoop(
     } else if (subIntent === "done") {
       thread.events.push({
         type: "tool_response",
-        data: { status: "success", message: subMessage, artifacts },
+        data: { status: "success", message: subMessage, artifacts: artifactsSummary },
       });
     } else {
       thread.events.push({

@@ -8,7 +8,7 @@ import type {
   FormatText,
   FormatParagraph,
 } from "../baml_client";
-import type { DocsToolsDependencies, DocsTools } from "@synqai/contracts";
+import type { DocsToolsDependencies, DocsTools, Artifact } from "@synqai/contracts";
 import { classifyDocsError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────
@@ -46,11 +46,20 @@ async function handleCreateDocument(step: CreateDocument, docs: docs_v1.Docs) {
       });
     }
 
-    return {
+    const result = {
       documentId,
       title: res.data.title!,
       url: `https://docs.google.com/document/d/${documentId}/edit`,
     };
+    const artifacts: Artifact[] = [{
+      ref: `docs:doc:${documentId}`,
+      kind: "doc",
+      domain: "docs",
+      id: documentId,
+      label: result.title,
+      data: { url: result.url },
+    }];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyDocsError(err) };
   }
@@ -81,11 +90,19 @@ async function handleGetDocument(step: GetDocument, docs: docs_v1.Docs) {
       }
     }
 
-    return {
+    const result = {
       documentId: res.data.documentId,
       title: res.data.title,
       content: textParts.join(""),
     };
+    const artifacts: Artifact[] = result.documentId ? [{
+      ref: `docs:doc:${result.documentId}`,
+      kind: "doc",
+      domain: "docs",
+      id: result.documentId,
+      label: result.title || undefined,
+    }] : [];
+    return { ...result, artifacts };
   } catch (err) {
     return { error: classifyDocsError(err) };
   }
@@ -155,7 +172,17 @@ async function handleListDocuments(step: ListDocuments, drive: drive_v3.Drive) {
       url: f.webViewLink,
     }));
 
-    return { documents };
+    const artifacts: Artifact[] = documents
+      .filter((d) => d.id)
+      .map((d) => ({
+        ref: `docs:doc:${d.id}`,
+        kind: "doc" as const,
+        domain: "docs" as const,
+        id: d.id!,
+        label: d.name || undefined,
+        data: { url: d.url },
+      }));
+    return { documents, artifacts };
   } catch (err) {
     return { error: classifyDocsError(err) };
   }

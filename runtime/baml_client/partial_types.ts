@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  DoneForNow,  GWorkspaceDone,  GWorkspaceRequestInfo,  Handoff,  RunCalendar,  RunDocs,  RunDrive,  RunGmail,  RunMeet,  RunSheets } from "./types"
+import type {  AddSheet,  AppendRows,  ArchiveEmail,  CheckAvailability,  ClearRange,  CopyFile,  CreateDocument,  CreateDraft,  CreateEvent,  CreateFolder,  CreateMeeting,  CreateSpreadsheet,  DeleteEvent,  Done,  EndMeeting,  FormatParagraph,  FormatText,  ForwardEmail,  GetDocument,  GetEvent,  GetFile,  GetMeeting,  GetSpreadsheet,  GetTranscriptEntries,  InsertText,  ListConferences,  ListDocuments,  ListEmails,  ListEvents,  ListPermissions,  ListRecordings,  ListSpreadsheets,  ListTranscripts,  MarkRead,  MarkUnread,  ModifyLabels,  MoveFile,  QuickAdd,  ReadEmail,  ReadValues,  RenameFile,  ReplaceText,  ReplyToEmail,  RequestInfo,  SearchFiles,  SendEmail,  ShareFile,  StarEmail,  TrashEmail,  TrashFile,  UnstarEmail,  UpdateEvent,  WriteValues } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -36,49 +36,280 @@ export interface StreamState<T> {
 }
 
 export namespace partial_types {
-    export interface DoneForNow {
-      intent?: "done_for_now" | null
-      message?: string | null
+    export interface AddSheet {
+      intent?: "add_sheet" | null
+      spreadsheetId?: string | null
+      title?: string | null
     }
-    export interface GWorkspaceDone {
+    export interface AppendRows {
+      intent?: "append_rows" | null
+      spreadsheetId?: string | null
+      range?: string | null
+      values: string[][]
+    }
+    export interface ArchiveEmail {
+      intent?: "archive_email" | null
+      messageId?: string | null
+    }
+    export interface CheckAvailability {
+      intent?: "check_availability" | null
+      date?: string | null
+      startTime?: string | null
+      endTime?: string | null
+      timezone?: string | null
+    }
+    export interface ClearRange {
+      intent?: "clear_range" | null
+      spreadsheetId?: string | null
+      range?: string | null
+    }
+    export interface CopyFile {
+      intent?: "copy_file" | null
+      fileId?: string | null
+      newName?: string | null
+      destinationFolderId?: string | null
+    }
+    export interface CreateDocument {
+      intent?: "create_document" | null
+      title?: string | null
+      content?: string | null
+    }
+    export interface CreateDraft {
+      intent?: "create_draft" | null
+      to?: string | null
+      subject?: string | null
+      body?: string | null
+    }
+    export interface CreateEvent {
+      intent?: "create_event" | null
+      summary?: string | null
+      date?: string | null
+      startTime?: string | null
+      endTime?: string | null
+      description?: string | null
+      location?: string | null
+      timezone?: string | null
+    }
+    export interface CreateFolder {
+      intent?: "create_folder" | null
+      name?: string | null
+      parentId?: string | null
+    }
+    export interface CreateMeeting {
+      intent?: "create_meeting" | null
+    }
+    export interface CreateSpreadsheet {
+      intent?: "create_spreadsheet" | null
+      title?: string | null
+    }
+    export interface DeleteEvent {
+      intent?: "delete_event" | null
+      eventId?: string | null
+      confirmation?: string | null
+    }
+    export interface Done {
       intent?: "done" | null
       message?: string | null
     }
-    export interface GWorkspaceRequestInfo {
+    export interface EndMeeting {
+      intent?: "end_meeting" | null
+      spaceName?: string | null
+    }
+    export interface FormatParagraph {
+      intent?: "format_paragraph" | null
+      documentId?: string | null
+      target?: string | null
+      headingLevel?: number | null
+      alignment?: string | null
+      bulletType?: string | null
+    }
+    export interface FormatText {
+      intent?: "format_text" | null
+      documentId?: string | null
+      target?: string | null
+      bold?: boolean | null
+      italic?: boolean | null
+      underline?: boolean | null
+      fontSize?: number | null
+      fontFamily?: string | null
+    }
+    export interface ForwardEmail {
+      intent?: "forward_email" | null
+      messageId?: string | null
+      to?: string | null
+      comment?: string | null
+    }
+    export interface GetDocument {
+      intent?: "get_document" | null
+      documentId?: string | null
+    }
+    export interface GetEvent {
+      intent?: "get_event" | null
+      eventId?: string | null
+    }
+    export interface GetFile {
+      intent?: "get_file" | null
+      fileId?: string | null
+    }
+    export interface GetMeeting {
+      intent?: "get_meeting" | null
+      spaceName?: string | null
+    }
+    export interface GetSpreadsheet {
+      intent?: "get_spreadsheet" | null
+      spreadsheetId?: string | null
+    }
+    export interface GetTranscriptEntries {
+      intent?: "get_transcript_entries" | null
+      transcriptName?: string | null
+    }
+    export interface InsertText {
+      intent?: "insert_text" | null
+      documentId?: string | null
+      text?: string | null
+      position?: string | null
+    }
+    export interface ListConferences {
+      intent?: "list_conferences" | null
+      pageSize?: number | null
+    }
+    export interface ListDocuments {
+      intent?: "list_documents" | null
+      query?: string | null
+    }
+    export interface ListEmails {
+      intent?: "list_emails" | null
+      query?: string | null
+      maxResults?: number | null
+    }
+    export interface ListEvents {
+      intent?: "list_events" | null
+      date?: string | null
+      timezone?: string | null
+    }
+    export interface ListPermissions {
+      intent?: "list_permissions" | null
+      fileId?: string | null
+    }
+    export interface ListRecordings {
+      intent?: "list_recordings" | null
+      conferenceRecordName?: string | null
+    }
+    export interface ListSpreadsheets {
+      intent?: "list_spreadsheets" | null
+      query?: string | null
+    }
+    export interface ListTranscripts {
+      intent?: "list_transcripts" | null
+      conferenceRecordName?: string | null
+    }
+    export interface MarkRead {
+      intent?: "mark_read" | null
+      messageId?: string | null
+    }
+    export interface MarkUnread {
+      intent?: "mark_unread" | null
+      messageId?: string | null
+    }
+    export interface ModifyLabels {
+      intent?: "modify_labels" | null
+      messageId?: string | null
+      addLabels: string[]
+      removeLabels: string[]
+    }
+    export interface MoveFile {
+      intent?: "move_file" | null
+      fileId?: string | null
+      destinationFolderId?: string | null
+    }
+    export interface QuickAdd {
+      intent?: "quick_add" | null
+      text?: string | null
+    }
+    export interface ReadEmail {
+      intent?: "read_email" | null
+      messageId?: string | null
+    }
+    export interface ReadValues {
+      intent?: "read_values" | null
+      spreadsheetId?: string | null
+      range?: string | null
+    }
+    export interface RenameFile {
+      intent?: "rename_file" | null
+      fileId?: string | null
+      newName?: string | null
+    }
+    export interface ReplaceText {
+      intent?: "replace_text" | null
+      documentId?: string | null
+      find?: string | null
+      replaceWith?: string | null
+    }
+    export interface ReplyToEmail {
+      intent?: "reply_to_email" | null
+      messageId?: string | null
+      body?: string | null
+    }
+    export interface RequestInfo {
       intent?: "request_info" | null
-      question?: string | null
+      message?: string | null
     }
-    export interface Handoff {
-      intent?: "handoff" | null
-      agent?: "gworkspace" | null
-      task?: string | null
+    export interface SearchFiles {
+      intent?: "search_files" | null
+      query?: string | null
+      mimeTypeFilter?: string | null
+      folderId?: string | null
+      maxResults?: number | null
     }
-    export interface RunCalendar {
-      intent?: "run_calendar" | null
-      task?: string | null
+    export interface SendEmail {
+      intent?: "send_email" | null
+      to?: string | null
+      subject?: string | null
+      body?: string | null
     }
-    export interface RunDocs {
-      intent?: "run_docs" | null
-      task?: string | null
+    export interface ShareFile {
+      intent?: "share_file" | null
+      fileId?: string | null
+      shareType?: string | null
+      role?: string | null
+      emailOrDomain?: string | null
+      sendNotification?: boolean | null
     }
-    export interface RunDrive {
-      intent?: "run_drive" | null
-      task?: string | null
+    export interface StarEmail {
+      intent?: "star_email" | null
+      messageId?: string | null
     }
-    export interface RunGmail {
-      intent?: "run_gmail" | null
-      task?: string | null
+    export interface TrashEmail {
+      intent?: "trash_email" | null
+      messageId?: string | null
     }
-    export interface RunMeet {
-      intent?: "run_meet" | null
-      task?: string | null
+    export interface TrashFile {
+      intent?: "trash_file" | null
+      fileId?: string | null
+      confirmation?: string | null
     }
-    export interface RunSheets {
-      intent?: "run_sheets" | null
-      task?: string | null
+    export interface UnstarEmail {
+      intent?: "unstar_email" | null
+      messageId?: string | null
     }
-export type GWorkspaceStep = RunCalendar | RunGmail | RunDocs | RunSheets | RunMeet | RunDrive | GWorkspaceRequestInfo | GWorkspaceDone | null
-
-export type RouterStep = DoneForNow | Handoff | null
+    export interface UpdateEvent {
+      intent?: "update_event" | null
+      eventId?: string | null
+      summary?: string | null
+      date?: string | null
+      startTime?: string | null
+      endTime?: string | null
+      description?: string | null
+      location?: string | null
+      timezone?: string | null
+    }
+    export interface WriteValues {
+      intent?: "write_values" | null
+      spreadsheetId?: string | null
+      range?: string | null
+      values: string[][]
+    }
+export type AgentStep = RequestInfo | Done | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries | null
 
 }

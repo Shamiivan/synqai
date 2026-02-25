@@ -27,32 +27,118 @@ export { FieldType, EnumBuilder, ClassBuilder }
 export default class TypeBuilder {
     private tb: _TypeBuilder;
     
-    DoneForNow: ClassViewer<'DoneForNow', "intent" | "message">;
+    AddSheet: ClassViewer<'AddSheet', "intent" | "spreadsheetId" | "title">;
     
-    GWorkspaceDone: ClassViewer<'GWorkspaceDone', "intent" | "message">;
+    AppendRows: ClassViewer<'AppendRows', "intent" | "spreadsheetId" | "range" | "values">;
     
-    GWorkspaceRequestInfo: ClassViewer<'GWorkspaceRequestInfo', "intent" | "question">;
+    ArchiveEmail: ClassViewer<'ArchiveEmail', "intent" | "messageId">;
     
-    Handoff: ClassViewer<'Handoff', "intent" | "agent" | "task">;
+    CheckAvailability: ClassViewer<'CheckAvailability', "intent" | "date" | "startTime" | "endTime" | "timezone">;
     
-    RunCalendar: ClassViewer<'RunCalendar', "intent" | "task">;
+    ClearRange: ClassViewer<'ClearRange', "intent" | "spreadsheetId" | "range">;
     
-    RunDocs: ClassViewer<'RunDocs', "intent" | "task">;
+    CopyFile: ClassViewer<'CopyFile', "intent" | "fileId" | "newName" | "destinationFolderId">;
     
-    RunDrive: ClassViewer<'RunDrive', "intent" | "task">;
+    CreateDocument: ClassViewer<'CreateDocument', "intent" | "title" | "content">;
     
-    RunGmail: ClassViewer<'RunGmail', "intent" | "task">;
+    CreateDraft: ClassViewer<'CreateDraft', "intent" | "to" | "subject" | "body">;
     
-    RunMeet: ClassViewer<'RunMeet', "intent" | "task">;
+    CreateEvent: ClassViewer<'CreateEvent', "intent" | "summary" | "date" | "startTime" | "endTime" | "description" | "location" | "timezone">;
     
-    RunSheets: ClassViewer<'RunSheets', "intent" | "task">;
+    CreateFolder: ClassViewer<'CreateFolder', "intent" | "name" | "parentId">;
+    
+    CreateMeeting: ClassViewer<'CreateMeeting', "intent">;
+    
+    CreateSpreadsheet: ClassViewer<'CreateSpreadsheet', "intent" | "title">;
+    
+    DeleteEvent: ClassViewer<'DeleteEvent', "intent" | "eventId" | "confirmation">;
+    
+    Done: ClassViewer<'Done', "intent" | "message">;
+    
+    EndMeeting: ClassViewer<'EndMeeting', "intent" | "spaceName">;
+    
+    FormatParagraph: ClassViewer<'FormatParagraph', "intent" | "documentId" | "target" | "headingLevel" | "alignment" | "bulletType">;
+    
+    FormatText: ClassViewer<'FormatText', "intent" | "documentId" | "target" | "bold" | "italic" | "underline" | "fontSize" | "fontFamily">;
+    
+    ForwardEmail: ClassViewer<'ForwardEmail', "intent" | "messageId" | "to" | "comment">;
+    
+    GetDocument: ClassViewer<'GetDocument', "intent" | "documentId">;
+    
+    GetEvent: ClassViewer<'GetEvent', "intent" | "eventId">;
+    
+    GetFile: ClassViewer<'GetFile', "intent" | "fileId">;
+    
+    GetMeeting: ClassViewer<'GetMeeting', "intent" | "spaceName">;
+    
+    GetSpreadsheet: ClassViewer<'GetSpreadsheet', "intent" | "spreadsheetId">;
+    
+    GetTranscriptEntries: ClassViewer<'GetTranscriptEntries', "intent" | "transcriptName">;
+    
+    InsertText: ClassViewer<'InsertText', "intent" | "documentId" | "text" | "position">;
+    
+    ListConferences: ClassViewer<'ListConferences', "intent" | "pageSize">;
+    
+    ListDocuments: ClassViewer<'ListDocuments', "intent" | "query">;
+    
+    ListEmails: ClassViewer<'ListEmails', "intent" | "query" | "maxResults">;
+    
+    ListEvents: ClassViewer<'ListEvents', "intent" | "date" | "timezone">;
+    
+    ListPermissions: ClassViewer<'ListPermissions', "intent" | "fileId">;
+    
+    ListRecordings: ClassViewer<'ListRecordings', "intent" | "conferenceRecordName">;
+    
+    ListSpreadsheets: ClassViewer<'ListSpreadsheets', "intent" | "query">;
+    
+    ListTranscripts: ClassViewer<'ListTranscripts', "intent" | "conferenceRecordName">;
+    
+    MarkRead: ClassViewer<'MarkRead', "intent" | "messageId">;
+    
+    MarkUnread: ClassViewer<'MarkUnread', "intent" | "messageId">;
+    
+    ModifyLabels: ClassViewer<'ModifyLabels', "intent" | "messageId" | "addLabels" | "removeLabels">;
+    
+    MoveFile: ClassViewer<'MoveFile', "intent" | "fileId" | "destinationFolderId">;
+    
+    QuickAdd: ClassViewer<'QuickAdd', "intent" | "text">;
+    
+    ReadEmail: ClassViewer<'ReadEmail', "intent" | "messageId">;
+    
+    ReadValues: ClassViewer<'ReadValues', "intent" | "spreadsheetId" | "range">;
+    
+    RenameFile: ClassViewer<'RenameFile', "intent" | "fileId" | "newName">;
+    
+    ReplaceText: ClassViewer<'ReplaceText', "intent" | "documentId" | "find" | "replaceWith">;
+    
+    ReplyToEmail: ClassViewer<'ReplyToEmail', "intent" | "messageId" | "body">;
+    
+    RequestInfo: ClassViewer<'RequestInfo', "intent" | "message">;
+    
+    SearchFiles: ClassViewer<'SearchFiles', "intent" | "query" | "mimeTypeFilter" | "folderId" | "maxResults">;
+    
+    SendEmail: ClassViewer<'SendEmail', "intent" | "to" | "subject" | "body">;
+    
+    ShareFile: ClassViewer<'ShareFile', "intent" | "fileId" | "shareType" | "role" | "emailOrDomain" | "sendNotification">;
+    
+    StarEmail: ClassViewer<'StarEmail', "intent" | "messageId">;
+    
+    TrashEmail: ClassViewer<'TrashEmail', "intent" | "messageId">;
+    
+    TrashFile: ClassViewer<'TrashFile', "intent" | "fileId" | "confirmation">;
+    
+    UnstarEmail: ClassViewer<'UnstarEmail', "intent" | "messageId">;
+    
+    UpdateEvent: ClassViewer<'UpdateEvent', "intent" | "eventId" | "summary" | "date" | "startTime" | "endTime" | "description" | "location" | "timezone">;
+    
+    WriteValues: ClassViewer<'WriteValues', "intent" | "spreadsheetId" | "range" | "values">;
     
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "DoneForNow","GWorkspaceDone","GWorkspaceRequestInfo","Handoff","RunCalendar","RunDocs","RunDrive","RunGmail","RunMeet","RunSheets",
+            "AddSheet","AppendRows","ArchiveEmail","CheckAvailability","ClearRange","CopyFile","CreateDocument","CreateDraft","CreateEvent","CreateFolder","CreateMeeting","CreateSpreadsheet","DeleteEvent","Done","EndMeeting","FormatParagraph","FormatText","ForwardEmail","GetDocument","GetEvent","GetFile","GetMeeting","GetSpreadsheet","GetTranscriptEntries","InsertText","ListConferences","ListDocuments","ListEmails","ListEvents","ListPermissions","ListRecordings","ListSpreadsheets","ListTranscripts","MarkRead","MarkUnread","ModifyLabels","MoveFile","QuickAdd","ReadEmail","ReadValues","RenameFile","ReplaceText","ReplyToEmail","RequestInfo","SearchFiles","SendEmail","ShareFile","StarEmail","TrashEmail","TrashFile","UnstarEmail","UpdateEvent","WriteValues",
           ]),
           enums: new Set([
             
@@ -60,44 +146,216 @@ export default class TypeBuilder {
           runtime: DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
         });
         
-        this.DoneForNow = this.tb.classViewer("DoneForNow", [
+        this.AddSheet = this.tb.classViewer("AddSheet", [
+          "intent","spreadsheetId","title",
+        ]);
+        
+        this.AppendRows = this.tb.classViewer("AppendRows", [
+          "intent","spreadsheetId","range","values",
+        ]);
+        
+        this.ArchiveEmail = this.tb.classViewer("ArchiveEmail", [
+          "intent","messageId",
+        ]);
+        
+        this.CheckAvailability = this.tb.classViewer("CheckAvailability", [
+          "intent","date","startTime","endTime","timezone",
+        ]);
+        
+        this.ClearRange = this.tb.classViewer("ClearRange", [
+          "intent","spreadsheetId","range",
+        ]);
+        
+        this.CopyFile = this.tb.classViewer("CopyFile", [
+          "intent","fileId","newName","destinationFolderId",
+        ]);
+        
+        this.CreateDocument = this.tb.classViewer("CreateDocument", [
+          "intent","title","content",
+        ]);
+        
+        this.CreateDraft = this.tb.classViewer("CreateDraft", [
+          "intent","to","subject","body",
+        ]);
+        
+        this.CreateEvent = this.tb.classViewer("CreateEvent", [
+          "intent","summary","date","startTime","endTime","description","location","timezone",
+        ]);
+        
+        this.CreateFolder = this.tb.classViewer("CreateFolder", [
+          "intent","name","parentId",
+        ]);
+        
+        this.CreateMeeting = this.tb.classViewer("CreateMeeting", [
+          "intent",
+        ]);
+        
+        this.CreateSpreadsheet = this.tb.classViewer("CreateSpreadsheet", [
+          "intent","title",
+        ]);
+        
+        this.DeleteEvent = this.tb.classViewer("DeleteEvent", [
+          "intent","eventId","confirmation",
+        ]);
+        
+        this.Done = this.tb.classViewer("Done", [
           "intent","message",
         ]);
         
-        this.GWorkspaceDone = this.tb.classViewer("GWorkspaceDone", [
+        this.EndMeeting = this.tb.classViewer("EndMeeting", [
+          "intent","spaceName",
+        ]);
+        
+        this.FormatParagraph = this.tb.classViewer("FormatParagraph", [
+          "intent","documentId","target","headingLevel","alignment","bulletType",
+        ]);
+        
+        this.FormatText = this.tb.classViewer("FormatText", [
+          "intent","documentId","target","bold","italic","underline","fontSize","fontFamily",
+        ]);
+        
+        this.ForwardEmail = this.tb.classViewer("ForwardEmail", [
+          "intent","messageId","to","comment",
+        ]);
+        
+        this.GetDocument = this.tb.classViewer("GetDocument", [
+          "intent","documentId",
+        ]);
+        
+        this.GetEvent = this.tb.classViewer("GetEvent", [
+          "intent","eventId",
+        ]);
+        
+        this.GetFile = this.tb.classViewer("GetFile", [
+          "intent","fileId",
+        ]);
+        
+        this.GetMeeting = this.tb.classViewer("GetMeeting", [
+          "intent","spaceName",
+        ]);
+        
+        this.GetSpreadsheet = this.tb.classViewer("GetSpreadsheet", [
+          "intent","spreadsheetId",
+        ]);
+        
+        this.GetTranscriptEntries = this.tb.classViewer("GetTranscriptEntries", [
+          "intent","transcriptName",
+        ]);
+        
+        this.InsertText = this.tb.classViewer("InsertText", [
+          "intent","documentId","text","position",
+        ]);
+        
+        this.ListConferences = this.tb.classViewer("ListConferences", [
+          "intent","pageSize",
+        ]);
+        
+        this.ListDocuments = this.tb.classViewer("ListDocuments", [
+          "intent","query",
+        ]);
+        
+        this.ListEmails = this.tb.classViewer("ListEmails", [
+          "intent","query","maxResults",
+        ]);
+        
+        this.ListEvents = this.tb.classViewer("ListEvents", [
+          "intent","date","timezone",
+        ]);
+        
+        this.ListPermissions = this.tb.classViewer("ListPermissions", [
+          "intent","fileId",
+        ]);
+        
+        this.ListRecordings = this.tb.classViewer("ListRecordings", [
+          "intent","conferenceRecordName",
+        ]);
+        
+        this.ListSpreadsheets = this.tb.classViewer("ListSpreadsheets", [
+          "intent","query",
+        ]);
+        
+        this.ListTranscripts = this.tb.classViewer("ListTranscripts", [
+          "intent","conferenceRecordName",
+        ]);
+        
+        this.MarkRead = this.tb.classViewer("MarkRead", [
+          "intent","messageId",
+        ]);
+        
+        this.MarkUnread = this.tb.classViewer("MarkUnread", [
+          "intent","messageId",
+        ]);
+        
+        this.ModifyLabels = this.tb.classViewer("ModifyLabels", [
+          "intent","messageId","addLabels","removeLabels",
+        ]);
+        
+        this.MoveFile = this.tb.classViewer("MoveFile", [
+          "intent","fileId","destinationFolderId",
+        ]);
+        
+        this.QuickAdd = this.tb.classViewer("QuickAdd", [
+          "intent","text",
+        ]);
+        
+        this.ReadEmail = this.tb.classViewer("ReadEmail", [
+          "intent","messageId",
+        ]);
+        
+        this.ReadValues = this.tb.classViewer("ReadValues", [
+          "intent","spreadsheetId","range",
+        ]);
+        
+        this.RenameFile = this.tb.classViewer("RenameFile", [
+          "intent","fileId","newName",
+        ]);
+        
+        this.ReplaceText = this.tb.classViewer("ReplaceText", [
+          "intent","documentId","find","replaceWith",
+        ]);
+        
+        this.ReplyToEmail = this.tb.classViewer("ReplyToEmail", [
+          "intent","messageId","body",
+        ]);
+        
+        this.RequestInfo = this.tb.classViewer("RequestInfo", [
           "intent","message",
         ]);
         
-        this.GWorkspaceRequestInfo = this.tb.classViewer("GWorkspaceRequestInfo", [
-          "intent","question",
+        this.SearchFiles = this.tb.classViewer("SearchFiles", [
+          "intent","query","mimeTypeFilter","folderId","maxResults",
         ]);
         
-        this.Handoff = this.tb.classViewer("Handoff", [
-          "intent","agent","task",
+        this.SendEmail = this.tb.classViewer("SendEmail", [
+          "intent","to","subject","body",
         ]);
         
-        this.RunCalendar = this.tb.classViewer("RunCalendar", [
-          "intent","task",
+        this.ShareFile = this.tb.classViewer("ShareFile", [
+          "intent","fileId","shareType","role","emailOrDomain","sendNotification",
         ]);
         
-        this.RunDocs = this.tb.classViewer("RunDocs", [
-          "intent","task",
+        this.StarEmail = this.tb.classViewer("StarEmail", [
+          "intent","messageId",
         ]);
         
-        this.RunDrive = this.tb.classViewer("RunDrive", [
-          "intent","task",
+        this.TrashEmail = this.tb.classViewer("TrashEmail", [
+          "intent","messageId",
         ]);
         
-        this.RunGmail = this.tb.classViewer("RunGmail", [
-          "intent","task",
+        this.TrashFile = this.tb.classViewer("TrashFile", [
+          "intent","fileId","confirmation",
         ]);
         
-        this.RunMeet = this.tb.classViewer("RunMeet", [
-          "intent","task",
+        this.UnstarEmail = this.tb.classViewer("UnstarEmail", [
+          "intent","messageId",
         ]);
         
-        this.RunSheets = this.tb.classViewer("RunSheets", [
-          "intent","task",
+        this.UpdateEvent = this.tb.classViewer("UpdateEvent", [
+          "intent","eventId","summary","date","startTime","endTime","description","location","timezone",
+        ]);
+        
+        this.WriteValues = this.tb.classViewer("WriteValues", [
+          "intent","spreadsheetId","range","values",
         ]);
         
         

@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector, ClientRegistry } fr
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {DoneForNow, GWorkspaceDone, GWorkspaceRequestInfo, Handoff, RunCalendar, RunDocs, RunDrive, RunGmail, RunMeet, RunSheets} from "./types"
+import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -97,10 +97,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         }
 
         
-        async DetermineNextStep(
-        thread: string,lastMessage: string,
+        async NextStep(
+        thread: string,today: string,
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.DoneForNow | types.Handoff> {
+        ): Promise<types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries> {
           try {
           const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const __signal__ = __options__.signal;
@@ -111,8 +111,8 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
           // Check if onTick is provided - route through streaming if so
           if (__options__.onTick) {
-          const __stream__ = this.stream.DetermineNextStep(
-          thread,lastMessage,
+          const __stream__ = this.stream.NextStep(
+          thread,today,
           __baml_options__
           );
 
@@ -134,9 +134,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             const __raw__ = await this.runtime.callFunction(
-            "DetermineNextStep",
+            "NextStep",
             {
-            "thread": thread,"lastMessage": lastMessage
+            "thread": thread,"today": today
             },
             this.ctxManager.cloneContext(),
             __options__.tb?.__tb(),
@@ -147,63 +147,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             __signal__,
             __options__.watchers,
             )
-            return __raw__.parsed(false) as types.DoneForNow | types.Handoff
-            } catch (error) {
-            throw toBamlError(error);
-            }
-            }
-            
-        async GWorkspaceNextStep(
-        thread: string,today: string,artifacts: string,
-        __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone> {
-          try {
-          const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
-          const __signal__ = __options__.signal;
-
-          if (__signal__?.aborted) {
-          throw new BamlAbortError('Operation was aborted', __signal__.reason);
-          }
-
-          // Check if onTick is provided - route through streaming if so
-          if (__options__.onTick) {
-          const __stream__ = this.stream.GWorkspaceNextStep(
-          thread,today,artifacts,
-          __baml_options__
-          );
-
-          return await __stream__.getFinalResponse();
-          }
-
-          const __collector__ = __options__.collector ? (Array.isArray(__options__.collector) ? __options__.collector :
-          [__options__.collector]) : [];
-          const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
-          const __env__: Record<string, string> = Object.fromEntries(
-            Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
-            );
-
-            // Resolve client option to clientRegistry (client takes precedence)
-            let __clientRegistry__ = __options__.clientRegistry;
-            if (__options__.client) {
-              __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
-              __clientRegistry__.setPrimary(__options__.client);
-            }
-
-            const __raw__ = await this.runtime.callFunction(
-            "GWorkspaceNextStep",
-            {
-            "thread": thread,"today": today,"artifacts": artifacts
-            },
-            this.ctxManager.cloneContext(),
-            __options__.tb?.__tb(),
-            __clientRegistry__,
-            __collector__,
-            __options__.tags || {},
-            __env__,
-            __signal__,
-            __options__.watchers,
-            )
-            return __raw__.parsed(false) as types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone
+            return __raw__.parsed(false) as types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries
             } catch (error) {
             throw toBamlError(error);
             }
@@ -223,10 +167,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             
-            DetermineNextStep(
-            thread: string,lastMessage: string,
+            NextStep(
+            thread: string,today: string,
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>
+            ): BamlStream<partial_types.RequestInfo | partial_types.Done | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries, types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries>
               {
               try {
               const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -252,7 +196,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
               try {
               __options__.onTick!("Unknown", __log__);
               } catch (error) {
-              console.error("Error in onTick callback for DetermineNextStep", error);
+              console.error("Error in onTick callback for NextStep", error);
               }
               }
               };
@@ -271,9 +215,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 }
 
                 const __raw__ = this.runtime.streamFunction(
-                "DetermineNextStep",
+                "NextStep",
                 {
-                "thread": thread,"lastMessage": lastMessage
+                "thread": thread,"today": today
                 },
                 undefined,
                 this.ctxManager.cloneContext(),
@@ -285,84 +229,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 __signal__,
                 __onTickWrapper__,
                 )
-                return new BamlStream<partial_types.DoneForNow | partial_types.Handoff, types.DoneForNow | types.Handoff>(
+                return new BamlStream<partial_types.RequestInfo | partial_types.Done | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries, types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries>(
                   __raw__,
-                  (a): partial_types.DoneForNow | partial_types.Handoff => a,
-                  (a): types.DoneForNow | types.Handoff => a,
-                  this.ctxManager.cloneContext(),
-                  __options__.signal,
-                  )
-                  } catch (error) {
-                  throw toBamlError(error);
-                  }
-                  }
-                  
-            GWorkspaceNextStep(
-            thread: string,today: string,artifacts: string,
-            __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone>
-              {
-              try {
-              const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
-              const __signal__ = __options__.signal;
-
-              if (__signal__?.aborted) {
-              throw new BamlAbortError('Operation was aborted', __signal__.reason);
-              }
-
-              let __collector__ = __options__.collector ? (Array.isArray(__options__.collector) ? __options__.collector :
-              [__options__.collector]) : [];
-
-              let __onTickWrapper__: (() => void) | undefined;
-
-              // Create collector and wrap onTick if provided
-              if (__options__.onTick) {
-              const __tickCollector__ = new Collector("on-tick-collector");
-              __collector__ = [...__collector__, __tickCollector__];
-
-              __onTickWrapper__ = () => {
-              const __log__ = __tickCollector__.last;
-              if (__log__) {
-              try {
-              __options__.onTick!("Unknown", __log__);
-              } catch (error) {
-              console.error("Error in onTick callback for GWorkspaceNextStep", error);
-              }
-              }
-              };
-              }
-
-              const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
-              const __env__: Record<string, string> = Object.fromEntries(
-                Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
-                );
-
-                // Resolve client option to clientRegistry (client takes precedence)
-                let __clientRegistry__ = __options__.clientRegistry;
-                if (__options__.client) {
-                  __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
-                  __clientRegistry__.setPrimary(__options__.client);
-                }
-
-                const __raw__ = this.runtime.streamFunction(
-                "GWorkspaceNextStep",
-                {
-                "thread": thread,"today": today,"artifacts": artifacts
-                },
-                undefined,
-                this.ctxManager.cloneContext(),
-                __options__.tb?.__tb(),
-                __clientRegistry__,
-                __collector__,
-                __options__.tags || {},
-                __env__,
-                __signal__,
-                __onTickWrapper__,
-                )
-                return new BamlStream<partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone, types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone>(
-                  __raw__,
-                  (a): partial_types.RunCalendar | partial_types.RunGmail | partial_types.RunDocs | partial_types.RunSheets | partial_types.RunMeet | partial_types.RunDrive | partial_types.GWorkspaceRequestInfo | partial_types.GWorkspaceDone => a,
-                  (a): types.RunCalendar | types.RunGmail | types.RunDocs | types.RunSheets | types.RunMeet | types.RunDrive | types.GWorkspaceRequestInfo | types.GWorkspaceDone => a,
+                  (a): partial_types.RequestInfo | partial_types.Done | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries => a,
+                  (a): types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries => a,
                   this.ctxManager.cloneContext(),
                   __options__.signal,
                   )

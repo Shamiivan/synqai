@@ -30,7 +30,7 @@ export interface CalendarTools {
   handleQuickAdd: (step: any) => Promise<any>;
 }
 
-// ── Calendar Agent ──
+// ── Calendar Agent (legacy — used by old domain agent files, remove in cleanup) ──
 
 export interface CalendarAgentDependencies {
   baml: {
@@ -63,7 +63,7 @@ export interface GmailTools {
   handleModifyLabels: (step: any) => Promise<any>;
 }
 
-// ── Gmail Agent ──
+// ── Gmail Agent (legacy) ──
 
 export interface GmailAgentDependencies {
   baml: {
@@ -90,7 +90,7 @@ export interface DocsTools {
   handleFormatParagraph: (step: any) => Promise<any>;
 }
 
-// ── Docs Agent ──
+// ── Docs Agent (legacy) ──
 
 export interface DocsAgentDependencies {
   baml: {
@@ -118,7 +118,7 @@ export interface SheetsTools {
   handleListSpreadsheets: (step: any) => Promise<any>;
 }
 
-// ── Sheets Agent ──
+// ── Sheets Agent (legacy) ──
 
 export interface SheetsAgentDependencies {
   baml: {
@@ -146,7 +146,7 @@ export interface DriveTools {
   handleListPermissions: (step: any) => Promise<any>;
 }
 
-// ── Drive Agent ──
+// ── Drive Agent (legacy) ──
 
 export interface DriveAgentDependencies {
   baml: {
@@ -172,7 +172,7 @@ export interface MeetTools {
   handleGetTranscriptEntries: (step: any) => Promise<any>;
 }
 
-// ── Meet Agent ──
+// ── Meet Agent (legacy) ──
 
 export interface MeetAgentDependencies {
   baml: {
@@ -182,7 +182,7 @@ export interface MeetAgentDependencies {
   log: Logger;
 }
 
-// ── Agent Registry ──
+// ── Agent Registry (legacy — remove in cleanup) ──
 
 export type AgentRunner = (thread: any, log?: Logger) => Promise<any>;
 
@@ -190,7 +190,7 @@ export interface TopLevelAgent {
   run: (thread: any, log?: Logger) => Promise<any>;
 }
 
-// ── GWorkspace Agent ──
+// ── GWorkspace Agent (legacy — remove in cleanup) ──
 
 export interface GWorkspaceDependencies {
   baml: {
@@ -200,7 +200,7 @@ export interface GWorkspaceDependencies {
   log: Logger;
 }
 
-// ── Router ──
+// ── Router (legacy — remove in cleanup) ──
 
 export interface RouterDependencies {
   baml: {
@@ -214,8 +214,7 @@ export interface RouterDependencies {
 
 export interface WorkerDependencies {
   convex: ConvexClient;
-  route: (thread: any) => Promise<any>;
-  routeToAgent: (agent: string, thread: any) => Promise<any>;
+  agent: { run: (thread: any, log?: Logger) => Promise<any> };
   log: Logger;
 }
 

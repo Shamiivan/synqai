@@ -23,45 +23,37 @@ function startWorker(deps: WorkerDependencies) {
 }
 
 async function processRun(
-  run: { _id: any; currentAgent: string; thread: string },
+  run: { _id: any; thread: string },
   deps: WorkerDependencies,
 ) {
-  const { convex, route, routeToAgent } = deps;
+  const { convex, agent, log: rootLog } = deps;
   const runId = String(run._id).slice(-4);
-  const log = deps.log.child(`run-${runId}`);
+  const log = rootLog.child(`run-${runId}`);
 
   const thread = Thread.fromJSON(JSON.parse(run.thread));
-  log.info("Processing", { currentAgent: run.currentAgent });
+  log.info("Processing");
 
   try {
-    // Fresh run (router) → classify and hand off.
-    // Resumed run (gworkspace) → go directly to that agent.
-    const result = run.currentAgent === "router"
-      ? await route(thread)
-      : await routeToAgent(run.currentAgent, thread);
+    const result = await agent.run(thread, log);
 
-    const { intent, message, currentAgent } = result;
-    const resultThread: Thread = result.thread;
-
-    if (intent === "request_info") {
+    if (result.intent === "request_info") {
       await convex.mutation(api.runs.pause, {
         id: run._id,
-        currentAgent: currentAgent ?? run.currentAgent,
-        thread: JSON.stringify(resultThread.toJSON()),
-        question: message ?? "Need more information",
+        thread: JSON.stringify(result.thread.toJSON()),
+        question: result.message ?? "Need more information",
       });
-      log.info("Paused — waiting for human", { question: message });
+      log.info("Paused — waiting for human", { question: result.message });
     } else {
-      const events = resultThread.toJSON() as any[];
+      const events = result.thread.toJSON() as any[];
       const hasOutput = events.some((e: any) => e.type === "agent_output");
-      if (message && !hasOutput) {
-        events.push({ type: "agent_output", data: message });
+      if (result.message && !hasOutput) {
+        events.push({ type: "agent_output", data: result.message });
       }
       await convex.mutation(api.runs.finish, {
         id: run._id,
         thread: JSON.stringify(events),
       });
-      log.info("Finished", { message });
+      log.info("Finished", { message: result.message });
     }
   } catch (err) {
     const runErr = classifyError(err);

@@ -31,7 +31,6 @@ async function createRunInStatus(
   if (status === "waiting_human") {
     await t.mutation(api.runs.pause, {
       id,
-      currentAgent: "calendar",
       thread: JSON.stringify([{ type: "user_input", data: "test" }]),
       question: "What time?",
     });
@@ -67,7 +66,6 @@ describe("Core mutations", () => {
     const run = await t.query(api.runs.get, { id: runId });
     expect(run).not.toBeNull();
     expect(run!.status).toBe("pending");
-    expect(run!.currentAgent).toBe("router");
     expect(JSON.parse(run!.thread)).toEqual([
       { type: "user_input", data: "Book a meeting" },
     ]);
@@ -127,7 +125,6 @@ describe("Core mutations", () => {
     // Pause
     await t.mutation(api.runs.pause, {
       id: runId,
-      currentAgent: "calendar",
       thread,
       question: "What time?",
     });
@@ -243,7 +240,6 @@ describe("Policy", () => {
     // Pause
     await t.mutation(api.runs.pause, {
       id: runId,
-      currentAgent: "calendar",
       thread: JSON.stringify([{ type: "user_input", data: "Book meeting" }]),
       question: "What time?",
     });
@@ -288,8 +284,7 @@ describe("Guard contracts", () => {
         fn: (t: ReturnType<typeof convexTest>, id: any) =>
           t.mutation(api.runs.pause, {
             id,
-            currentAgent: "calendar",
-            thread: "[]",
+                  thread: "[]",
             question: "q",
           }),
       },
@@ -339,8 +334,7 @@ describe("Guard contracts", () => {
           : mutation === "pause"
             ? t.mutation(api.runs.pause, {
                 id,
-                currentAgent: "calendar",
-                thread: "[]",
+                          thread: "[]",
                 question: "q",
               })
             : t.mutation(api.runs.resume, { id, answer: "a" });

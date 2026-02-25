@@ -14,8 +14,9 @@ export default defineSchema({
     .index("by_channel", ["discordChannelId"]),
 
   agentRuns: defineTable({
-    entryAgent: v.string(),
-    currentAgent: v.union(v.literal("router"), v.literal("gworkspace"), v.literal("calendar"), v.literal("gmail"), v.literal("docs"), v.literal("sheets"), v.literal("meet")),
+    // Legacy fields — optional for backward compat, no longer written
+    entryAgent: v.optional(v.string()),
+    currentAgent: v.optional(v.string()),
     status: v.union(
       v.literal("pending"),
       v.literal("running"),

@@ -1,14 +1,9 @@
 import type { meet_v2 } from "googleapis";
 import type {
-  CreateMeeting,
-  GetMeeting,
-  EndMeeting,
-  ListConferences,
-  ListRecordings,
-  ListTranscripts,
-  GetTranscriptEntries,
-} from "../baml_client";
-import type { MeetToolsDependencies, MeetTools, Artifact } from "@synqai/contracts";
+  MeetToolsDependencies, MeetTools, Artifact,
+  CreateMeeting, GetMeeting, EndMeeting, ListConferences,
+  ListRecordings, ListTranscripts, GetTranscriptEntries,
+} from "@synqai/contracts";
 import { classifyMeetError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────

@@ -1,14 +1,9 @@
 import type { calendar_v3 } from "googleapis";
 import type {
-  CreateEvent,
-  ListEvents,
-  GetEvent,
-  UpdateEvent,
-  DeleteEvent,
-  CheckAvailability,
-  QuickAdd,
-} from "../baml_client";
-import type { CalendarToolsDependencies, CalendarTools, Artifact } from "@synqai/contracts";
+  CalendarToolsDependencies, CalendarTools, Artifact,
+  CreateEvent, ListEvents, GetEvent, UpdateEvent,
+  DeleteEvent, CheckAvailability, QuickAdd,
+} from "@synqai/contracts";
 import { classifyCalendarError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────

@@ -2,8 +2,9 @@ import type { ConvexClient } from "convex/browser";
 import type { calendar_v3, gmail_v1, docs_v1, sheets_v4, drive_v3, meet_v2 } from "googleapis";
 
 export type { Artifact, ArtifactKind, ArtifactDomain } from "./artifacts";
+export * from "./step-types";
 
-// ── Logger (shared by all layers) ──
+// ── Logger ──
 
 export interface Logger {
   info(msg: string, meta?: Record<string, unknown>): void;
@@ -30,16 +31,6 @@ export interface CalendarTools {
   handleQuickAdd: (step: any) => Promise<any>;
 }
 
-// ── Calendar Agent (legacy — used by old domain agent files, remove in cleanup) ──
-
-export interface CalendarAgentDependencies {
-  baml: {
-    calendarNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: CalendarTools;
-  log: Logger;
-}
-
 // ── Gmail Tools ──
 
 export interface GmailToolsDependencies {
@@ -63,16 +54,6 @@ export interface GmailTools {
   handleModifyLabels: (step: any) => Promise<any>;
 }
 
-// ── Gmail Agent (legacy) ──
-
-export interface GmailAgentDependencies {
-  baml: {
-    gmailNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: GmailTools;
-  log: Logger;
-}
-
 // ── Docs Tools ──
 
 export interface DocsToolsDependencies {
@@ -88,16 +69,6 @@ export interface DocsTools {
   handleListDocuments: (step: any) => Promise<any>;
   handleFormatText: (step: any) => Promise<any>;
   handleFormatParagraph: (step: any) => Promise<any>;
-}
-
-// ── Docs Agent (legacy) ──
-
-export interface DocsAgentDependencies {
-  baml: {
-    docsNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: DocsTools;
-  log: Logger;
 }
 
 // ── Sheets Tools ──
@@ -118,16 +89,6 @@ export interface SheetsTools {
   handleListSpreadsheets: (step: any) => Promise<any>;
 }
 
-// ── Sheets Agent (legacy) ──
-
-export interface SheetsAgentDependencies {
-  baml: {
-    sheetsNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: SheetsTools;
-  log: Logger;
-}
-
 // ── Drive Tools ──
 
 export interface DriveToolsDependencies {
@@ -146,16 +107,6 @@ export interface DriveTools {
   handleListPermissions: (step: any) => Promise<any>;
 }
 
-// ── Drive Agent (legacy) ──
-
-export interface DriveAgentDependencies {
-  baml: {
-    driveNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: DriveTools;
-  log: Logger;
-}
-
 // ── Meet Tools ──
 
 export interface MeetToolsDependencies {
@@ -170,44 +121,6 @@ export interface MeetTools {
   handleListRecordings: (step: any) => Promise<any>;
   handleListTranscripts: (step: any) => Promise<any>;
   handleGetTranscriptEntries: (step: any) => Promise<any>;
-}
-
-// ── Meet Agent (legacy) ──
-
-export interface MeetAgentDependencies {
-  baml: {
-    meetNextStep: (thread: string, today: string) => Promise<unknown>;
-  };
-  tools: MeetTools;
-  log: Logger;
-}
-
-// ── Agent Registry (legacy — remove in cleanup) ──
-
-export type AgentRunner = (thread: any, log?: Logger) => Promise<any>;
-
-export interface TopLevelAgent {
-  run: (thread: any, log?: Logger) => Promise<any>;
-}
-
-// ── GWorkspace Agent (legacy — remove in cleanup) ──
-
-export interface GWorkspaceDependencies {
-  baml: {
-    gworkspaceNextStep: (thread: string, today: string, artifacts: string) => Promise<unknown>;
-  };
-  agents: Record<string, AgentRunner>;
-  log: Logger;
-}
-
-// ── Router (legacy — remove in cleanup) ──
-
-export interface RouterDependencies {
-  baml: {
-    determineNextStep: (thread: string, lastMessage: string) => Promise<unknown>;
-  };
-  agents: Record<string, TopLevelAgent>;
-  log: Logger;
 }
 
 // ── Worker ──

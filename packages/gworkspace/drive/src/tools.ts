@@ -1,16 +1,9 @@
 import type { drive_v3 } from "googleapis";
 import type {
-  SearchFiles,
-  GetFile,
-  CreateFolder,
-  MoveFile,
-  CopyFile,
-  RenameFile,
-  TrashFile,
-  ShareFile,
-  ListPermissions,
-} from "../baml_client";
-import type { DriveToolsDependencies, DriveTools, Artifact } from "@synqai/contracts";
+  DriveToolsDependencies, DriveTools, Artifact,
+  SearchFiles, GetFile, CreateFolder, MoveFile, CopyFile,
+  RenameFile, TrashFile, ShareFile, ListPermissions,
+} from "@synqai/contracts";
 import { classifyDriveError } from "./errors";
 
 const FILE_FIELDS = "id,name,mimeType,fileExtension,size,modifiedTime,createdTime,parents,webViewLink,owners(displayName,emailAddress),shared,starred,trashed,shortcutDetails(targetId,targetMimeType),driveId";

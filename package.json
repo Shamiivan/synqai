@@ -18,8 +18,7 @@
   "dependencies": {
     "@axiomhq/pino": "^1.4.0",
     "@boundaryml/baml": "^0.219.0",
-    "@google/genai": "^1.42.0",
-    "@synqai/contracts": "workspace:*",
+"@synqai/contracts": "workspace:*",
     "@synqai/gateway-discord": "workspace:*",
     "@synqai/gworkspace-calendar": "workspace:*",
     "@synqai/gworkspace-docs": "workspace:*",

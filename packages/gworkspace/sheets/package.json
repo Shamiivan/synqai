@@ -2,17 +2,9 @@
   "name": "@synqai/gworkspace-sheets",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "npx tsx src/index.ts",
-    "baml:generate": "pnpm exec baml-cli generate"
-  },
   "dependencies": {
-    "@boundaryml/baml": "^0.219.0",
     "@synqai/contracts": "workspace:*",
     "@synqai/gworkspace-auth": "workspace:*",
-    "@synqai/human-loop": "workspace:*",
-    "dotenv": "^17.3.1",
-    "googleapis": "^148.0.0",
-    "tsx": "^4.21.0"
+    "googleapis": "^148.0.0"
   }
 }

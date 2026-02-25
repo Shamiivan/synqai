@@ -1,15 +1,9 @@
 import type { sheets_v4, drive_v3 } from "googleapis";
 import type {
-  CreateSpreadsheet,
-  GetSpreadsheet,
-  ReadValues,
-  WriteValues,
-  AppendRows,
-  ClearRange,
-  AddSheet,
-  ListSpreadsheets,
-} from "../baml_client";
-import type { SheetsToolsDependencies, SheetsTools, Artifact } from "@synqai/contracts";
+  SheetsToolsDependencies, SheetsTools, Artifact,
+  CreateSpreadsheet, GetSpreadsheet, ReadValues, WriteValues,
+  AppendRows, ClearRange, AddSheet, ListSpreadsheets,
+} from "@synqai/contracts";
 import { classifySheetsError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────

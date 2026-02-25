@@ -1,20 +1,10 @@
 import type { gmail_v1 } from "googleapis";
 import type {
-  ListEmails,
-  ReadEmail,
-  SendEmail,
-  ReplyToEmail,
-  ForwardEmail,
-  CreateDraft,
-  ArchiveEmail,
-  TrashEmail,
-  MarkRead,
-  MarkUnread,
-  StarEmail,
-  UnstarEmail,
-  ModifyLabels,
-} from "../baml_client";
-import type { GmailToolsDependencies, GmailTools, Artifact } from "@synqai/contracts";
+  GmailToolsDependencies, GmailTools, Artifact,
+  ListEmails, ReadEmail, SendEmail, ReplyToEmail, ForwardEmail,
+  CreateDraft, ArchiveEmail, TrashEmail, MarkRead, MarkUnread,
+  StarEmail, UnstarEmail, ModifyLabels,
+} from "@synqai/contracts";
 import { classifyGmailError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────

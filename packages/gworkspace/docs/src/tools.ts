@@ -1,14 +1,9 @@
 import type { docs_v1, drive_v3 } from "googleapis";
 import type {
-  CreateDocument,
-  GetDocument,
-  InsertText,
-  ReplaceText,
-  ListDocuments,
-  FormatText,
-  FormatParagraph,
-} from "../baml_client";
-import type { DocsToolsDependencies, DocsTools, Artifact } from "@synqai/contracts";
+  DocsToolsDependencies, DocsTools, Artifact,
+  CreateDocument, GetDocument, InsertText, ReplaceText,
+  ListDocuments, FormatText, FormatParagraph,
+} from "@synqai/contracts";
 import { classifyDocsError } from "./errors";
 
 // ── Factory ──────────────────────────────────────────────

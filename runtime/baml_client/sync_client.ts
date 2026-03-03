@@ -22,7 +22,7 @@ import type { BamlRuntime, FunctionResult, BamlCtxManager, Image, Audio, Pdf, Vi
 import { toBamlError, BamlAbortError, ClientRegistry, type HTTPRequest } from "@boundaryml/baml"
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type * as types from "./types"
-import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
+import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CompleteStep, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, Plan, PlanStep, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SaveMemory, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
 import type TypeBuilder from "./type_builder"
 import { HttpRequest, HttpStreamRequest } from "./sync_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -97,10 +97,10 @@ export class BamlSyncClient {
   }
 
   
-  NextStep(
-      thread: string,today: string,
+  MakePlan(
+      thread: string,workingMemory: string,today: string,
       __baml_options__?: BamlCallOptions<never>
-  ): types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries {
+  ): types.Plan {
     try {
       const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
       const __signal__ = __options__.signal;
@@ -128,9 +128,9 @@ export class BamlSyncClient {
       }
 
       const __raw__ = this.runtime.callFunctionSync(
-        "NextStep",
+        "MakePlan",
         {
-          "thread": thread,"today": today
+          "thread": thread,"workingMemory": workingMemory,"today": today
         },
         this.ctxManager.cloneContext(),
         __options__.tb?.__tb(),
@@ -141,7 +141,57 @@ export class BamlSyncClient {
         __signal__,
         __options__.watchers,
       )
-      return __raw__.parsed(false) as types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries
+      return __raw__.parsed(false) as types.Plan
+    } catch (error: any) {
+      throw toBamlError(error);
+    }
+  }
+  
+  NextAction(
+      thread: string,workingMemory: string,plan: string,currentStep: string,stepHistory: string,today: string,
+      __baml_options__?: BamlCallOptions<never>
+  ): types.RequestInfo | types.Done | types.SaveMemory | types.CompleteStep | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries {
+    try {
+      const __options__ = { ...this.bamlOptions, ...(__baml_options__ || {}) }
+      const __signal__ = __options__.signal;
+
+      if (__signal__?.aborted) {
+        throw new BamlAbortError('Operation was aborted', __signal__.reason);
+      }
+
+      // Check if onTick is provided and reject for sync operations
+      if (__options__.onTick) {
+        throw new Error("onTick is not supported for synchronous functions. Please use the async client instead.");
+      }
+
+      const __collector__ = __options__.collector ? (Array.isArray(__options__.collector) ? __options__.collector : [__options__.collector]) : [];
+      const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
+      const __env__: Record<string, string> = Object.fromEntries(
+        Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
+      );
+
+      // Resolve client option to clientRegistry (client takes precedence)
+      let __clientRegistry__ = __options__.clientRegistry;
+      if (__options__.client) {
+        __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
+        __clientRegistry__.setPrimary(__options__.client);
+      }
+
+      const __raw__ = this.runtime.callFunctionSync(
+        "NextAction",
+        {
+          "thread": thread,"workingMemory": workingMemory,"plan": plan,"currentStep": currentStep,"stepHistory": stepHistory,"today": today
+        },
+        this.ctxManager.cloneContext(),
+        __options__.tb?.__tb(),
+        __clientRegistry__,
+        __collector__,
+        __options__.tags || {},
+        __env__,
+        __signal__,
+        __options__.watchers,
+      )
+      return __raw__.parsed(false) as types.RequestInfo | types.Done | types.SaveMemory | types.CompleteStep | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries
     } catch (error: any) {
       throw toBamlError(error);
     }

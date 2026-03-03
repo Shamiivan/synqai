@@ -37,6 +37,8 @@ export default class TypeBuilder {
     
     ClearRange: ClassViewer<'ClearRange', "intent" | "spreadsheetId" | "range">;
     
+    CompleteStep: ClassViewer<'CompleteStep', "intent" | "summary">;
+    
     CopyFile: ClassViewer<'CopyFile', "intent" | "fileId" | "newName" | "destinationFolderId">;
     
     CreateDocument: ClassViewer<'CreateDocument', "intent" | "title" | "content">;
@@ -101,6 +103,10 @@ export default class TypeBuilder {
     
     MoveFile: ClassViewer<'MoveFile', "intent" | "fileId" | "destinationFolderId">;
     
+    Plan: ClassViewer<'Plan', "goal" | "steps">;
+    
+    PlanStep: ClassViewer<'PlanStep', "id" | "title" | "success">;
+    
     QuickAdd: ClassViewer<'QuickAdd', "intent" | "text">;
     
     ReadEmail: ClassViewer<'ReadEmail', "intent" | "messageId">;
@@ -114,6 +120,8 @@ export default class TypeBuilder {
     ReplyToEmail: ClassViewer<'ReplyToEmail', "intent" | "messageId" | "body">;
     
     RequestInfo: ClassViewer<'RequestInfo', "intent" | "message">;
+    
+    SaveMemory: ClassViewer<'SaveMemory', "intent" | "note">;
     
     SearchFiles: ClassViewer<'SearchFiles', "intent" | "query" | "mimeTypeFilter" | "folderId" | "maxResults">;
     
@@ -138,7 +146,7 @@ export default class TypeBuilder {
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "AddSheet","AppendRows","ArchiveEmail","CheckAvailability","ClearRange","CopyFile","CreateDocument","CreateDraft","CreateEvent","CreateFolder","CreateMeeting","CreateSpreadsheet","DeleteEvent","Done","EndMeeting","FormatParagraph","FormatText","ForwardEmail","GetDocument","GetEvent","GetFile","GetMeeting","GetSpreadsheet","GetTranscriptEntries","InsertText","ListConferences","ListDocuments","ListEmails","ListEvents","ListPermissions","ListRecordings","ListSpreadsheets","ListTranscripts","MarkRead","MarkUnread","ModifyLabels","MoveFile","QuickAdd","ReadEmail","ReadValues","RenameFile","ReplaceText","ReplyToEmail","RequestInfo","SearchFiles","SendEmail","ShareFile","StarEmail","TrashEmail","TrashFile","UnstarEmail","UpdateEvent","WriteValues",
+            "AddSheet","AppendRows","ArchiveEmail","CheckAvailability","ClearRange","CompleteStep","CopyFile","CreateDocument","CreateDraft","CreateEvent","CreateFolder","CreateMeeting","CreateSpreadsheet","DeleteEvent","Done","EndMeeting","FormatParagraph","FormatText","ForwardEmail","GetDocument","GetEvent","GetFile","GetMeeting","GetSpreadsheet","GetTranscriptEntries","InsertText","ListConferences","ListDocuments","ListEmails","ListEvents","ListPermissions","ListRecordings","ListSpreadsheets","ListTranscripts","MarkRead","MarkUnread","ModifyLabels","MoveFile","Plan","PlanStep","QuickAdd","ReadEmail","ReadValues","RenameFile","ReplaceText","ReplyToEmail","RequestInfo","SaveMemory","SearchFiles","SendEmail","ShareFile","StarEmail","TrashEmail","TrashFile","UnstarEmail","UpdateEvent","WriteValues",
           ]),
           enums: new Set([
             
@@ -164,6 +172,10 @@ export default class TypeBuilder {
         
         this.ClearRange = this.tb.classViewer("ClearRange", [
           "intent","spreadsheetId","range",
+        ]);
+        
+        this.CompleteStep = this.tb.classViewer("CompleteStep", [
+          "intent","summary",
         ]);
         
         this.CopyFile = this.tb.classViewer("CopyFile", [
@@ -294,6 +306,14 @@ export default class TypeBuilder {
           "intent","fileId","destinationFolderId",
         ]);
         
+        this.Plan = this.tb.classViewer("Plan", [
+          "goal","steps",
+        ]);
+        
+        this.PlanStep = this.tb.classViewer("PlanStep", [
+          "id","title","success",
+        ]);
+        
         this.QuickAdd = this.tb.classViewer("QuickAdd", [
           "intent","text",
         ]);
@@ -320,6 +340,10 @@ export default class TypeBuilder {
         
         this.RequestInfo = this.tb.classViewer("RequestInfo", [
           "intent","message",
+        ]);
+        
+        this.SaveMemory = this.tb.classViewer("SaveMemory", [
+          "intent","note",
         ]);
         
         this.SearchFiles = this.tb.classViewer("SearchFiles", [

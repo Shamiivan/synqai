@@ -13,6 +13,12 @@ export default defineSchema({
     .index("by_run", ["runId"])
     .index("by_channel", ["discordChannelId"]),
 
+  workingMemory: defineTable({
+    scope: v.string(),
+    content: v.string(),
+    updatedAt: v.number(),
+  }).index("by_scope", ["scope"]),
+
   agentRuns: defineTable({
     // Legacy fields — optional for backward compat, no longer written
     entryAgent: v.optional(v.string()),

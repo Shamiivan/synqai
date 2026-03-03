@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as memory from "../memory.js";
 import type * as runs from "../runs.js";
 
 import type {
@@ -17,6 +18,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  memory: typeof memory;
   runs: typeof runs;
 }>;
 

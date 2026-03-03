@@ -20,7 +20,7 @@ $ pnpm add @boundaryml/baml
 
 import type { Image, Audio, Pdf, Video } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
-import type {  AddSheet,  AppendRows,  ArchiveEmail,  CheckAvailability,  ClearRange,  CopyFile,  CreateDocument,  CreateDraft,  CreateEvent,  CreateFolder,  CreateMeeting,  CreateSpreadsheet,  DeleteEvent,  Done,  EndMeeting,  FormatParagraph,  FormatText,  ForwardEmail,  GetDocument,  GetEvent,  GetFile,  GetMeeting,  GetSpreadsheet,  GetTranscriptEntries,  InsertText,  ListConferences,  ListDocuments,  ListEmails,  ListEvents,  ListPermissions,  ListRecordings,  ListSpreadsheets,  ListTranscripts,  MarkRead,  MarkUnread,  ModifyLabels,  MoveFile,  QuickAdd,  ReadEmail,  ReadValues,  RenameFile,  ReplaceText,  ReplyToEmail,  RequestInfo,  SearchFiles,  SendEmail,  ShareFile,  StarEmail,  TrashEmail,  TrashFile,  UnstarEmail,  UpdateEvent,  WriteValues } from "./types"
+import type {  AddSheet,  AppendRows,  ArchiveEmail,  CheckAvailability,  ClearRange,  CompleteStep,  CopyFile,  CreateDocument,  CreateDraft,  CreateEvent,  CreateFolder,  CreateMeeting,  CreateSpreadsheet,  DeleteEvent,  Done,  EndMeeting,  FormatParagraph,  FormatText,  ForwardEmail,  GetDocument,  GetEvent,  GetFile,  GetMeeting,  GetSpreadsheet,  GetTranscriptEntries,  InsertText,  ListConferences,  ListDocuments,  ListEmails,  ListEvents,  ListPermissions,  ListRecordings,  ListSpreadsheets,  ListTranscripts,  MarkRead,  MarkUnread,  ModifyLabels,  MoveFile,  Plan,  PlanStep,  QuickAdd,  ReadEmail,  ReadValues,  RenameFile,  ReplaceText,  ReplyToEmail,  RequestInfo,  SaveMemory,  SearchFiles,  SendEmail,  ShareFile,  StarEmail,  TrashEmail,  TrashFile,  UnstarEmail,  UpdateEvent,  WriteValues } from "./types"
 import type * as types from "./types"
 
 /******************************************************************************
@@ -62,6 +62,10 @@ export namespace partial_types {
       intent?: "clear_range" | null
       spreadsheetId?: string | null
       range?: string | null
+    }
+    export interface CompleteStep {
+      intent?: "complete_step" | null
+      summary?: string | null
     }
     export interface CopyFile {
       intent?: "copy_file" | null
@@ -222,6 +226,15 @@ export namespace partial_types {
       fileId?: string | null
       destinationFolderId?: string | null
     }
+    export interface Plan {
+      goal?: string | null
+      steps: PlanStep[]
+    }
+    export interface PlanStep {
+      id?: string | null
+      title?: string | null
+      success?: string | null
+    }
     export interface QuickAdd {
       intent?: "quick_add" | null
       text?: string | null
@@ -254,6 +267,10 @@ export namespace partial_types {
     export interface RequestInfo {
       intent?: "request_info" | null
       message?: string | null
+    }
+    export interface SaveMemory {
+      intent?: "save_memory" | null
+      note?: string | null
     }
     export interface SearchFiles {
       intent?: "search_files" | null
@@ -310,6 +327,6 @@ export namespace partial_types {
       range?: string | null
       values: string[][]
     }
-export type AgentStep = RequestInfo | Done | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries | null
+export type Action = RequestInfo | Done | SaveMemory | CompleteStep | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries | null
 
 }

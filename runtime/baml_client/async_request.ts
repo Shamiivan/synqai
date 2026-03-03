@@ -23,7 +23,7 @@ import type { BamlRuntime, BamlCtxManager, Image, Audio, Pdf, Video, FunctionLog
 import { toBamlError, HTTPRequest, ClientRegistry } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
+import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CompleteStep, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, Plan, PlanStep, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SaveMemory, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 
@@ -42,8 +42,8 @@ env?: Record<string, string | undefined>
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  async NextStep(
-  thread: string,today: string,
+  async MakePlan(
+  thread: string,workingMemory: string,today: string,
   __baml_options__?: BamlCallOptions<never>
   ): Promise<HTTPRequest> {
     try {
@@ -60,9 +60,42 @@ env?: Record<string, string | undefined>
       }
 
       return await this.runtime.buildRequest(
-      "NextStep",
+      "MakePlan",
       {
-      "thread": thread,"today": today
+      "thread": thread,"workingMemory": workingMemory,"today": today
+      },
+      this.ctxManager.cloneContext(),
+      __baml_options__?.tb?.__tb(),
+      __clientRegistry__,
+      false,
+      __env__
+      )
+      } catch (error) {
+      throw toBamlError(error);
+      }
+      }
+      
+  async NextAction(
+  thread: string,workingMemory: string,plan: string,currentStep: string,stepHistory: string,today: string,
+  __baml_options__?: BamlCallOptions<never>
+  ): Promise<HTTPRequest> {
+    try {
+    const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
+    const __env__: Record<string, string> = Object.fromEntries(
+      Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
+      );
+
+      // Resolve client option to clientRegistry (client takes precedence)
+      let __clientRegistry__ = __baml_options__?.clientRegistry;
+      if (__baml_options__?.client) {
+        __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
+        __clientRegistry__.setPrimary(__baml_options__.client);
+      }
+
+      return await this.runtime.buildRequest(
+      "NextAction",
+      {
+      "thread": thread,"workingMemory": workingMemory,"plan": plan,"currentStep": currentStep,"stepHistory": stepHistory,"today": today
       },
       this.ctxManager.cloneContext(),
       __baml_options__?.tb?.__tb(),
@@ -81,8 +114,8 @@ env?: Record<string, string | undefined>
       constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
       
-      async NextStep(
-      thread: string,today: string,
+      async MakePlan(
+      thread: string,workingMemory: string,today: string,
       __baml_options__?: BamlCallOptions<never>
       ): Promise<HTTPRequest> {
         try {
@@ -99,9 +132,42 @@ env?: Record<string, string | undefined>
           }
 
           return await this.runtime.buildRequest(
-          "NextStep",
+          "MakePlan",
           {
-          "thread": thread,"today": today
+          "thread": thread,"workingMemory": workingMemory,"today": today
+          },
+          this.ctxManager.cloneContext(),
+          __baml_options__?.tb?.__tb(),
+          __clientRegistry__,
+          true,
+          __env__
+          )
+          } catch (error) {
+          throw toBamlError(error);
+          }
+          }
+          
+      async NextAction(
+      thread: string,workingMemory: string,plan: string,currentStep: string,stepHistory: string,today: string,
+      __baml_options__?: BamlCallOptions<never>
+      ): Promise<HTTPRequest> {
+        try {
+        const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
+        const __env__: Record<string, string> = Object.fromEntries(
+          Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
+          );
+
+          // Resolve client option to clientRegistry (client takes precedence)
+          let __clientRegistry__ = __baml_options__?.clientRegistry;
+          if (__baml_options__?.client) {
+            __clientRegistry__ = __clientRegistry__ || new ClientRegistry();
+            __clientRegistry__.setPrimary(__baml_options__.client);
+          }
+
+          return await this.runtime.buildRequest(
+          "NextAction",
+          {
+          "thread": thread,"workingMemory": workingMemory,"plan": plan,"currentStep": currentStep,"stepHistory": stepHistory,"today": today
           },
           this.ctxManager.cloneContext(),
           __baml_options__?.tb?.__tb(),

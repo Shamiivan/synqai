@@ -84,6 +84,12 @@ export interface ClearRange {
   
 }
 
+export interface CompleteStep {
+  intent: "complete_step"
+  summary: string
+  
+}
+
 export interface CopyFile {
   intent: "copy_file"
   fileId: string
@@ -307,6 +313,19 @@ export interface MoveFile {
   
 }
 
+export interface Plan {
+  goal: string
+  steps: PlanStep[]
+  
+}
+
+export interface PlanStep {
+  id: string
+  title: string
+  success: string
+  
+}
+
 export interface QuickAdd {
   intent: "quick_add"
   text: string
@@ -351,6 +370,12 @@ export interface ReplyToEmail {
 export interface RequestInfo {
   intent: "request_info"
   message: string
+  
+}
+
+export interface SaveMemory {
+  intent: "save_memory"
+  note: string
   
 }
 
@@ -427,4 +452,4 @@ export interface WriteValues {
   
 }
 
-export type AgentStep = RequestInfo | Done | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries
+export type Action = RequestInfo | Done | SaveMemory | CompleteStep | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries

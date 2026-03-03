@@ -339,18 +339,78 @@ class GetTranscriptEntries {
   transcriptName string @description("The transcript resource name, e.g. 'conferenceRecords/abc123/transcripts/def456'")
 }
 
-// ── Union type (all 53 intents) ──
+// ── Planning types ──
 
-type AgentStep = RequestInfo | Done | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries
+class PlanStep {
+  id string @description("Short unique ID like s1, s2, s3")
+  title string @description("What this step accomplishes")
+  success string @description("How to know this step is done")
+}
 
-// ── Unified agent function ──
+class Plan {
+  goal string @description("One-sentence summary of the user's request")
+  steps PlanStep[] @description("1-6 concrete steps. Empty array for simple chat/greetings.")
+}
 
-function NextStep(thread: string, today: string) -> AgentStep {
+// ── Execution control intents ──
+
+class SaveMemory {
+  intent "save_memory" @description("Save a durable fact worth remembering across conversations — folder IDs, user preferences, discovered patterns")
+  note string @description("The fact to remember")
+}
+
+class CompleteStep {
+  intent "complete_step" @description("Current plan step is done. Move to the next step.")
+  summary string @description("Brief summary of what was accomplished")
+}
+
+// ── Action union (all 51 tools + control intents) ──
+
+type Action = RequestInfo | Done | SaveMemory | CompleteStep | CreateEvent | ListEvents | GetEvent | UpdateEvent | DeleteEvent | CheckAvailability | QuickAdd | ListEmails | ReadEmail | SendEmail | ReplyToEmail | ForwardEmail | CreateDraft | ArchiveEmail | TrashEmail | MarkRead | MarkUnread | StarEmail | UnstarEmail | ModifyLabels | CreateSpreadsheet | GetSpreadsheet | ReadValues | WriteValues | AppendRows | ClearRange | AddSheet | ListSpreadsheets | CreateDocument | GetDocument | InsertText | ReplaceText | ListDocuments | FormatText | FormatParagraph | SearchFiles | GetFile | CreateFolder | MoveFile | CopyFile | RenameFile | TrashFile | ShareFile | ListPermissions | CreateMeeting | GetMeeting | EndMeeting | ListConferences | ListRecordings | ListTranscripts | GetTranscriptEntries
+
+// ── MakePlan — break user request into steps ──
+
+function MakePlan(thread: string, workingMemory: string, today: string) -> Plan {
   client Gemini
   prompt #"
     {{ _.role("system") }}
 
     You are Joe, an AI assistant on Discord. You manage Google Workspace: Calendar, Gmail, Sheets, Docs, Drive, and Meet.
+
+    Break the user's request into 1-6 concrete steps. Each step should be tool-oriented with clear success criteria.
+
+    Rules:
+    - Use working memory to skip steps you already know the answer to (e.g. folder IDs, file locations).
+    - Do NOT call tools — just plan which tools you'll need.
+    - If the request is simple chat, a greeting, or a question that needs no tools, return an empty steps array.
+    - Each step should be small enough to complete in 1-4 tool calls.
+    - Steps should be ordered — later steps can depend on earlier ones.
+
+    ## Working Memory (facts from previous conversations)
+    {{ workingMemory }}
+
+    Today: {{ today }}
+
+    {{ _.role("user") }}
+
+    {{ thread }}
+
+    Create a plan for this request.
+
+    {{ ctx.output_format }}
+  "#
+}
+
+// ── NextAction — execute one step of the plan ──
+
+function NextAction(thread: string, workingMemory: string, plan: string, currentStep: string, stepHistory: string, today: string) -> Action {
+  client Gemini
+  prompt #"
+    {{ _.role("system") }}
+
+    You are Joe, an AI assistant on Discord. You manage Google Workspace: Calendar, Gmail, Sheets, Docs, Drive, and Meet.
+
+    You are executing a plan. Focus on the current step.
 
     ## Core Principle: Bias to Action
     - Use tools to discover information instead of asking the user.
@@ -375,13 +435,30 @@ function NextStep(thread: string, today: string) -> AgentStep {
     - Drive: search supports fullText contains, starred = true, sharedWithMe. Use search_files before asking for file IDs.
     - Meet: always return the meeting link after creating.
 
+    ## Control Actions
+    - Use complete_step when the current step's success criteria are met.
+    - Use save_memory for durable facts worth remembering (folder IDs, file IDs, user preferences, discovered patterns).
+    - Use done when the entire task is complete — include a final message to the user.
+
+    ## Working Memory
+    {{ workingMemory }}
+
+    ## Plan
+    {{ plan }}
+
+    ## Current Step
+    {{ currentStep }}
+
+    ## Step History (actions taken so far for this step)
+    {{ stepHistory }}
+
     Today: {{ today }}
 
     {{ _.role("user") }}
 
     {{ thread }}
 
-    What should the next step be?
+    What is the next action for the current step?
 
     {{ ctx.output_format }}
   "#

@@ -19,6 +19,7 @@ import { getDriveClient } from "@synqai/gworkspace-drive/src/google-auth";
 import { createDriveTools } from "@synqai/gworkspace-drive/src/tools";
 import { createDiscordGateway } from "@synqai/gateway-discord";
 
+import { api } from "../../convex/_generated/api.js";
 import { createLogger } from "./logging";
 import { createToolRegistry } from "./tool-registry";
 import { createAgent } from "./agent-loop";
@@ -56,10 +57,24 @@ const tools = createToolRegistry({
   calendarTools, gmailTools, sheetsTools, docsTools, driveTools, meetTools,
 });
 
-// ── Agent (one loop, all tools, one BAML function) ──
+// ── Memory Store (Convex-backed working memory) ──
+const memoryStore = {
+  load: (scope: string) =>
+    convex.query(api.memory.getMemory, { scope }),
+  save: (scope: string, note: string) =>
+    convex.mutation(api.memory.appendMemory, { scope, note }),
+};
+
+// ── Agent (2-loop: plan → execute, with working memory) ──
 const agent = createAgent({
-  baml: { nextStep: (thread, today) => baml.NextStep(thread, today) },
+  baml: {
+    makePlan: (thread, workingMemory, today) =>
+      baml.MakePlan(thread, workingMemory, today),
+    nextAction: (thread, workingMemory, plan, currentStep, stepHistory, today) =>
+      baml.NextAction(thread, workingMemory, plan, currentStep, stepHistory, today),
+  },
   tools,
+  memoryStore,
   log: log.child("agent"),
 });
 

@@ -23,31 +23,54 @@ import { toBamlError } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
+import type {AddSheet, AppendRows, ArchiveEmail, CheckAvailability, ClearRange, CompleteStep, CopyFile, CreateDocument, CreateDraft, CreateEvent, CreateFolder, CreateMeeting, CreateSpreadsheet, DeleteEvent, Done, EndMeeting, FormatParagraph, FormatText, ForwardEmail, GetDocument, GetEvent, GetFile, GetMeeting, GetSpreadsheet, GetTranscriptEntries, InsertText, ListConferences, ListDocuments, ListEmails, ListEvents, ListPermissions, ListRecordings, ListSpreadsheets, ListTranscripts, MarkRead, MarkUnread, ModifyLabels, MoveFile, Plan, PlanStep, QuickAdd, ReadEmail, ReadValues, RenameFile, ReplaceText, ReplyToEmail, RequestInfo, SaveMemory, SearchFiles, SendEmail, ShareFile, StarEmail, TrashEmail, TrashFile, UnstarEmail, UpdateEvent, WriteValues} from "./types"
 import type TypeBuilder from "./type_builder"
 
 export class LlmResponseParser {
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  NextStep(
+  MakePlan(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries {
+  ): types.Plan {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
         Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       return this.runtime.parseLlmResponse(
-        "NextStep",
+        "MakePlan",
         llmResponse,
         false,
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as types.RequestInfo | types.Done | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries
+      ) as types.Plan
+    } catch (error) {
+      throw toBamlError(error);
+    }
+  }
+  
+  NextAction(
+      llmResponse: string,
+      __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
+  ): types.RequestInfo | types.Done | types.SaveMemory | types.CompleteStep | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries {
+    try {
+      const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
+      const __env__: Record<string, string> = Object.fromEntries(
+        Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
+      );
+      return this.runtime.parseLlmResponse(
+        "NextAction",
+        llmResponse,
+        false,
+        this.ctxManager.cloneContext(),
+        __baml_options__?.tb?.__tb(),
+        __baml_options__?.clientRegistry,
+        __env__,
+      ) as types.RequestInfo | types.Done | types.SaveMemory | types.CompleteStep | types.CreateEvent | types.ListEvents | types.GetEvent | types.UpdateEvent | types.DeleteEvent | types.CheckAvailability | types.QuickAdd | types.ListEmails | types.ReadEmail | types.SendEmail | types.ReplyToEmail | types.ForwardEmail | types.CreateDraft | types.ArchiveEmail | types.TrashEmail | types.MarkRead | types.MarkUnread | types.StarEmail | types.UnstarEmail | types.ModifyLabels | types.CreateSpreadsheet | types.GetSpreadsheet | types.ReadValues | types.WriteValues | types.AppendRows | types.ClearRange | types.AddSheet | types.ListSpreadsheets | types.CreateDocument | types.GetDocument | types.InsertText | types.ReplaceText | types.ListDocuments | types.FormatText | types.FormatParagraph | types.SearchFiles | types.GetFile | types.CreateFolder | types.MoveFile | types.CopyFile | types.RenameFile | types.TrashFile | types.ShareFile | types.ListPermissions | types.CreateMeeting | types.GetMeeting | types.EndMeeting | types.ListConferences | types.ListRecordings | types.ListTranscripts | types.GetTranscriptEntries
     } catch (error) {
       throw toBamlError(error);
     }
@@ -59,24 +82,47 @@ export class LlmStreamParser {
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  NextStep(
+  MakePlan(
       llmResponse: string,
       __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
-  ): partial_types.RequestInfo | partial_types.Done | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries {
+  ): partial_types.Plan {
     try {
       const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
       const __env__: Record<string, string> = Object.fromEntries(
         Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       return this.runtime.parseLlmResponse(
-        "NextStep",
+        "MakePlan",
         llmResponse,
         true,
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),
         __baml_options__?.clientRegistry,
         __env__,
-      ) as partial_types.RequestInfo | partial_types.Done | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries
+      ) as partial_types.Plan
+    } catch (error) {
+      throw toBamlError(error);
+    }
+  }
+  
+  NextAction(
+      llmResponse: string,
+      __baml_options__?: { tb?: TypeBuilder, clientRegistry?: ClientRegistry, env?: Record<string, string | undefined> }
+  ): partial_types.RequestInfo | partial_types.Done | partial_types.SaveMemory | partial_types.CompleteStep | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries {
+    try {
+      const __rawEnv__ = __baml_options__?.env ? { ...process.env, ...__baml_options__.env } : { ...process.env };
+      const __env__: Record<string, string> = Object.fromEntries(
+        Object.entries(__rawEnv__).filter(([_, value]) => value !== undefined) as [string, string][]
+      );
+      return this.runtime.parseLlmResponse(
+        "NextAction",
+        llmResponse,
+        true,
+        this.ctxManager.cloneContext(),
+        __baml_options__?.tb?.__tb(),
+        __baml_options__?.clientRegistry,
+        __env__,
+      ) as partial_types.RequestInfo | partial_types.Done | partial_types.SaveMemory | partial_types.CompleteStep | partial_types.CreateEvent | partial_types.ListEvents | partial_types.GetEvent | partial_types.UpdateEvent | partial_types.DeleteEvent | partial_types.CheckAvailability | partial_types.QuickAdd | partial_types.ListEmails | partial_types.ReadEmail | partial_types.SendEmail | partial_types.ReplyToEmail | partial_types.ForwardEmail | partial_types.CreateDraft | partial_types.ArchiveEmail | partial_types.TrashEmail | partial_types.MarkRead | partial_types.MarkUnread | partial_types.StarEmail | partial_types.UnstarEmail | partial_types.ModifyLabels | partial_types.CreateSpreadsheet | partial_types.GetSpreadsheet | partial_types.ReadValues | partial_types.WriteValues | partial_types.AppendRows | partial_types.ClearRange | partial_types.AddSheet | partial_types.ListSpreadsheets | partial_types.CreateDocument | partial_types.GetDocument | partial_types.InsertText | partial_types.ReplaceText | partial_types.ListDocuments | partial_types.FormatText | partial_types.FormatParagraph | partial_types.SearchFiles | partial_types.GetFile | partial_types.CreateFolder | partial_types.MoveFile | partial_types.CopyFile | partial_types.RenameFile | partial_types.TrashFile | partial_types.ShareFile | partial_types.ListPermissions | partial_types.CreateMeeting | partial_types.GetMeeting | partial_types.EndMeeting | partial_types.ListConferences | partial_types.ListRecordings | partial_types.ListTranscripts | partial_types.GetTranscriptEntries
     } catch (error) {
       throw toBamlError(error);
     }

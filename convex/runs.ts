@@ -126,7 +126,7 @@ export const resume = mutation({
     const run = await ctx.db.get(args.id);
     assertStatus(run, ["waiting_human"], "resume");
 
-    const events = JSON.parse(run.thread);
+    const events = JSON.parse(run!.thread);
     events.push({ type: "human_response", data: args.answer });
 
     await ctx.db.patch(args.id, {
